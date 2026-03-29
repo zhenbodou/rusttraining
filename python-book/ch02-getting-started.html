@@ -1,0 +1,550 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>2. 入门 - Rust for Python Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for Python Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="安装和设置"><a class="header" href="#安装和设置">安装和设置</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> 如何安装 Rust 及其工具链，Cargo 构建系统 vs pip/Poetry，
+IDE 设置，你的第一个 <code>Hello, world!</code> 程序，以及映射到 Python 等价物的基本 Rust 关键字。</p>
+<p><strong>难度：</strong> 🟢 初学者</p>
+</blockquote>
+<h3 id="安装-rust"><a class="header" href="#安装-rust">安装 Rust</a></h3>
+<pre><code class="language-bash"># 通过 rustup 安装 Rust（Linux/macOS/WSL）
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# 验证安装
+rustc --version     # Rust 编译器
+cargo --version     # 构建工具 + 包管理器（如 pip + setuptools 组合）
+
+# 更新 Rust
+rustup update
+</code></pre>
+<h3 id="rust-工具-vs-python-工具"><a class="header" href="#rust-工具-vs-python-工具">Rust 工具 vs Python 工具</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>用途</th><th>Python</th><th>Rust</th></tr></thead><tbody>
+<tr><td>语言运行时</td><td><code>python</code>（解释器）</td><td><code>rustc</code>（编译器，很少直接调用）</td></tr>
+<tr><td>包管理器</td><td><code>pip</code> / <code>poetry</code> / <code>uv</code></td><td><code>cargo</code>（内置）</td></tr>
+<tr><td>项目配置</td><td><code>pyproject.toml</code></td><td><code>Cargo.toml</code></td></tr>
+<tr><td>锁定文件</td><td><code>poetry.lock</code> / <code>requirements.txt</code></td><td><code>Cargo.lock</code></td></tr>
+<tr><td>虚拟环境</td><td><code>venv</code> / <code>conda</code></td><td>不需要（依赖按项目隔离）</td></tr>
+<tr><td>格式化器</td><td><code>black</code> / <code>ruff format</code></td><td><code>rustfmt</code>（内置：<code>cargo fmt</code>）</td></tr>
+<tr><td>Linter</td><td><code>ruff</code> / <code>flake8</code> / <code>pylint</code></td><td><code>clippy</code>（内置：<code>cargo clippy</code>）</td></tr>
+<tr><td>类型检查器</td><td><code>mypy</code> / <code>pyright</code></td><td>内置于编译器（始终开启）</td></tr>
+<tr><td>测试运行器</td><td><code>pytest</code></td><td><code>cargo test</code>（内置）</td></tr>
+<tr><td>文档</td><td><code>sphinx</code> / <code>mkdocs</code></td><td><code>cargo doc</code>（内置）</td></tr>
+<tr><td>REPL</td><td><code>python</code> / <code>ipython</code></td><td>无（使用 <code>cargo test</code> 或 Rust Playground）</td></tr>
+</tbody></table>
+</div>
+<h3 id="ide-设置"><a class="header" href="#ide-设置">IDE 设置</a></h3>
+<p><strong>VS Code</strong>（推荐）：</p>
+<pre><code class="language-text">要安装的扩展：
+- rust-analyzer        ← 基本：IDE 功能、类型提示、补全
+- Even Better TOML     ← Cargo.toml 语法高亮
+- CodeLLDB             ← 调试器支持
+
+# Python 等价映射：
+# rust-analyzer ≈ Pylance（但有 100% 类型覆盖，始终如此）
+# cargo clippy  ≈ ruff（但检查正确性，不仅是风格）
+</code></pre>
+<hr />
+<h2 id="你的第一个-rust-程序"><a class="header" href="#你的第一个-rust-程序">你的第一个 Rust 程序</a></h2>
+<h3 id="python-hello-world"><a class="header" href="#python-hello-world">Python Hello World</a></h3>
+<pre><code class="language-python"># hello.py —— 直接运行
+print("Hello, World!")
+
+# 运行：
+# python hello.py
+</code></pre>
+<h3 id="rust-hello-world"><a class="header" href="#rust-hello-world">Rust Hello World</a></h3>
+<pre><pre class="playground"><code class="language-rust">// src/main.rs —— 必须先编译
+fn main() {
+    println!("Hello, World!");   // println! 是宏（注意 !）
+}
+
+// 构建并运行：
+// cargo run</code></pre></pre>
+<h3 id="python-开发者的关键差异"><a class="header" href="#python-开发者的关键差异">Python 开发者的关键差异</a></h3>
+<pre><code class="language-text">Python：                              Rust：
+─────────                            ─────
+- 不需要 main()                      - fn main() 是入口点
+- 缩进 = 代码块                       - 花括号 {} = 代码块
+- print() 是函数                     - println!() 是宏（! 很重要）
+- 无分号                            - 分号结束语句
+- 无类型声明                        - 类型推断但始终已知
+- 解释型（直接运行）                 - 编译型（cargo build，然后运行）
+- 运行时错误                        - 大多数错误在编译时
+</code></pre>
+<h3 id="创建你的第一个项目"><a class="header" href="#创建你的第一个项目">创建你的第一个项目</a></h3>
+<pre><code class="language-bash"># Python                              # Rust
+mkdir myproject                        cargo new myproject
+cd myproject                           cd myproject
+python -m venv .venv                   # 不需要虚拟环境
+source .venv/bin/activate              # 不需要激活
+# 手动创建文件                        # src/main.rs 已创建
+
+# Python 项目结构：                    Rust 项目结构：
+# myproject/                           myproject/
+# ├── pyproject.toml                   ├── Cargo.toml        （如 pyproject.toml）
+# ├── src/                             ├── src/
+# │   └── myproject/                   │   └── main.rs       （入口点）
+# │       ├── __init__.py              └── （不需要 __init__.py）
+# │       └── main.py
+# └── tests/
+#     └── test_main.py
+</code></pre>
+<pre class="mermaid">graph TD
+    subgraph Python [&quot;Python 项目&quot;]
+        PP[&quot;pyproject.toml&quot;] --- PS[&quot;src/&quot;]
+        PS --- PM[&quot;myproject/&quot;]
+        PM --- PI[&quot;__init__.py&quot;]
+        PM --- PMN[&quot;main.py&quot;]
+        PP --- PT[&quot;tests/&quot;]
+    end
+    subgraph Rust [&quot;Rust 项目&quot;]
+        RC[&quot;Cargo.toml&quot;] --- RS[&quot;src/&quot;]
+        RS --- RM[&quot;main.rs&quot;]
+        RC --- RTG[&quot;target/（自动生成）&quot;]
+    end
+    style Python fill:#ffeeba
+    style Rust fill:#d4edda
+</pre>
+<blockquote>
+<p><strong>关键差异</strong>：Rust 项目更简单 —— 无 <code>__init__.py</code>，无虚拟环境，无 <code>setup.py</code> vs <code>setup.cfg</code> vs <code>pyproject.toml</code> 混淆。只有 <code>Cargo.toml</code> + <code>src/</code>。</p>
+</blockquote>
+<hr />
+<h2 id="cargo-vs-pippoetry"><a class="header" href="#cargo-vs-pippoetry">Cargo vs pip/Poetry</a></h2>
+<h3 id="项目配置"><a class="header" href="#项目配置">项目配置</a></h3>
+<pre><code class="language-toml"># Python — pyproject.toml
+[project]
+name = "myproject"
+version = "0.1.0"
+requires-python = "&gt;=3.10"
+dependencies = [
+    "requests&gt;=2.28",
+    "pydantic&gt;=2.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff", "mypy"]
+</code></pre>
+<pre><code class="language-toml"># Rust — Cargo.toml
+[package]
+name = "myproject"
+version = "0.1.0"
+edition = "2021"          # Rust edition（如 Python 版本）
+
+[dependencies]
+reqwest = "0.12"          # HTTP 客户端（如 requests）
+serde = { version = "1.0", features = ["derive"] }  # 序列化（如 pydantic）
+
+[dev-dependencies]
+# 测试依赖 —— 仅为 `cargo test` 编译
+# （不需要单独的测试配置 —— `cargo test` 内置）
+</code></pre>
+<h3 id="常见-cargo-命令"><a class="header" href="#常见-cargo-命令">常见 Cargo 命令</a></h3>
+<pre><code class="language-bash"># Python 等价                       # Rust
+pip install requests                 cargo add reqwest
+pip install -r requirements.txt      cargo build           # 自动安装依赖
+pip install -e .                     cargo build            # 始终"可编辑"
+python -m pytest                     cargo test
+python -m mypy .                     # 内置于编译器 —— 始终运行
+ruff check .                         cargo clippy
+ruff format .                        cargo fmt
+python main.py                       cargo run
+python -c "..."                      # 无等价物 —— 使用 cargo run 或测试
+
+# Rust 特有：
+cargo new myproject                  # 创建新项目
+cargo build --release                # 优化构建（比 debug 快 10-100 倍）
+cargo doc --open                     # 生成并浏览 API 文档
+cargo update                         # 更新依赖（如 pip install --upgrade）
+</code></pre>
+<hr />
+<h2 id="python-开发者的基本-rust-关键字"><a class="header" href="#python-开发者的基本-rust-关键字">Python 开发者的基本 Rust 关键字</a></h2>
+<h3 id="变量和可变性关键字"><a class="header" href="#变量和可变性关键字">变量和可变性关键字</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// let —— 声明变量（如 Python 赋值，但默认不可变）
+let name = "Alice";          // Python：name = "Alice"（但可变）
+// name = "Bob";             // ❌ 编译错误！默认不可变
+
+// mut —— 选择加入可变性
+let mut count = 0;           // Python：count = 0（在 Python 中始终可变）
+count += 1;                  // ✅ 允许，因为有 `mut`
+
+// const —— 编译时常量（如 Python 的 UPPER_CASE 约定，但强制执行）
+const MAX_SIZE: usize = 1024;   // Python：MAX_SIZE = 1024（仅是约定）
+
+// static —— 全局变量（慎用；Python 有模块级全局变量）
+static VERSION: &amp;str = "1.0";
+<span class="boring">}</span></code></pre></pre>
+<h3 id="所有权和借用关键字"><a class="header" href="#所有权和借用关键字">所有权和借用关键字</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 这些没有 Python 等价物 —— 它们是 Rust 特有的概念
+
+// &amp; —— 借用（只读引用）
+fn print_name(name: &amp;str) { }    // Python：def print_name(name: str) —— 但 Python 始终传递引用
+
+// &amp;mut —— 可变借用
+fn append(list: &amp;mut Vec&lt;i32&gt;) { }  // Python：def append(lst: list) —— 在 Python 中始终可变
+
+// move —— 转移所有权（在 Rust 中隐式发生，在 Python 中从不）
+let s1 = String::from("hello");
+let s2 = s1;    // s1 被 MOVE 到 s2 —— s1 不再有效
+// println!("{}", s1);  // ❌ 编译错误：值已 move
+<span class="boring">}</span></code></pre></pre>
+<h3 id="类型定义关键字"><a class="header" href="#类型定义关键字">类型定义关键字</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// struct —— 如 Python 的 dataclass 或 NamedTuple
+struct Point {               // @dataclass
+    x: f64,                  // class Point:
+    y: f64,                  //     x: float
+}                            //     y: float
+
+// enum —— 如 Python 的 enum 但强大得多（携带数据）
+enum Shape {                 // 无直接 Python 等价物
+    Circle(f64),             // 每个变体可以持有不同数据
+    Rectangle(f64, f64),
+}
+
+// impl —— 为类型附加方法（如在类中定义方法）
+impl Point {                 // class Point:
+    fn distance(&amp;self) -&gt; f64 {  //     def distance(self) -&gt; float:
+        (self.x.powi(2) + self.y.powi(2)).sqrt()
+    }
+}
+
+// trait —— 如 Python 的 ABC 或 Protocol（PEP 544）
+trait Drawable {             // class Drawable(Protocol):
+    fn draw(&amp;self);          //     def draw(self) -&gt; None: ...
+}
+
+// type —— 类型别名（如 Python 的 TypeAlias）
+type UserId = i64;           // UserId = int（或 TypeAlias）
+<span class="boring">}</span></code></pre></pre>
+<h3 id="控制流关键字"><a class="header" href="#控制流关键字">控制流关键字</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// match —— 穷尽模式匹配（如 Python 3.10+ match，但强制执行）
+match value {
+    1 =&gt; println!("one"),
+    2 | 3 =&gt; println!("two or three"),
+    _ =&gt; println!("other"),          // _ = 通配符（如 Python 的 case _：）
+}
+
+// if let —— destructuring + 条件（Pythonic：if (m := regex.match(s))：）
+if let Some(x) = optional_value {
+    println!("{}", x);
+}
+
+// loop —— 无限循环（如 while True：）
+loop {
+    break;  // 必须 break 才能退出
+}
+
+// for —— 迭代（如 Python 的 for，但更常需要 .iter()）
+for item in collection.iter() {      // for item in collection:
+    println!("{}", item);
+}
+
+// while let —— 带 destructuring 的循环
+while let Some(item) = stack.pop() {
+    process(item);
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="可见性关键字"><a class="header" href="#可见性关键字">可见性关键字</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// pub —— 公共（Python 无真正私有；使用 _ 约定）
+pub fn greet() { }           // def greet():  —— 在 Python 中一切"公共"
+
+// pub(crate) —— 仅在 crate 内可见
+pub(crate) fn internal() { } // def _internal():  —— 单下划线约定
+
+// （无关键字） —— 模块私有
+fn private_helper() { }      // def __private():  —— 双下划线名称修饰
+
+// 在 Python 中，"私有"是君子协定。
+// 在 Rust 中，私有由编译器强制执行。
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：第一个 Rust 程序</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：创建一个新的 Rust 项目并编写一个程序：</p>
+<ol>
+<li>声明一个变量 <code>name</code>，值为你的名字（类型 <code>&amp;str</code>）</li>
+<li>声明一个可变变量 <code>count</code>，从 0 开始</li>
+<li>使用 <code>for</code> 循环从 1..=5 递增 <code>count</code> 并打印 <code>"Hello, {name}! (count: {count})"</code></li>
+<li>循环后，使用 <code>match</code> 表达式打印 count 是偶数还是奇数</li>
+</ol>
+<details>
+<summary>🔑 解答</summary>
+<pre><code class="language-bash">cargo new hello_rust &amp;&amp; cd hello_rust
+</code></pre>
+<pre><pre class="playground"><code class="language-rust">// src/main.rs
+fn main() {
+    let name = "Pythonista";
+    let mut count = 0u32;
+
+    for _ in 1..=5 {
+        count += 1;
+        println!("Hello, {name}! (count: {count})");
+    }
+
+    let parity = match count % 2 {
+        0 =&gt; "even",
+        _ =&gt; "odd",
+    };
+    println!("Final count {count} is {parity}");
+}</code></pre></pre>
+<p><strong>关键要点</strong>：</p>
+<ul>
+<li><code>let</code> 默认不可变（你需要 <code>mut</code> 来改变 <code>count</code>）</li>
+<li><code>1..=5</code> 是包含范围（Python 的 <code>range(1, 6)</code>）</li>
+<li><code>match</code> 是返回值的表达式</li>
+<li>无 <code>self</code>，无 <code>if __name__ == "__main__"</code> —— 只有 <code>fn main()</code></li>
+</ul>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch01-introduction-and-motivation.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch03-built-in-types-and-variables.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch01-introduction-and-motivation.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch03-built-in-types-and-variables.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

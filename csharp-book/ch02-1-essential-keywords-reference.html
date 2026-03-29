@@ -1,0 +1,622 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>必备关键词参考 （可选） - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="c-开发者的基本-rust-关键字"><a class="header" href="#c-开发者的基本-rust-关键字">C# 开发者的基本 Rust 关键字</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> Rust 关键字与其 C# 等价物的快速参考——
+可见性修饰符、所有权关键字、控制流、类型定义和模式匹配语法。</p>
+<p><strong>难度：</strong> 🟢 初学者</p>
+</blockquote>
+<p>理解 Rust 的关键字及其用途有助于 C# 开发者更有效地浏览语言。</p>
+<h3 id="可见性和访问控制关键字"><a class="header" href="#可见性和访问控制关键字">可见性和访问控制关键字</a></h3>
+<h4 id="c-访问修饰符"><a class="header" href="#c-访问修饰符">C# 访问修饰符</a></h4>
+<pre><code class="language-csharp">public class Example
+{
+    public int PublicField;           // 到处可访问
+    private int privateField;        // 仅在此类内
+    protected int protectedField;    // 此类和子类
+    internal int internalField;      // 在此程序集内
+    protected internal int protectedInternalField; // 组合
+}
+</code></pre>
+<h4 id="rust-可见性关键字"><a class="header" href="#rust-可见性关键字">Rust 可见性关键字</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// pub - 使项公开（类似 C# public）
+pub struct PublicStruct {
+    pub public_field: i32,           // 公开字段
+    private_field: i32,              // 默认私有（无关键字）
+}
+
+pub mod my_module {
+    pub(crate) fn crate_public() {}     // 在当前 crate 内公开（类似 internal）
+    pub(super) fn parent_public() {}    // 对父模块公开
+    pub(self) fn self_public() {}       // 在当前模块内公开（与私有相同）
+
+    pub use super::PublicStruct;        // 重新导出（类似 using 别名）
+}
+
+// 没有直接等价于 C# protected 的关键字——改用组合
+<span class="boring">}</span></code></pre></pre>
+<h3 id="内存和所有权关键字"><a class="header" href="#内存和所有权关键字">内存和所有权关键字</a></h3>
+<h4 id="c-内存关键字"><a class="header" href="#c-内存关键字">C# 内存关键字</a></h4>
+<pre><code class="language-csharp">// ref - 通过引用传递
+public void Method(ref int value) { value = 10; }
+
+// out - 输出参数
+public bool TryParse(string input, out int result) { /* */ }
+
+// in - 只读引用（C# 7.2+）
+public void ReadOnly(in LargeStruct data) { /* 不能修改 data */ }
+</code></pre>
+<h4 id="rust-所有权关键字"><a class="header" href="#rust-所有权关键字">Rust 所有权关键字</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// &amp; - 不可变引用（类似 C# in 参数）
+fn read_only(data: &amp;Vec&lt;i32&gt;) {
+    println!("Length: {}", data.len()); // 可以读取，不能修改
+}
+
+// &amp;mut - 可变引用（类似 C# ref 参数）
+fn modify(data: &amp;mut Vec&lt;i32&gt;) {
+    data.push(42); // 可以修改
+}
+
+// move - 在闭包中强制移动捕获
+let data = vec![1, 2, 3];
+let closure = move || {
+    println!("{:?}", data); // data 被移动到闭包中
+};
+// data 在这里不再可访问
+
+// Box - 堆分配（类似 C# 对引用类型使用 new）
+let boxed_data = Box::new(42); // 在堆上分配
+<span class="boring">}</span></code></pre></pre>
+<h3 id="控制流关键字"><a class="header" href="#控制流关键字">控制流关键字</a></h3>
+<h4 id="c-控制流"><a class="header" href="#c-控制流">C# 控制流</a></h4>
+<pre><code class="language-csharp">// return - 带值退出函数
+public int GetValue() { return 42; }
+
+// yield return - 迭代器模式
+public IEnumerable&lt;int&gt; GetNumbers()
+{
+    yield return 1;
+    yield return 2;
+}
+
+// break/continue - 循环控制
+foreach (var item in items)
+{
+    if (item == null) continue;
+    if (item.Stop) break;
+}
+</code></pre>
+<h4 id="rust-控制流关键字"><a class="header" href="#rust-控制流关键字">Rust 控制流关键字</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// return - 显式返回（通常不需要）
+fn get_value() -&gt; i32 {
+    return 42; // 显式返回
+    // 或：42（隐式返回）
+}
+
+// break/continue - 带可选值的循环控制
+fn find_value() -&gt; Option&lt;i32&gt; {
+    loop {
+        let value = get_next();
+        if value &lt; 0 { continue; }
+        if value &gt; 100 { break None; }      // 带值 break
+        if value == 42 { break Some(value); } // 带成功值 break
+    }
+}
+
+// loop - 无限循环（类似 while(true)）
+loop {
+    if condition { break; }
+}
+
+// while - 条件循环
+while condition {
+    // 代码
+}
+
+// for - 迭代器循环
+for item in collection {
+    // 代码
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="类型定义关键字"><a class="header" href="#类型定义关键字">类型定义关键字</a></h3>
+<h4 id="c-类型关键字"><a class="header" href="#c-类型关键字">C# 类型关键字</a></h4>
+<pre><code class="language-csharp">// class - 引用类型
+public class MyClass { }
+
+// struct - 值类型
+public struct MyStruct { }
+
+// interface - 契约定义
+public interface IMyInterface { }
+
+// enum - 枚举
+public enum MyEnum { Value1, Value2 }
+
+// delegate - 函数指针
+public delegate void MyDelegate(int value);
+</code></pre>
+<h4 id="rust-类型关键字"><a class="header" href="#rust-类型关键字">Rust 类型关键字</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// struct - 数据结构（类似 C# 类/结构体组合）
+struct MyStruct {
+    field: i32,
+}
+
+// enum - 代数数据类型（比 C# enum 强大得多）
+enum MyEnum {
+    Variant1,
+    Variant2(i32),              // 可以持有数据
+    Variant3 { x: i32, y: i32 }, // 类似结构体的变体
+}
+
+// trait - 接口定义（类似 C# 接口但更强大）
+trait MyTrait {
+    fn method(&amp;self);
+
+    // 默认实现（类似 C# 8+ 默认接口方法）
+    fn default_method(&amp;self) {
+        println!("Default implementation");
+    }
+}
+
+// type - 类型别名（类似 C# using 别名）
+type UserId = u32;
+type Result&lt;T&gt; = std::result::Result&lt;T, MyError&gt;;
+
+// impl - 实现块（没有 C# 等价物——方法单独定义）
+impl MyStruct {
+    fn new() -&gt; MyStruct {
+        MyStruct { field: 0 }
+    }
+}
+
+impl MyTrait for MyStruct {
+    fn method(&amp;self) {
+        println!("Implementation");
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="函数定义关键字"><a class="header" href="#函数定义关键字">函数定义关键字</a></h3>
+<h4 id="c-函数关键字"><a class="header" href="#c-函数关键字">C# 函数关键字</a></h4>
+<pre><code class="language-csharp">// static - 类方法
+public static void StaticMethod() { }
+
+// virtual - 可以被重写
+public virtual void VirtualMethod() { }
+
+// override - 重写基类方法
+public override void VirtualMethod() { }
+
+// abstract - 必须被实现
+public abstract void AbstractMethod();
+
+// async - 异步方法
+public async Task&lt;int&gt; AsyncMethod() { return await SomeTask(); }
+</code></pre>
+<h4 id="rust-函数关键字"><a class="header" href="#rust-函数关键字">Rust 函数关键字</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// fn - 函数定义（类似 C# 方法但独立）
+fn regular_function() {
+    println!("Hello");
+}
+
+// const fn - 编译时函数（类似 C# const 但用于函数）
+const fn compile_time_function() -&gt; i32 {
+    42 // 可以在编译时求值
+}
+
+// async fn - 异步函数（类似 C# async）
+async fn async_function() -&gt; i32 {
+    some_async_operation().await
+}
+
+// unsafe fn - 可能违反内存安全的函数
+unsafe fn unsafe_function() {
+    // 可以执行不安全操作
+}
+
+// extern fn - 外部函数接口
+extern "C" fn c_compatible_function() {
+    // 可以从 C 调用
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="变量声明关键字"><a class="header" href="#变量声明关键字">变量声明关键字</a></h3>
+<h4 id="c-变量关键字"><a class="header" href="#c-变量关键字">C# 变量关键字</a></h4>
+<pre><code class="language-csharp">// var - 类型推断
+var name = "John"; // 推断为 string
+
+// const - 编译时常量
+const int MaxSize = 100;
+
+// readonly - 运行时常量（仅限字段，不能用于局部变量）
+// readonly DateTime createdAt = DateTime.Now;
+
+// static - 类级变量
+static int instanceCount = 0;
+</code></pre>
+<h4 id="rust-变量关键字"><a class="header" href="#rust-变量关键字">Rust 变量关键字</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// let - 变量绑定（类似 C# var）
+let name = "John"; // 默认不可变
+
+// let mut - 可变变量绑定
+let mut count = 0; // 可以更改
+count += 1;
+
+// const - 编译时常量（类似 C# const）
+const MAX_SIZE: usize = 100;
+
+// static - 全局变量（类似 C# static）
+static INSTANCE_COUNT: std::sync::atomic::AtomicUsize =
+    std::sync::atomic::AtomicUsize::new(0);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="模式匹配关键字"><a class="header" href="#模式匹配关键字">模式匹配关键字</a></h3>
+<h4 id="c-模式匹配c-8"><a class="header" href="#c-模式匹配c-8">C# 模式匹配（C# 8+）</a></h4>
+<pre><code class="language-csharp">// switch 表达式
+string result = value switch
+{
+    1 =&gt; "One",
+    2 =&gt; "Two",
+    _ =&gt; "Other"
+};
+
+// is 模式
+if (obj is string str)
+{
+    Console.WriteLine(str.Length);
+}
+</code></pre>
+<h4 id="rust-模式匹配关键字"><a class="header" href="#rust-模式匹配关键字">Rust 模式匹配关键字</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// match - 模式匹配（类似 C# switch 但强大得多）
+let result = match value {
+    1 =&gt; "One",
+    2 =&gt; "Two",
+    3..=10 =&gt; "Between 3 and 10", // 范围模式
+    _ =&gt; "Other", // 通配符（类似 C# _）
+};
+
+// if let - 条件模式匹配
+if let Some(value) = optional {
+    println!("Got value: {}", value);
+}
+
+// while let - 带模式匹配的循环
+while let Some(item) = iterator.next() {
+    println!("Item: {}", item);
+}
+
+// 带模式的 let - 解构
+let (x, y) = point; // 解构元组
+let Some(value) = optional else {
+    return; // 如果模式不匹配则提前返回
+};
+<span class="boring">}</span></code></pre></pre>
+<h3 id="内存安全关键字"><a class="header" href="#内存安全关键字">内存安全关键字</a></h3>
+<h4 id="c-内存关键字-1"><a class="header" href="#c-内存关键字-1">C# 内存关键字</a></h4>
+<pre><code class="language-csharp">// unsafe - 禁用安全检查
+unsafe
+{
+    int* ptr = &amp;variable;
+    *ptr = 42;
+}
+
+// fixed - 固定托管内存
+unsafe
+{
+    fixed (byte* ptr = array)
+    {
+        // 使用 ptr
+    }
+}
+</code></pre>
+<h4 id="rust-安全关键字"><a class="header" href="#rust-安全关键字">Rust 安全关键字</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// unsafe - 禁用借用检查器（谨慎使用！）
+unsafe {
+    let ptr = &amp;variable as *const i32;
+    let value = *ptr; // 解引用原始指针
+}
+
+// 原始指针类型（没有 C# 等价物——通常不需要）
+let ptr: *const i32 = &amp;42;  // 不可变原始指针
+let ptr: *mut i32 = &amp;mut 42; // 可变原始指针
+<span class="boring">}</span></code></pre></pre>
+<h3 id="c-中没有的常见-rust-关键字"><a class="header" href="#c-中没有的常见-rust-关键字">C# 中没有的常见 Rust 关键字</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// where - 泛型约束（比 C# where 更灵活）
+fn generic_function&lt;T&gt;()
+where
+    T: Clone + Send + Sync,
+{
+    // T 必须实现 Clone、Send 和 Sync trait
+}
+
+// dyn - 动态 trait 对象（类似 C# object 但类型安全）
+let drawable: Box&lt;dyn Draw&gt; = Box::new(Circle::new());
+
+// Self - 引用实现类型（类似 C# this 但用于类型）
+impl MyStruct {
+    fn new() -&gt; Self { // Self = MyStruct
+        Self { field: 0 }
+    }
+}
+
+// self - 方法接收者
+impl MyStruct {
+    fn method(&amp;self) { }        // 不可变借用
+    fn method_mut(&amp;mut self) { } // 可变借用
+    fn consume(self) { }        // 获取所有权
+}
+
+// crate - 引用当前 crate 根
+use crate::models::User; // 从 crate 根的绝对路径
+
+// super - 引用父模块
+use super::utils; // 从父模块导入
+<span class="boring">}</span></code></pre></pre>
+<h3 id="c-开发者关键字总结"><a class="header" href="#c-开发者关键字总结">C# 开发者关键字总结</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>用途</th><th>C#</th><th>Rust</th><th>关键区别</th></tr></thead><tbody>
+<tr><td>可见性</td><td><code>public</code>、<code>private</code>、<code>internal</code></td><td><code>pub</code>、默认私有</td><td>使用 <code>pub(crate)</code> 更细粒度</td></tr>
+<tr><td>变量</td><td><code>var</code>、<code>readonly</code>、<code>const</code></td><td><code>let</code>、<code>let mut</code>、<code>const</code></td><td>默认不可变</td></tr>
+<tr><td>函数</td><td><code>method()</code></td><td><code>fn</code></td><td>独立函数</td></tr>
+<tr><td>类型</td><td><code>class</code>、<code>struct</code>、<code>interface</code></td><td><code>struct</code>、<code>enum</code>、<code>trait</code></td><td>枚举是代数类型</td></tr>
+<tr><td>泛型</td><td><code>&lt;T&gt; where T : IFoo</code></td><td><code>&lt;T&gt; where T: Foo</code></td><td>更灵活的约束</td></tr>
+<tr><td>引用</td><td><code>ref</code>、<code>out</code>、<code>in</code></td><td><code>&amp;</code>、<code>&amp;mut</code></td><td>编译时借用检查</td></tr>
+<tr><td>模式</td><td><code>switch</code>、<code>is</code></td><td><code>match</code>、<code>if let</code></td><td>需要穷尽匹配</td></tr>
+</tbody></table>
+</div>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch02-getting-started.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch03-built-in-types-and-variables.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch02-getting-started.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch03-built-in-types-and-variables.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

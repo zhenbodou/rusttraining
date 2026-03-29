@@ -1,0 +1,626 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>14. 测试和基准测试模式 - Rust Patterns &amp; Engineering How-Tos</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust Patterns &amp; Engineering How-Tos</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="13-测试和基准测试模式-"><a class="header" href="#13-测试和基准测试模式-">13. 测试和基准测试模式 🟢</a></h1>
+<blockquote>
+<p><strong>你将学到：</strong></p>
+<ul>
+<li>Rust 的三个测试层级：单元、集成和文档测试</li>
+<li>用 proptest 进行基于属性的测试以发现边界情况</li>
+<li>用 criterion 进行可靠的性能测量</li>
+<li>无重型框架的 Mock 策略</li>
+</ul>
+</blockquote>
+<h2 id="单元测试集成测试文档测试"><a class="header" href="#单元测试集成测试文档测试">单元测试、集成测试、文档测试</a></h2>
+<p>Rust 有三种内置于语言的测试层级：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// --- 单元测试：与代码在同一文件中 ---
+pub fn factorial(n: u64) -&gt; u64 {
+    (1..=n).product()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_factorial_zero() {
+        // (1..=0).product() 返回 1 —— 空范围的乘法单位元
+        assert_eq!(factorial(0), 1);
+    }
+
+    #[test]
+    fn test_factorial_five() {
+        assert_eq!(factorial(5), 120);
+    }
+
+    #[test]
+    #[cfg(debug_assertions)] // 溢出检查仅在 debug 模式启用
+    #[should_panic(expected = "overflow")]
+    fn test_factorial_overflow() {
+        // ⚠️ 此测试仅在 debug 模式通过（溢出检查启用）。
+        // 在 release 模式（`cargo test --release`）中，u64 算术静默环绕
+        // 无 panic 发生。对 release 模式安全使用 `checked_mul` 或
+        // `overflow-checks = true` 配置文件设置。
+        factorial(100); // 应在溢出时 panic
+    }
+
+    #[test]
+    fn test_with_result() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+        // 测试可以返回 Result —— ？在里面工作！
+        let value: u64 = "42".parse()?;
+        assert_eq!(value, 42);
+        Ok(())
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// --- 集成测试：在 tests/ 目录中 ---
+// tests/integration_test.rs
+// 这些只测试你 crate 的公共 API
+
+use my_crate::factorial;
+
+#[test]
+fn test_factorial_from_outside() {
+    assert_eq!(factorial(10), 3_628_800);
+}
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// --- 文档测试：在文档注释中 ---
+/// 计算 `n` 的阶乘。
+///
+/// # 示例
+///
+/// ```
+/// use my_crate::factorial;
+/// assert_eq!(factorial(5), 120);
+/// ```
+///
+/// # Panics
+///
+/// 如果结果溢出 `u64` 则 panic。
+///
+/// ```should_panic
+/// my_crate::factorial(100);
+/// ```
+pub fn factorial(n: u64) -&gt; u64 {
+    (1..=n).product()
+}
+// 文档测试由 `cargo test` 编译和运行——它们保持示例诚实。
+<span class="boring">}</span></code></pre></pre>
+<h3 id="测试夹具和设置"><a class="header" href="#测试夹具和设置">测试夹具和设置</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // 共享设置——创建辅助函数
+    fn setup_database() -&gt; TestDb {
+        let db = TestDb::new_in_memory();
+        db.run_migrations();
+        db.seed_test_data();
+        db
+    }
+
+    #[test]
+    fn test_user_creation() {
+        let db = setup_database();
+        let user = db.create_user("Alice", "alice@test.com").unwrap();
+        assert_eq!(user.name, "Alice");
+    }
+
+    #[test]
+    fn test_user_deletion() {
+        let db = setup_database();
+        db.create_user("Bob", "bob@test.com").unwrap();
+        assert!(db.delete_user("Bob").is_ok());
+        assert!(db.get_user("Bob").is_none());
+    }
+
+    // 用 Drop 清理（RAII）：
+    struct TempDir {
+        path: std::path::PathBuf,
+    }
+
+    impl TempDir {
+        fn new() -&gt; Self {
+            // Cargo.toml: rand = "0.8"
+            let path = std::env::temp_dir().join(format!("test_{}", rand::random::&lt;u32&gt;()));
+            std::fs::create_dir_all(&amp;path).unwrap();
+            TempDir { path }
+        }
+    }
+
+    impl Drop for TempDir {
+        fn drop(&amp;mut self) {
+            let _ = std::fs::remove_dir_all(&amp;self.path);
+        }
+    }
+
+    #[test]
+    fn test_file_operations() {
+        let dir = TempDir::new(); // 创建
+        std::fs::write(dir.path.join("test.txt"), "hello").unwrap();
+        assert!(dir.path.join("test.txt").exists());
+    } // dir 在这里 drop → 临时目录清理
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="基于属性的测试proptest"><a class="header" href="#基于属性的测试proptest">基于属性的测试（proptest）</a></h3>
+<p>与其测试特定值，不如测试<em>应该始终成立的属性</em>：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Cargo.toml: proptest = "1"
+use proptest::prelude::*;
+
+fn reverse(v: &amp;[i32]) -&gt; Vec&lt;i32&gt; {
+    v.iter().rev().cloned().collect()
+}
+
+proptest! {
+    #[test]
+    fn test_reverse_twice_is_identity(v in prop::collection::vec(any::&lt;i32&gt;(), 0..100)) {
+        // 属性：反转两次返回原始
+        assert_eq!(reverse(&amp;reverse(&amp;v)), v);
+    }
+
+    #[test]
+    fn test_reverse_preserves_length(v in prop::collection::vec(any::&lt;i32&gt;(), 0..100)) {
+        assert_eq!(reverse(&amp;v).len(), v.len());
+    }
+
+    #[test]
+    fn test_sort_is_idempotent(mut v in prop::collection::vec(any::&lt;i32&gt;(), 0..100)) {
+        v.sort();
+        let sorted_once = v.clone();
+        v.sort();
+        assert_eq!(v, sorted_once); // 排序两次 = 排序一次
+    }
+
+    #[test]
+    fn test_parse_roundtrip(x in any::&lt;f64&gt;().prop_filter("finite", |x| x.is_finite())) {
+        // 属性：格式化然后解析返回相同值
+        let s = format!("{x}");
+        let parsed: f64 = s.parse().unwrap();
+        prop_assert!((x - parsed).abs() &lt; f64::EPSILON);
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>何时使用 proptest</strong>：当你测试有大输入空间的函数并想要信心它在你想不到的边界情况工作时。
+proptest 生成数百个随机输入并将失败缩小到最小重现案例。</p>
+</blockquote>
+<h3 id="用-criterion-基准测试"><a class="header" href="#用-criterion-基准测试">用 criterion 基准测试</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Cargo.toml:
+// [dev-dependencies]
+// criterion = { version = "0.5", features = ["html_reports"] }
+//
+// [[bench]]
+// name = "my_benchmarks"
+// harness = false
+
+// benches/my_benchmarks.rs
+use criterion::{criterion_group, criterion_main, Criterion, black_box};
+
+fn fibonacci(n: u64) -&gt; u64 {
+    match n {
+        0 | 1 =&gt; n,
+        _ =&gt; fibonacci(n - 1) + fibonacci(n - 2),
+    }
+}
+
+fn bench_fibonacci(c: &amp;mut Criterion) {
+    c.bench_function("fibonacci 20", |b| {
+        b.iter(|| fibonacci(black_box(20)))
+    });
+
+    // 比较不同实现：
+    let mut group = c.benchmark_group("fibonacci_compare");
+    for size in [10, 15, 20, 25] {
+        group.bench_with_input(
+            criterion::BenchmarkId::from_parameter(size),
+            &amp;size,
+            |b, &amp;size| b.iter(|| fibonacci(black_box(size))),
+        );
+    }
+    group.finish();
+}
+
+criterion_group!(benches, bench_fibonacci);
+criterion_main!(benches);
+
+// 运行：cargo bench
+// 在 target/criterion/ 生成 HTML 报告
+<span class="boring">}</span></code></pre></pre>
+<h3 id="无框架的-mock-策略"><a class="header" href="#无框架的-mock-策略">无框架的 Mock 策略</a></h3>
+<p>Rust 的 trait 系统提供自然的依赖注入——无需 mock 框架：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 将行为定义为 trait
+trait Clock {
+    fn now(&amp;self) -&gt; std::time::Instant;
+}
+
+trait HttpClient {
+    fn get(&amp;self, url: &amp;str) -&gt; Result&lt;String, String&gt;;
+}
+
+// 生产实现
+struct RealClock;
+impl Clock for RealClock {
+    fn now(&amp;self) -&gt; std::time::Instant { std::time::Instant::now() }
+}
+
+// 服务依赖于抽象
+struct CacheService&lt;C: Clock, H: HttpClient&gt; {
+    clock: C,
+    client: H,
+    ttl: std::time::Duration,
+}
+
+impl&lt;C: Clock, H: HttpClient&gt; CacheService&lt;C, H&gt; {
+    fn fetch(&amp;self, url: &amp;str) -&gt; Result&lt;String, String&gt; {
+        // 使用 self.clock 和 self.client —— 可注入
+        self.client.get(url)
+    }
+}
+
+// 用 mock 实现测试——无需框架！
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    struct MockClock {
+        fixed_time: std::time::Instant,
+    }
+    impl Clock for MockClock {
+        fn now(&amp;self) -&gt; std::time::Instant { self.fixed_time }
+    }
+
+    struct MockHttpClient {
+        response: String,
+    }
+    impl HttpClient for MockHttpClient {
+        fn get(&amp;self, _url: &amp;str) -&gt; Result&lt;String, String&gt; {
+            Ok(self.response.clone())
+        }
+    }
+
+    #[test]
+    fn test_cache_service() {
+        let service = CacheService {
+            clock: MockClock { fixed_time: std::time::Instant::now() },
+            client: MockHttpClient { response: "cached data".into() },
+            ttl: std::time::Duration::from_secs(300),
+        };
+
+        assert_eq!(service.fetch("http://example.com").unwrap(), "cached data");
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>测试哲学</strong>：在集成测试中优先真实依赖，在单元测试中基于 trait 的 mock。
+除非你的依赖图复杂，否则避免 mock 框架——Rust 的 trait 泛型自然处理大多数情况。</p>
+</blockquote>
+<blockquote>
+<p><strong>要点——测试</strong></p>
+<ul>
+<li>文档测试（<code>///</code>）兼作文档和回归测试——它们被编译和运行</li>
+<li><code>proptest</code> 生成随机输入以发现你永远不会手动写的边界情况</li>
+<li><code>criterion</code> 提供带 HTML 报告的统计严格基准</li>
+<li>通过 trait 泛型 + 测试双重 mock，不是 mock 框架</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>另见：</strong> <a href="ch12-macros-code-that-writes-code.html">第 12 章 — 宏</a> 了解测试宏生成的代码。<a href="ch14-crate-architecture-and-api-design.html">第 14 章 — API 设计</a> 了解模块布局如何影响测试组织。</p>
+</blockquote>
+<hr />
+<h3 id="练习带-proptest-的基于属性的测试-约-25-分钟"><a class="header" href="#练习带-proptest-的基于属性的测试-约-25-分钟">练习：带 proptest 的基于属性的测试 ★★（约 25 分钟）</a></h3>
+<p>编写 <code>SortedVec&lt;T: Ord&gt;</code> 包装器，维护排序不变量。使用 <code>proptest</code> 验证：</p>
+<ol>
+<li>在任何插入序列后，内部 vec 始终排序</li>
+<li><code>contains()</code> 与 stdlib <code>Vec::contains()</code> 一致</li>
+<li>长度等于插入数量</li>
+</ol>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><code class="language-rust ignore">#[derive(Debug)]
+struct SortedVec&lt;T: Ord&gt; {
+    inner: Vec&lt;T&gt;,
+}
+
+impl&lt;T: Ord&gt; SortedVec&lt;T&gt; {
+    fn new() -&gt; Self { SortedVec { inner: Vec::new() } }
+
+    fn insert(&amp;mut self, value: T) {
+        let pos = self.inner.binary_search(&amp;value).unwrap_or_else(|p| p);
+        self.inner.insert(pos, value);
+    }
+
+    fn contains(&amp;self, value: &amp;T) -&gt; bool {
+        self.inner.binary_search(value).is_ok()
+    }
+
+    fn len(&amp;self) -&gt; usize { self.inner.len() }
+    fn as_slice(&amp;self) -&gt; &amp;[T] { &amp;self.inner }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn always_sorted(values in proptest::collection::vec(-1000i32..1000, 0..100)) {
+            let mut sv = SortedVec::new();
+            for v in &amp;values {
+                sv.insert(*v);
+            }
+            for w in sv.as_slice().windows(2) {
+                prop_assert!(w[0] &lt;= w[1]);
+            }
+            prop_assert_eq!(sv.len(), values.len());
+        }
+
+        #[test]
+        fn contains_matches_stdlib(values in proptest::collection::vec(0i32..50, 1..30)) {
+            let mut sv = SortedVec::new();
+            for v in &amp;values {
+                sv.insert(*v);
+            }
+            for v in &amp;values {
+                prop_assert!(sv.contains(v));
+            }
+            prop_assert!(!sv.contains(&amp;9999));
+        }
+    }
+}</code></pre>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch13-macros-code-that-writes-code.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch15-crate-architecture-and-api-design.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch13-macros-code-that-writes-code.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch15-crate-architecture-and-api-design.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

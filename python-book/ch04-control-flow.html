@@ -1,0 +1,580 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>4. 控制流 - Rust for Python Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for Python Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="条件语句"><a class="header" href="#条件语句">条件语句</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> 无括号的 <code>if</code>/<code>else</code>（但有花括号），<code>loop</code>/<code>while</code>/<code>for</code> vs Python 的迭代模型，
+表达式块（一切返回值），以及带有必需返回类型的函数签名。</p>
+<p><strong>难度：</strong> 🟢 初学者</p>
+</blockquote>
+<h3 id="ifelse"><a class="header" href="#ifelse">if/else</a></h3>
+<pre><code class="language-python"># Python
+if temperature &gt; 100:
+    print("Too hot!")
+elif temperature &lt; 0:
+    print("Too cold!")
+else:
+    print("Just right")
+
+# 三元
+status = "hot" if temperature &gt; 100 else "ok"
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 需要花括号，无冒号，`else if` 不是 `elif`
+if temperature &gt; 100 {
+    println!("Too hot!");
+} else if temperature &lt; 0 {
+    println!("Too cold!");
+} else {
+    println!("Just right");
+}
+
+// if 是表达式 —— 返回值（如 Python 三元，但更强大）
+let status = if temperature &gt; 100 { "hot" } else { "ok" };
+<span class="boring">}</span></code></pre></pre>
+<h3 id="重要差异"><a class="header" href="#重要差异">重要差异</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 1. 条件必须是 bool —— 无 truthy/falsy
+let x = 42;
+// if x { }          # ❌ 错误：期望 bool，找到 integer
+if x != 0 { }        # ✅ 需要显式比较
+
+// 在 Python 中，这些都是 truthy/falsy：
+<span class="boring">if []:      → False    （空列表）
+</span><span class="boring">if "":      → False    （空字符串）
+</span><span class="boring">if 0:       → False    （零）
+</span><span class="boring">if None:    → False
+</span>
+// 在 Rust 中，只有 bool 可用于条件：
+let items: Vec&lt;i32&gt; = vec![];
+// if items { }           # ❌ 错误
+if !items.is_empty() { }  # ✅ 显式检查
+
+let name = "";
+// if name { }             # ❌ 错误
+if !name.is_empty() { }    # ✅ 显式检查
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="循环和迭代"><a class="header" href="#循环和迭代">循环和迭代</a></h2>
+<h3 id="for-循环"><a class="header" href="#for-循环">for 循环</a></h3>
+<pre><code class="language-python"># Python
+for i in range(5):
+    print(i)
+
+for item in ["a", "b", "c"]:
+    print(item)
+
+for i, item in enumerate(["a", "b", "c"]):
+    print(f"{i}: {item}")
+
+for key, value in {"x": 1, "y": 2}.items():
+    print(f"{key} = {value}")
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust
+for i in 0..5 {                           # range(5) → 0..5
+    println!("{}", i);
+}
+
+for item in ["a", "b", "c"] {             # 直接迭代
+    println!("{}", item);
+}
+
+for (i, item) in ["a", "b", "c"].iter().enumerate() {  # enumerate()
+    println!("{}: {}", i, item);
+}
+
+<span class="boring">HashMap 迭代
+</span>use std::collections::HashMap;
+let map = HashMap::from([("x", 1), ("y", 2)]);
+for (key, value) in &amp;map {                # &amp; 借用 map
+    println!("{} = {}", key, value);
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="range-语法"><a class="header" href="#range-语法">Range 语法</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>Python：              Rust：               说明：
+range(5)             0..5                半开（排除结束）
+range(1, 10)         1..10               半开
+range(1, 11)         1..=10              包含（包括结束）
+range(0, 10, 2)      (0..10).step_by(2)  步长（方法，不是语法）
+<span class="boring">}</span></code></pre></pre>
+<h3 id="while-循环"><a class="header" href="#while-循环">while 循环</a></h3>
+<pre><code class="language-python"># Python
+count = 0
+while count &lt; 5:
+    print(count)
+    count += 1
+
+# 无限循环
+while True:
+    data = get_input()
+    if data == "quit":
+        break
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust
+let mut count = 0;
+while count &lt; 5 {
+    println!("{}", count);
+    count += 1;
+}
+
+<span class="boring">无限循环 —— 使用 `loop`，不是 `while true`
+</span>loop {
+    let data = get_input();
+    if data == "quit" {
+        break;
+    }
+}
+
+<span class="boring">loop 可以返回值！（Rust 特有）
+</span>let result = loop {
+    let input = get_input();
+    if let Ok(num) = input.parse::&lt;i32&gt;() {
+        break num;  # 带值的 `break` —— 如循环的 return
+    }
+    println!("Not a number, try again");
+};
+<span class="boring">}</span></code></pre></pre>
+<h3 id="列表推导式-vs-迭代器链"><a class="header" href="#列表推导式-vs-迭代器链">列表推导式 vs 迭代器链</a></h3>
+<pre><code class="language-python"># Python —— 列表推导式
+squares = [x ** 2 for x in range(10)]
+evens = [x for x in range(20) if x % 2 == 0]
+pairs = [(x, y) for x in range(3) for y in range(3)]
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 迭代器链（.map、.filter、.collect）
+let squares: Vec&lt;i32&gt; = (0..10).map(|x| x * x).collect();
+let evens: Vec&lt;i32&gt; = (0..20).filter(|x| x % 2 == 0).collect();
+let pairs: Vec&lt;(i32, i32)&gt; = (0..3)
+    .flat_map(|x| (0..3).map(move |y| (x, y)))
+    .collect();
+
+<span class="boring">这些是惰性的 —— 直到 .collect() 才运行
+</span><span class="boring">Python 推导式是急切的（立即运行）
+</span><span class="boring">Rust 迭代器对于大数据集可以更高效
+</span><span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="表达式块"><a class="header" href="#表达式块">表达式块</a></h2>
+<p>Rust 中一切都是表达式（或可以是）。这与 Python 有很大不同，
+在 Python 中 <code>if</code>/<code>for</code> 是语句。</p>
+<pre><code class="language-python"># Python —— if 是语句（三元除外）
+if condition:
+    result = "yes"
+else:
+    result = "no"
+
+# 或三元（限制为一个表达式）：
+result = "yes" if condition else "no"
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— if 是表达式（返回值）
+let result = if condition { "yes" } else { "no" };
+
+<span class="boring">块是表达式 —— 最后一行（无分号）是返回值
+</span>let value = {
+    let x = 5;
+    let y = 10;
+    x + y    # 无分号 → 这是块的值（15）
+};
+
+<span class="boring">match 也是表达式
+</span>let description = match temperature {
+    t if t &gt; 100 =&gt; "boiling",
+    t if t &gt; 50 =&gt; "hot",
+    t if t &gt; 20 =&gt; "warm",
+    _ =&gt; "cold",
+};
+<span class="boring">}</span></code></pre></pre>
+<p>下图说明了 Python 基于语句和 Rust 基于表达式的控制流之间的核心差异：</p>
+<pre class="mermaid">flowchart LR
+    subgraph Python [&quot;Python —— 语句&quot;]
+        P1[&quot;if condition:&quot;] --&gt; P2[&quot;result = 'yes'&quot;]
+        P1 --&gt; P3[&quot;result = 'no'&quot;]
+        P2 --&gt; P4[&quot;result 稍后使用&quot;]
+        P3 --&gt; P4
+    end
+    subgraph Rust [&quot;Rust —— 表达式&quot;]
+        R1[&quot;let result = if cond&quot;] --&gt; R2[&quot;{ 'yes' }&quot;]
+        R1 --&gt; R3[&quot;{ 'no' }&quot;]
+        R2 --&gt; R4[&quot;值直接返回&quot;]
+        R3 --&gt; R4
+    end
+    style Python fill:#ffeeba
+    style Rust fill:#d4edda
+</pre>
+<blockquote>
+<p><strong>分号规则</strong>：在 Rust 中，块中最后一个表达式<strong>不带分号</strong>
+是块的返回值。添加分号使其成为语句（返回 <code>()</code>）。
+这让 Python 开发者最初感到困惑 —— 它像隐式 <code>return</code>。</p>
+</blockquote>
+<hr />
+<h2 id="函数和类型签名"><a class="header" href="#函数和类型签名">函数和类型签名</a></h2>
+<h3 id="python-函数"><a class="header" href="#python-函数">Python 函数</a></h3>
+<pre><code class="language-python"># Python —— 类型可选，动态分派
+def greet(name: str, greeting: str = "Hello") -&gt; str:
+    return f"{greeting}, {name}!"
+
+# 默认参数，*args，**kwargs
+def flexible(*args, **kwargs):
+    pass
+
+# 一等函数
+def apply(f, x):
+    return f(x)
+
+result = apply(lambda x: x * 2, 5)  # 10
+</code></pre>
+<h3 id="rust-函数"><a class="header" href="#rust-函数">Rust 函数</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 函数签名上类型必需，无默认值
+fn greet(name: &amp;str, greeting: &amp;str) -&gt; String {
+    format!("{}, {}!", greeting, name)
+}
+
+<span class="boring">无默认参数 —— 使用 builder 模式或 Option
+</span>fn greet_with_default(name: &amp;str, greeting: Option&lt;&amp;str&gt;) -&gt; String {
+    let greeting = greeting.unwrap_or("Hello");
+    format!("{}, {}!", greeting, name)
+}
+
+<span class="boring">无 *args/**kwargs —— 使用切片或 struct
+</span>fn sum_all(numbers: &amp;[i32]) -&gt; i32 {
+    numbers.iter().sum()
+}
+
+<span class="boring">一等函数和闭包
+</span>fn apply(f: fn(i32) -&gt; i32, x: i32) -&gt; i32 {
+    f(x)
+}
+
+let result = apply(|x| x * 2, 5);  # 10
+<span class="boring">}</span></code></pre></pre>
+<h3 id="返回值"><a class="header" href="#返回值">返回值</a></h3>
+<pre><code class="language-python"># Python —— return 是显式的，None 是隐式的
+def divide(a, b):
+    if b == 0:
+        return None  # 或抛出异常
+    return a / b
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 最后一个表达式是返回值（无分号）
+fn divide(a: f64, b: f64) -&gt; Option&lt;f64&gt; {
+    if b == 0.0 {
+        None              # 提前返回（也可以写 `return None;`）
+    } else {
+        Some(a / b)       # 最后一个表达式 —— 隐式返回
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="多个返回值"><a class="header" href="#多个返回值">多个返回值</a></h3>
+<pre><code class="language-python"># Python —— 返回元组
+def min_max(numbers):
+    return min(numbers), max(numbers)
+
+lo, hi = min_max([3, 1, 4, 1, 5])
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 返回元组（相同概念！）
+fn min_max(numbers: &amp;[i32]) -&gt; (i32, i32) {
+    let min = *numbers.iter().min().unwrap();
+    let max = *numbers.iter().max().unwrap();
+    (min, max)
+}
+
+let (lo, hi) = min_max(&amp;[3, 1, 4, 1, 5]);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="方法self-vs-self-vs-mut-self"><a class="header" href="#方法self-vs-self-vs-mut-self">方法：self vs &amp;self vs &amp;mut self</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 在 Python 中，`self` 始终是对对象的可变引用。
+// 在 Rust 中，你选择：
+
+impl MyStruct {
+    fn new() -&gt; Self { ... }                # 无 self —— "静态方法" / "classmethod"
+    fn read_only(&amp;self) { ... }             # &amp;self —— 不可变借用（不能修改）
+    fn modify(&amp;mut self) { ... }            # &amp;mut self —— 可变借用（可以修改）
+    fn consume(self) { ... }                # self —— 获取所有权（对象被 move）
+}
+
+<span class="boring">Python 等价物：
+</span><span class="boring">class MyStruct:
+</span><span class="boring">    @classmethod
+</span><span class="boring">    def new(cls): ...                    # 不需要实例
+</span><span class="boring">    def read_only(self): ...             # 这三者在 Python 中相同：
+</span><span class="boring">    def modify(self): ...                # Python self 始终可变
+</span><span class="boring">    def consume(self): ...               # Python 从不"消耗"self
+</span><span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：使用表达式的 FizzBuzz</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：使用 Rust 基于表达式的 <code>match</code> 为 1..=30 编写 FizzBuzz。每个数字应打印 "Fizz"、"Buzz"、"FizzBuzz" 或数字。使用 <code>match (n % 3, n % 5)</code> 作为表达式。</p>
+<details>
+<summary>🔑 解答</summary>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    for n in 1..=30 {
+        let result = match (n % 3, n % 5) {
+            (0, 0) =&gt; String::from("FizzBuzz"),
+            (0, _) =&gt; String::from("Fizz"),
+            (_, 0) =&gt; String::from("Buzz"),
+            _ =&gt; n.to_string(),
+        };
+        println!("{result}");
+    }
+}</code></pre></pre>
+<p><strong>关键要点</strong>：<code>match</code> 是返回值的表达式 —— 不需要 <code>if/elif/else</code> 链。<code>_</code> 通配符替换 Python 的 <code>case _:</code> 默认值。</p>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch03-built-in-types-and-variables.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch05-data-structures-and-collections.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch03-built-in-types-and-variables.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch05-data-structures-and-collections.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

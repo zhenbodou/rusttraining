@@ -1,0 +1,543 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>6. enum 和模式匹配 - Rust for Python Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for Python Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="代数数据类型-vs-union-类型"><a class="header" href="#代数数据类型-vs-union-类型">代数数据类型 vs Union 类型</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> 带数据的 Rust enum vs Python <code>Union</code> 类型，穷尽 <code>match</code> vs <code>match/case</code>，
+<code>Option&lt;T&gt;</code> 作为 <code>None</code> 的编译时替代品，以及 guard 模式。</p>
+<p><strong>难度：</strong> 🟡 中级</p>
+</blockquote>
+<p>Python 3.10 引入了 <code>match</code> 语句和类型联合。Rust 的 enum 更进一步 ——
+每个变体可以携带不同的数据，编译器确保你处理每种情况。</p>
+<h3 id="python-union-类型和-match"><a class="header" href="#python-union-类型和-match">Python Union 类型和 Match</a></h3>
+<pre><code class="language-python"># Python 3.10+ —— 结构模式匹配
+from typing import Union
+from dataclasses import dataclass
+
+@dataclass
+class Circle:
+    radius: float
+
+@dataclass
+class Rectangle:
+    width: float
+    height: float
+
+@dataclass
+class Triangle:
+    base: float
+    height: float
+
+Shape = Union[Circle, Rectangle, Triangle]  # 类型别名
+
+def area(shape: Shape) -&gt; float:
+    match shape:
+        case Circle(radius=r):
+            return 3.14159 * r * r
+        case Rectangle(width=w, height=h):
+            return w * h
+        case Triangle(base=b, height=h):
+            return 0.5 * b * h
+        # 如果漏掉情况，没有编译器警告！
+        # 添加新形状？grep 代码库并希望找到所有 match 块。
+</code></pre>
+<h3 id="rust-enum--携带数据的变体"><a class="header" href="#rust-enum--携带数据的变体">Rust Enum —— 携带数据的变体</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— enum 变体携带数据，编译器强制执行穷尽匹配
+enum Shape {
+    Circle(f64),                # Circle 携带半径
+    Rectangle(f64, f64),        # Rectangle 携带宽、高
+    Triangle { base: f64, height: f64 }, # 也可以使用命名字段
+}
+
+fn area(shape: &amp;Shape) -&gt; f64 {
+    match shape {
+        Shape::Circle(r) =&gt; std::f64::consts::PI * r * r,
+        Shape::Rectangle(w, h) =&gt; w * h,
+        Shape::Triangle { base, height } =&gt; 0.5 * base * height,
+<span class="boring">        ❌ 如果你添加 Shape::Pentagon 并忘记在这里处理，
+</span><span class="boring">           编译器拒绝构建。无需 grep。
+</span>    }
+}
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>关键见解</strong>：Rust 的 <code>match</code> 是<strong>穷尽的</strong> —— 编译器验证你处理
+每个变体。向 enum 添加新变体，编译器会准确告诉你哪些
+<code>match</code> 块需要更新。Python 的 <code>match</code> 没有这种保证。</p>
+</blockquote>
+<h3 id="enum-替换多个-python-模式"><a class="header" href="#enum-替换多个-python-模式">Enum 替换多个 Python 模式</a></h3>
+<pre><code class="language-python"># Python —— Rust enum 替换的几种模式：
+
+# 1. 字符串常量
+STATUS_PENDING = "pending"
+STATUS_ACTIVE = "active"
+STATUS_CLOSED = "closed"
+
+# 2. Python Enum（无数据）
+from enum import Enum
+class Status(Enum):
+    PENDING = "pending"
+    ACTIVE = "active"
+    CLOSED = "closed"
+
+# 3. 标记联合（class + 类型字段）
+class Message:
+    def __init__(self, kind, **data):
+        self.kind = kind
+        self.data = data
+# Message(kind="text", content="hello")
+# Message(kind="image", url="...", width=100)
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 一个 enum 完成所有三种以及更多
+
+// 1. 简单 enum（如 Python 的 Enum）
+enum Status {
+    Pending,
+    Active,
+    Closed,
+}
+
+// 2. 携带数据的 enum（标记联合 —— 类型安全！）
+enum Message {
+    Text(String),
+    Image { url: String, width: u32, height: u32 },
+    Quit,                    # 无数据
+    Move { x: i32, y: i32 },
+}
+<span class="boring">}</span></code></pre></pre>
+<pre class="mermaid">flowchart TD
+    E[&quot;enum Message&quot;] --&gt; T[&quot;Text(String)\n🏷️ tag=0 + String 数据&quot;]
+    E --&gt; I[&quot;Image { url, width, height }\n🏷️ tag=1 + 3 个字段&quot;]
+    E --&gt; Q[&quot;Quit\n🏷️ tag=2 + 无数据&quot;]
+    E --&gt; M[&quot;Move { x, y }\n🏷️ tag=3 + 2 个字段&quot;]
+    style E fill:#d4edda,stroke:#28a745
+    style T fill:#fff3cd
+    style I fill:#fff3cd
+    style Q fill:#fff3cd
+    style M fill:#fff3cd
+</pre>
+<blockquote>
+<p><strong>内存见解</strong>：Rust enum 是"标记联合" —— 编译器存储判别标签 + 足够容纳最大变体的空间。Python 的等价物（<code>Union[str, dict, None]</code>）没有紧凑表示。</p>
+<p>📌 <strong>另见</strong>：<a href="ch09-error-handling.html">第 9 章 — 错误处理</a> 大量使用 enum —— <code>Result&lt;T, E&gt;</code> 和 <code>Option&lt;T&gt;</code> 只是带 <code>match</code> 的 enum。</p>
+</blockquote>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn process(msg: &amp;Message) {
+    match msg {
+        Message::Text(content) =&gt; println!("Text: {content}"),
+        Message::Image { url, width, height } =&gt; {
+            println!("Image: {url} ({width}x{height})")
+        }
+        Message::Quit =&gt; println!("Quitting"),
+        Message::Move { x, y } =&gt; println!("Moving to ({x}, {y})"),
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="穷尽模式匹配"><a class="header" href="#穷尽模式匹配">穷尽模式匹配</a></h2>
+<h3 id="python-的-match--不穷尽"><a class="header" href="#python-的-match--不穷尽">Python 的 match —— 不穷尽</a></h3>
+<pre><code class="language-python"># Python —— 通配符情况是可选的，无编译器帮助
+def describe(value):
+    match value:
+        case 0:
+            return "zero"
+        case 1:
+            return "one"
+        # 如果忘记默认值，Python 静默返回 None。
+        # 无警告，无错误。
+
+describe(42)  # 返回 None —— 静默 bug
+</code></pre>
+<h3 id="rust-的-match--编译器强制执行"><a class="header" href="#rust-的-match--编译器强制执行">Rust 的 match —— 编译器强制执行</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 必须处理每种可能情况
+fn describe(value: i32) -&gt; &amp;'static str {
+    match value {
+        0 =&gt; "zero",
+        1 =&gt; "one",
+<span class="boring">        ❌ 编译错误：非穷尽模式：`i32::MIN..=-1_i32`
+</span><span class="boring">           和 `2_i32..=i32::MAX` 未覆盖
+</span>        _ =&gt; "other",   # _ = 通配符（开放类型需要）
+    }
+}
+
+<span class="boring">对于 enum，不需要通配符 —— 编译器知道所有变体：
+</span>enum Color { Red, Green, Blue }
+
+fn color_hex(c: Color) -&gt; &amp;'static str {
+    match c {
+        Color::Red =&gt; "#ff0000",
+        Color::Green =&gt; "#00ff00",
+        Color::Blue =&gt; "#0000ff",
+<span class="boring">        不需要 _ —— 所有变体已覆盖
+</span><span class="boring">        稍后添加 Color::Yellow → 此处的编译错误
+</span>    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="模式匹配功能"><a class="header" href="#模式匹配功能">模式匹配功能</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">多个值（如 Python 的 case 1 | 2 | 3：）
+</span>match value {
+    1 | 2 | 3 =&gt; println!("small"),
+    4..=9 =&gt; println!("medium"),    # 范围模式
+    _ =&gt; println!("large"),
+}
+
+<span class="boring">Guard（如 Python 的 case x if x &gt; 0：）
+</span>match temperature {
+    t if t &gt; 100 =&gt; println!("boiling"),
+    t if t &lt; 0 =&gt; println!("freezing"),
+    t =&gt; println!("normal: {t}°"),
+}
+
+<span class="boring">嵌套 destructuring
+</span>let point = (3, (4, 5));
+match point {
+    (0, _) =&gt; println!("on y-axis"),
+    (_, (0, _)) =&gt; println!("y=0"),
+    (x, (y, z)) =&gt; println!("x={x}, y={y}, z={z}"),
+}
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="option-实现-none-安全"><a class="header" href="#option-实现-none-安全">Option 实现 None 安全</a></h2>
+<p><code>Option&lt;T&gt;</code> 是 Python 开发者最重要的 Rust enum。它用类型安全的替代品替换
+<code>None</code>。</p>
+<h3 id="python-none"><a class="header" href="#python-none">Python None</a></h3>
+<pre><code class="language-python"># Python —— None 是可以出现在任何地方的值
+def find_user(user_id: int) -&gt; dict | None:
+    users = {1: {"name": "Alice"}}
+    return users.get(user_id)
+
+user = find_user(999)
+# user 是 None —— 但没有什么强制你检查！
+print(user["name"])  # 💥 运行时 TypeError
+</code></pre>
+<h3 id="rust-option"><a class="header" href="#rust-option">Rust Option</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— Option&lt;T&gt; 强制你处理 None 情况
+fn find_user(user_id: i64) -&gt; Option&lt;User&gt; {
+    let users = HashMap::from([(1, User { name: "Alice".into() })]);
+    users.get(&amp;user_id).cloned()
+}
+
+let user = find_user(999);
+<span class="boring">user 是 Option&lt;User&gt; —— 你不能在不处理 None 的情况下使用它
+</span>
+<span class="boring">方法 1：match
+</span>match find_user(999) {
+    Some(user) =&gt; println!("Found: {}", user.name),
+    None =&gt; println!("Not found"),
+}
+
+<span class="boring">方法 2：if let（如 Python 的 if (x := expr) is not None）
+</span>if let Some(user) = find_user(1) {
+    println!("Found: {}", user.name);
+}
+
+<span class="boring">方法 3：unwrap_or
+</span>let name = find_user(999)
+    .map(|u| u.name)
+    .unwrap_or_else(|| "Unknown".to_string());
+
+<span class="boring">方法 4：? 运算符（在返回 Option 的函数中）
+</span>fn get_user_name(id: i64) -&gt; Option&lt;String&gt; {
+    let user = find_user(id)?;     # 如果未找到则提前返回 None
+    Some(user.name)
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="option-方法--python-等价物"><a class="header" href="#option-方法--python-等价物">Option 方法 —— Python 等价物</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>模式</th><th>Python</th><th>Rust</th></tr></thead><tbody>
+<tr><td>检查是否存在</td><td><code>if x is not None:</code></td><td><code>if let Some(x) = opt {</code></td></tr>
+<tr><td>默认值</td><td><code>x or default</code></td><td><code>opt.unwrap_or(default)</code></td></tr>
+<tr><td>默认工厂</td><td><code>x or compute()</code></td><td><code>opt.unwrap_or_else(|| compute())</code></td></tr>
+<tr><td>如果存在则转换</td><td><code>f(x) if x else None</code></td><td><code>opt.map(f)</code></td></tr>
+<tr><td>链式查找</td><td><code>x and x.attr and x.attr.method()</code></td><td><code>opt.and_then(|x| x.method())</code></td></tr>
+<tr><td>如果 None 则崩溃</td><td>无法防止</td><td><code>opt.unwrap()</code>（panic）或 <code>opt.expect("msg")</code></td></tr>
+<tr><td>获取或抛出</td><td><code>x if x else raise</code></td><td><code>opt.ok_or(Error)?</code></td></tr>
+</tbody></table>
+</div>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：Shape 面积计算器</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：定义一个 enum <code>Shape</code>，变体为 <code>Circle(f64)</code>（半径）、<code>Rectangle(f64, f64)</code>（宽、高）和 <code>Triangle(f64, f64)</code>（底、高）。使用 <code>match</code> 实现方法 <code>fn area(&amp;self) -&gt; f64</code>。创建每种一个并打印面积。</p>
+<details>
+<summary>🔑 解答</summary>
+<pre><pre class="playground"><code class="language-rust">use std::f64::consts::PI;
+
+enum Shape {
+    Circle(f64),
+    Rectangle(f64, f64),
+    Triangle(f64, f64),
+}
+
+impl Shape {
+    fn area(&amp;self) -&gt; f64 {
+        match self {
+            Shape::Circle(r) =&gt; PI * r * r,
+            Shape::Rectangle(w, h) =&gt; w * h,
+            Shape::Triangle(b, h) =&gt; 0.5 * b * h,
+        }
+    }
+}
+
+fn main() {
+    let shapes = [
+        Shape::Circle(5.0),
+        Shape::Rectangle(4.0, 6.0),
+        Shape::Triangle(3.0, 8.0),
+    ];
+    for shape in &amp;shapes {
+        println!("Area: {:.2}", shape.area());
+    }
+}</code></pre></pre>
+<p><strong>关键要点</strong>：Rust enum 替换 Python 的 <code>Union[Circle, Rectangle, Triangle]</code> + <code>isinstance()</code> 检查。编译器确保你处理每个变体 —— 添加新形状而不更新 <code>area()</code> 是编译错误。</p>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch05-data-structures-and-collections.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch07-ownership-and-borrowing.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch05-data-structures-and-collections.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch07-ownership-and-borrowing.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

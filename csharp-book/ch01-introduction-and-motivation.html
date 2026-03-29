@@ -1,0 +1,800 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>1. 介绍与动机 - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="演讲者介绍与总体方法"><a class="header" href="#演讲者介绍与总体方法">演讲者介绍与总体方法</a></h2>
+<ul>
+<li>演讲者介绍
+<ul>
+<li>微软 SCHIE（硅与云硬件基础设施工程）团队首席固件架构师</li>
+<li>行业资深专家，专长于安全、系统编程（固件、操作系统、虚拟机管理程序）、CPU 和平台架构以及 C++ 系统</li>
+<li>2017 年开始使用 Rust 编程（@AWS EC2），从此爱上了这门语言</li>
+</ul>
+</li>
+<li>本课程尽可能保持互动性
+<ul>
+<li>假设：你了解 C# 和 .NET 开发</li>
+<li>示例刻意将 C# 概念映射到 Rust 等价物</li>
+<li><strong>请随时在任何时候提出澄清性问题</strong></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="c-开发者选择-rust-的理由"><a class="header" href="#c-开发者选择-rust-的理由">C# 开发者选择 Rust 的理由</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> 为什么 Rust 对 C# 开发者很重要——托管代码和原生代码之间的性能差距，
+Rust 如何在编译时消除空引用异常和隐藏的控制流，
+以及 Rust 补充或替代 C# 的关键场景。</p>
+<p><strong>难度：</strong> 🟢 初学者</p>
+</blockquote>
+<h3 id="无需运行时开销的性能"><a class="header" href="#无需运行时开销的性能">无需运行时开销的性能</a></h3>
+<pre><code class="language-csharp">// C# - 出色的生产力，运行时开销
+public class DataProcessor
+{
+    private List&lt;int&gt; data = new List&lt;int&gt;();
+
+    public void ProcessLargeDataset()
+    {
+        // 分配触发 GC
+        for (int i = 0; i &lt; 10_000_000; i++)
+        {
+            data.Add(i * 2); // GC 压力
+        }
+        // 处理期间不可预测的 GC 暂停
+    }
+}
+// 运行时：可变（50-200ms，由于 GC）
+// 内存：~80MB（包括 GC 开销）
+// 可预测性：低（GC 暂停）
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust - 同样的表达能力，零运行时开销
+struct DataProcessor {
+    data: Vec&lt;i32&gt;,
+}
+
+impl DataProcessor {
+    fn process_large_dataset(&amp;mut self) {
+        // 零成本抽象
+        for i in 0..10_000_000 {
+            self.data.push(i * 2); // 无 GC 压力
+        }
+        // 确定性性能
+    }
+}
+// 运行时：一致（~30ms）
+// 内存：~40MB（精确分配）
+// 可预测性：高（无 GC）
+<span class="boring">}</span></code></pre></pre>
+<h3 id="无需运行时检查的内存安全"><a class="header" href="#无需运行时检查的内存安全">无需运行时检查的内存安全</a></h3>
+<pre><code class="language-csharp">// C# - 运行时安全，有开销
+public class RuntimeCheckedOperations
+{
+    public string? ProcessArray(int[] array)
+    {
+        // 每次访问都有运行时边界检查
+        if (array.Length &gt; 0)
+        {
+            return array[0].ToString(); // 安全——int 是值类型，永不为 null
+        }
+        return null; // 可空返回（C# 8+ 可空引用类型）
+    }
+
+    public void ProcessConcurrently()
+    {
+        var list = new List&lt;int&gt;();
+
+        // 可能发生数据竞争，需要仔细锁定
+        Parallel.For(0, 1000, i =&gt;
+        {
+            lock (list) // 运行时开销
+            {
+                list.Add(i);
+            }
+        });
+    }
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust - 编译时安全，零运行时成本
+struct SafeOperations;
+
+impl SafeOperations {
+    // 编译时空安全，无需运行时检查
+    fn process_array(array: &amp;[i32]) -&gt; Option&lt;String&gt; {
+        array.first().map(|x| x.to_string())
+        // 不可能有空引用
+        // 当可证明安全时，边界检查会被优化掉
+    }
+
+    fn process_concurrently() {
+        use std::sync::{Arc, Mutex};
+        use std::thread;
+
+        let data = Arc::new(Mutex::new(Vec::new()));
+
+        // 编译时防止数据竞争
+        let handles: Vec&lt;_&gt; = (0..1000).map(|i| {
+            let data = Arc::clone(&amp;data);
+            thread::spawn(move || {
+                data.lock().unwrap().push(i);
+            })
+        }).collect();
+
+        for handle in handles {
+            handle.join().unwrap();
+        }
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="rust-解决的常见-c-痛点"><a class="header" href="#rust-解决的常见-c-痛点">Rust 解决的常见 C# 痛点</a></h2>
+<h3 id="1-十亿美元的错误空引用"><a class="header" href="#1-十亿美元的错误空引用">1. 十亿美元的错误：空引用</a></h3>
+<pre><code class="language-csharp">// C# - 空引用异常是运行时炸弹
+public class UserService
+{
+    public string GetUserDisplayName(User user)
+    {
+        // 这些都可能抛出 NullReferenceException
+        return user.Profile.DisplayName.ToUpper();
+        //     ^^^^^ ^^^^^^^ ^^^^^^^^^^^ ^^^^^^^
+        //     可能在运行时为 null
+    }
+
+    // 即使使用可空引用类型（C# 8+）
+    public string GetDisplayName(User? user)
+    {
+        return user?.Profile?.DisplayName?.ToUpper() ?? "Unknown";
+        // 运行时仍可能出现 null
+    }
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust - 编译时保证的空安全
+struct UserService;
+
+impl UserService {
+    fn get_user_display_name(user: &amp;User) -&gt; Option&lt;String&gt; {
+        user.profile.as_ref()?
+            .display_name.as_ref()
+            .map(|name| name.to_uppercase())
+        // 编译器强制你处理 None 情况
+        // 不可能有空指针异常
+    }
+
+    fn get_display_name_safe(user: Option&lt;&amp;User&gt;) -&gt; String {
+        user.and_then(|u| u.profile.as_ref())
+            .and_then(|p| p.display_name.as_ref())
+            .map(|name| name.to_uppercase())
+            .unwrap_or_else(|| "Unknown".to_string())
+        // 显式处理，无意外
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="2-隐藏异常和控制流"><a class="header" href="#2-隐藏异常和控制流">2. 隐藏异常和控制流</a></h3>
+<pre><code class="language-csharp">// C# - 异常可能从任何地方抛出
+public async Task&lt;UserData&gt; GetUserDataAsync(int userId)
+{
+    // 每一个都可能抛出不同的异常
+    var user = await userRepository.GetAsync(userId);        // SqlException
+    var permissions = await permissionService.GetAsync(user); // HttpRequestException
+    var preferences = await preferenceService.GetAsync(user); // TimeoutException
+
+    return new UserData(user, permissions, preferences);
+    // 调用者不知道会抛出什么异常
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust - 所有错误在函数签名中显式声明
+#[derive(Debug)]
+enum UserDataError {
+    DatabaseError(String),
+    NetworkError(String),
+    Timeout,
+    UserNotFound(i32),
+}
+
+async fn get_user_data(user_id: i32) -&gt; Result&lt;UserData, UserDataError&gt; {
+    // 所有错误都是显式处理的
+    let user = user_repository.get(user_id).await
+        .map_err(UserDataError::DatabaseError)?;
+
+    let permissions = permission_service.get(&amp;user).await
+        .map_err(UserDataError::NetworkError)?;
+
+    let preferences = preference_service.get(&amp;user).await
+        .map_err(|_| UserDataError::Timeout)?;
+
+    Ok(UserData::new(user, permissions, preferences))
+    // 调用者确切知道可能出现什么错误
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="3-正确性类型系统作为证明引擎"><a class="header" href="#3-正确性类型系统作为证明引擎">3. 正确性：类型系统作为证明引擎</a></h3>
+<p>Rust 的类型系统在编译时捕获了 C# 只能在运行时捕获（或根本无法捕获）的整类逻辑错误。</p>
+<h4 id="adt-与密封类变通方案"><a class="header" href="#adt-与密封类变通方案">ADT 与密封类变通方案</a></h4>
+<pre><code class="language-csharp">// C# —— 判别联合需要密封类样板代码。
+// 仅当没有 _ 通配符时，编译器才会警告缺失的情况（CS8524）。
+// 实际上，大多数 C# 代码使用 _ 作为默认值，这会抑制警告。
+public abstract record Shape;
+public sealed record Circle(double Radius)   : Shape;
+public sealed record Rectangle(double W, double H) : Shape;
+public sealed record Triangle(double A, double B, double C) : Shape;
+
+public static double Area(Shape shape) =&gt; shape switch
+{
+    Circle c    =&gt; Math.PI * c.Radius * c.Radius,
+    Rectangle r =&gt; r.W * r.H,
+    // 忘记 Triangle？_ 通配符抑制了任何编译器警告。
+    _           =&gt; throw new ArgumentException("未知形状")
+};
+// 六个月后添加一个新变体——_ 模式隐藏了缺失的情况。
+// 没有编译器警告告诉你需要更新 47 个 switch 表达式。
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— ADT + 穷尽匹配 = 编译时证明
+enum Shape {
+    Circle { radius: f64 },
+    Rectangle { w: f64, h: f64 },
+    Triangle { a: f64, b: f64, c: f64 },
+}
+
+fn area(shape: &amp;Shape) -&gt; f64 {
+    match shape {
+        Shape::Circle { radius }    =&gt; std::f64::consts::PI * radius * radius,
+        Shape::Rectangle { w, h }   =&gt; w * h,
+        // 忘记 Triangle？错误：模式不穷尽
+        Shape::Triangle { a, b, c } =&gt; {
+            let s = (a + b + c) / 2.0;
+            (s * (s - a) * (s - b) * (s - c)).sqrt()
+        }
+    }
+}
+// 添加新变体 → 编译器显示每个需要更新的 match。
+<span class="boring">}</span></code></pre></pre>
+<h4 id="默认不可变性与选择性不可变性"><a class="header" href="#默认不可变性与选择性不可变性">默认不可变性与选择性不可变性</a></h4>
+<pre><code class="language-csharp">// C# —— 默认一切皆可变
+public class Config
+{
+    public string Host { get; set; }   // 默认可变
+    public int Port { get; set; }
+}
+
+// "readonly" 和 "record" 有帮助，但不能防止深层变异：
+public record ServerConfig(string Host, int Port, List&lt;string&gt; AllowedOrigins);
+
+var config = new ServerConfig("localhost", 8080, new List&lt;string&gt; { "*.example.com" });
+// Record 是"不可变的"，但引用类型字段 NOT：
+config.AllowedOrigins.Add("*.evil.com"); // 编译并通过并变异！← bug
+// 编译器不给你任何警告。
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 默认不可变，变异是显式且可见的
+struct Config {
+    host: String,
+    port: u16,
+    allowed_origins: Vec&lt;String&gt;,
+}
+
+let config = Config {
+    host: "localhost".into(),
+    port: 8080,
+    allowed_origins: vec!["*.example.com".into()],
+};
+
+// config.allowed_origins.push("*.evil.com".into()); // 错误：无法可变借用
+
+// 变异需要显式选择加入：
+let mut config = config;
+config.allowed_origins.push("*.safe.com".into()); // 好——可见可变
+
+// 签名中的 "mut" 告诉每个读者："此函数修改数据"
+fn add_origin(config: &amp;mut Config, origin: String) {
+    config.allowed_origins.push(origin);
+}
+<span class="boring">}</span></code></pre></pre>
+<h4 id="函数式编程一等公民-vs-事后想法"><a class="header" href="#函数式编程一等公民-vs-事后想法">函数式编程：一等公民 vs 事后想法</a></h4>
+<pre><code class="language-csharp">// C# —— FP 强加；LINQ 有表现力但语言与你作对
+public IEnumerable&lt;Order&gt; GetHighValueOrders(IEnumerable&lt;Order&gt; orders)
+{
+    return orders
+        .Where(o =&gt; o.Total &gt; 1000)   // Func&lt;Order, bool&gt; —— 堆分配委托
+        .Select(o =&gt; new OrderSummary  // 匿名类型或额外类
+        {
+            Id = o.Id,
+            Total = o.Total
+        })
+        .OrderByDescending(o =&gt; o.Total);
+    // 结果上没有穷尽匹配
+    // null 可能在管道中任何地方潜入
+    // 无法强制纯度——任何 lambda 都可能有副作用
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— FP 是一等公民
+fn get_high_value_orders(orders: &amp;[Order]) -&gt; Vec&lt;OrderSummary&gt; {
+    orders.iter()
+        .filter(|o| o.total &gt; 1000)      // 零成本闭包，无堆分配
+        .map(|o| OrderSummary {           // 类型检查结构体
+            id: o.id,
+            total: o.total,
+        })
+        .sorted_by(|a, b| b.total.cmp(&amp;a.total)) // itertools
+        .collect()
+    // 管道中没有任何 null
+    // 闭包是单态化的——与手写循环相比零开销
+    // 强制纯度：&amp;[Order] 意味着函数不能修改 orders
+}
+<span class="boring">}</span></code></pre></pre>
+<h4 id="继承理论上优雅实践中脆弱"><a class="header" href="#继承理论上优雅实践中脆弱">继承：理论上优雅，实践中脆弱</a></h4>
+<pre><code class="language-csharp">// C# —— 脆弱基类问题
+public class Animal
+{
+    public virtual string Speak() =&gt; "...";
+    public void Greet() =&gt; Console.WriteLine($"I say: {Speak()}");
+}
+
+public class Dog : Animal
+{
+    public override string Speak() =&gt; "Woof!";
+}
+
+public class RobotDog : Dog
+{
+    // Greet() 调用哪个 Speak()？如果 Dog 改变会怎样？
+    // 接口 + 默认方法的菱形问题
+    // 紧密耦合：改变 Animal 可能静默破坏 RobotDog
+}
+
+// 常见 C# 反模式：
+// - 有 20 个虚方法的上帝基类
+// - 没人能理解的深层层次结构（5+ 层）
+// - 创建隐藏耦合的 "protected" 字段
+// - 基类更改静默改变派生行为
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 组合优于继承，由语言强制
+trait Speaker {
+    fn speak(&amp;self) -&gt; &amp;str;
+}
+
+trait Greeter: Speaker {
+    fn greet(&amp;self) {
+        println!("I say: {}", self.speak());
+    }
+}
+
+struct Dog;
+impl Speaker for Dog {
+    fn speak(&amp;self) -&gt; &amp;str { "Woof!" }
+}
+impl Greeter for Dog {} // 使用默认 greet()
+
+struct RobotDog {
+    voice: String, // 组合：拥有自己的数据
+}
+impl Speaker for RobotDog {
+    fn speak(&amp;self) -&gt; &amp;str { &amp;self.voice }
+}
+impl Greeter for RobotDog {} // 清晰、显式的行为
+
+// 没有脆弱基类问题——根本没有基类
+// 没有隐藏耦合——trait 是显式契约
+// 没有菱形问题——trait 一致性规则防止歧义
+// 向 Speaker 添加方法？编译器告诉你在哪里实现它。
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>关键见解</strong>：在 C# 中，正确性是一种纪律——你希望开发者
+遵循约定、编写测试、在代码审查中捕获边界情况。
+在 Rust 中，正确性是<strong>类型系统的属性</strong>——整类错误
+（空指针解引用、忘记的变体、意外变异、数据竞争）在结构上是不可能的。</p>
+</blockquote>
+<hr />
+<h3 id="4-由于-gc-导致的不可预测性能"><a class="header" href="#4-由于-gc-导致的不可预测性能">4. 由于 GC 导致的不可预测性能</a></h3>
+<pre><code class="language-csharp">// C# - GC 可能随时暂停
+public class HighFrequencyTrader
+{
+    private List&lt;Trade&gt; trades = new List&lt;Trade&gt;();
+
+    public void ProcessMarketData(MarketTick tick)
+    {
+        // 分配可能在最关键时刻触发 GC
+        var analysis = new MarketAnalysis(tick);
+        trades.Add(new Trade(analysis.Signal, tick.Price));
+
+        // GC 可能在关键市场时刻暂停这里
+        // 暂停持续时间：1-100ms，取决于堆大小
+    }
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust - 可预测的确定性性能
+struct HighFrequencyTrader {
+    trades: Vec&lt;Trade&gt;,
+}
+
+impl HighFrequencyTrader {
+    fn process_market_data(&amp;mut self, tick: MarketTick) {
+        // 零分配，可预测的性能
+        let analysis = MarketAnalysis::from(tick);
+        self.trades.push(Trade::new(analysis.signal(), tick.price));
+
+        // 无 GC 暂停，一致的亚微秒级延迟
+        // 类型系统保证的性能
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="何时选择-rust-而非-c"><a class="header" href="#何时选择-rust-而非-c">何时选择 Rust 而非 C#</a></h2>
+<h3 id="-选择-rust-当"><a class="header" href="#-选择-rust-当">✅ 选择 Rust 当：</a></h3>
+<ul>
+<li><strong>正确性很重要</strong>：状态机、协议实现、财务逻辑——遗漏的情况是生产事件，而不是测试失败</li>
+<li><strong>性能至关重要</strong>：实时系统、高频交易、游戏引擎</li>
+<li><strong>内存使用很重要</strong>：嵌入式系统、云成本、移动应用</li>
+<li><strong>需要可预测性</strong>：医疗设备、汽车、金融系统</li>
+<li><strong>安全至关重要</strong>：密码学、网络安全、系统级代码</li>
+<li><strong>长期运行的服务</strong>：GC 暂停会导致问题</li>
+<li><strong>资源受限环境</strong>：IoT、边缘计算</li>
+<li><strong>系统编程</strong>：CLI 工具、数据库、Web 服务器、操作系统</li>
+</ul>
+<h3 id="-继续使用-c-当"><a class="header" href="#-继续使用-c-当">✅ 继续使用 C# 当：</a></h3>
+<ul>
+<li><strong>快速应用开发</strong>：业务应用、CRUD 应用</li>
+<li><strong>大型现有代码库</strong>：迁移成本过高时</li>
+<li><strong>团队专业知识</strong>：Rust 学习曲线不值得时</li>
+<li><strong>企业集成</strong>：重度 .NET Framework/Windows 依赖</li>
+<li><strong>GUI 应用</strong>：WPF、WinUI、Blazor 生态系统</li>
+<li><strong>上市时间</strong>：开发速度胜过性能时</li>
+</ul>
+<h3 id="-考虑两者混合方法"><a class="header" href="#-考虑两者混合方法">🔄 考虑两者（混合方法）：</a></h3>
+<ul>
+<li><strong>Rust 中的性能关键组件</strong>：通过 P/Invoke 从 C# 调用</li>
+<li><strong>C# 中的业务逻辑</strong>：熟悉、高效的开发</li>
+<li><strong>渐进式迁移</strong>：在 Rust 中开始新服务</li>
+</ul>
+<hr />
+<h2 id="现实世界影响为什么公司选择-rust"><a class="header" href="#现实世界影响为什么公司选择-rust">现实世界影响：为什么公司选择 Rust</a></h2>
+<h3 id="dropbox存储基础设施"><a class="header" href="#dropbox存储基础设施">Dropbox：存储基础设施</a></h3>
+<ul>
+<li><strong>之前（Python）</strong>：高 CPU 使用率，内存开销</li>
+<li><strong>之后（Rust）</strong>：10 倍性能提升，50% 内存减少</li>
+<li><strong>结果</strong>：节省数百万基础设施成本</li>
+</ul>
+<h3 id="discord语音视频后端"><a class="header" href="#discord语音视频后端">Discord：语音/视频后端</a></h3>
+<ul>
+<li><strong>之前（Go）</strong>：GC 暂停导致音频丢失</li>
+<li><strong>之后（Rust）</strong>：一致的低延迟性能</li>
+<li><strong>结果</strong>：更好的用户体验，降低服务器成本</li>
+</ul>
+<h3 id="microsoftwindows-组件"><a class="header" href="#microsoftwindows-组件">Microsoft：Windows 组件</a></h3>
+<ul>
+<li><strong>Windows 中的 Rust</strong>：文件系统、网络栈组件</li>
+<li><strong>优势</strong>：内存安全，无性能成本</li>
+<li><strong>影响</strong>：更少的安全漏洞，相同的性能</li>
+</ul>
+<h3 id="为什么这对-c-开发者很重要"><a class="header" href="#为什么这对-c-开发者很重要">为什么这对 C# 开发者很重要：</a></h3>
+<ol>
+<li><strong>互补技能</strong>：Rust 和 C# 解决不同的问题</li>
+<li><strong>职业成长</strong>：系统编程专业知识越来越有价值</li>
+<li><strong>性能理解</strong>：学习零成本抽象</li>
+<li><strong>安全思维</strong>：将所有权思维应用于任何语言</li>
+<li><strong>云成本</strong>：性能直接影响基础设施支出</li>
+</ol>
+<hr />
+<h2 id="语言哲学比较"><a class="header" href="#语言哲学比较">语言哲学比较</a></h2>
+<h3 id="c-哲学"><a class="header" href="#c-哲学">C# 哲学</a></h3>
+<ul>
+<li><strong>生产力优先</strong>：丰富的工具、广泛的框架、"成功之坑"</li>
+<li><strong>托管运行时</strong>：垃圾回收自动处理内存</li>
+<li><strong>面向企业</strong>：强类型与反射、广泛的标准库</li>
+<li><strong>面向对象</strong>：类、继承、接口作为主要抽象</li>
+</ul>
+<h3 id="rust-哲学"><a class="header" href="#rust-哲学">Rust 哲学</a></h3>
+<ul>
+<li><strong>无牺牲的性能</strong>：零成本抽象，无运行时开销</li>
+<li><strong>内存安全</strong>：编译时保证防止崩溃和安全漏洞</li>
+<li><strong>系统编程</strong>：直接硬件访问与高级抽象</li>
+<li><strong>函数式 + 系统</strong>：默认不可变、基于所有权的资源管理</li>
+</ul>
+<pre class="mermaid">graph TD
+    subgraph &quot;C# 开发模型&quot;
+        CS_CODE[&quot;C# 源代码&lt;br/&gt;类、方法、属性&quot;]
+        CS_COMPILE[&quot;C# 编译器&lt;br/&gt;(csc.exe)&quot;]
+        CS_IL[&quot;中间语言&lt;br/&gt;(IL 字节码)&quot;]
+        CS_RUNTIME[&quot;.NET 运行时&lt;br/&gt;(CLR)&quot;]
+        CS_JIT[&quot;即时编译器&quot;]
+        CS_NATIVE[&quot;原生机器码&quot;]
+        CS_GC[&quot;垃圾回收器&lt;br/&gt;(内存管理)&quot;]
+
+        CS_CODE --&gt; CS_COMPILE
+        CS_COMPILE --&gt; CS_IL
+        CS_IL --&gt; CS_RUNTIME
+        CS_RUNTIME --&gt; CS_JIT
+        CS_JIT --&gt; CS_NATIVE
+        CS_RUNTIME --&gt; CS_GC
+
+        CS_BENEFITS[&quot;[好] 快速开发&lt;br/&gt;[好] 丰富生态系统&lt;br/&gt;[好] 自动内存管理&lt;br/&gt;[错误] 运行时开销&lt;br/&gt;[错误] GC 暂停&lt;br/&gt;[错误] 平台依赖&quot;]
+    end
+
+    subgraph &quot;Rust 开发模型&quot;
+        RUST_CODE[&quot;Rust 源代码&lt;br/&gt;结构体、枚举、函数&quot;]
+        RUST_COMPILE[&quot;Rust 编译器&lt;br/&gt;(rustc)&quot;]
+        RUST_NATIVE[&quot;原生机器码&lt;br/&gt;(直接编译)&quot;]
+        RUST_ZERO[&quot;零运行时&lt;br/&gt;(无 VM、无 GC)&quot;]
+
+        RUST_CODE --&gt; RUST_COMPILE
+        RUST_COMPILE --&gt; RUST_NATIVE
+        RUST_NATIVE --&gt; RUST_ZERO
+
+        RUST_BENEFITS[&quot;[好] 最大性能&lt;br/&gt;[好] 内存安全&lt;br/&gt;[好] 无运行时依赖&lt;br/&gt;[错误] 更陡的学习曲线&lt;br/&gt;[错误] 更长的编译时间&lt;br/&gt;[错误] 更显式的代码&quot;]
+    end
+
+    style CS_BENEFITS fill:#e3f2fd,color:#000
+    style RUST_BENEFITS fill:#e8f5e8,color:#000
+    style CS_GC fill:#fff3e0,color:#000
+    style RUST_ZERO fill:#e8f5e8,color:#000
+</pre>
+<hr />
+<h2 id="快速参考rust-vs-c"><a class="header" href="#快速参考rust-vs-c">快速参考：Rust vs C#</a></h2>
+<div class="table-wrapper"><table><thead><tr><th><strong>概念</strong></th><th><strong>C#</strong></th><th><strong>Rust</strong></th><th><strong>关键区别</strong></th></tr></thead><tbody>
+<tr><td>内存管理</td><td>垃圾回收器</td><td>所有权系统</td><td>零成本、确定性清理</td></tr>
+<tr><td>空引用</td><td>到处是 <code>null</code></td><td><code>Option&lt;T&gt;</code></td><td>编译时空安全</td></tr>
+<tr><td>错误处理</td><td>异常</td><td><code>Result&lt;T, E&gt;</code></td><td>显式、无隐藏控制流</td></tr>
+<tr><td>可变性</td><td>默认可变</td><td>默认不可变</td><td>选择加入变异</td></tr>
+<tr><td>类型系统</td><td>引用/值类型</td><td>所有权类型</td><td>移动语义、借用</td></tr>
+<tr><td>程序集</td><td>GAC、应用程序域</td><td>Crates</td><td>静态链接、无运行时</td></tr>
+<tr><td>命名空间</td><td><code>using System.IO</code></td><td><code>use std::fs</code></td><td>模块系统</td></tr>
+<tr><td>接口</td><td><code>interface IFoo</code></td><td><code>trait Foo</code></td><td>默认实现</td></tr>
+<tr><td>泛型</td><td><code>List&lt;T&gt;</code> where T : class</td><td><code>Vec&lt;T&gt;</code> where T: Clone</td><td>零成本抽象</td></tr>
+<tr><td>线程</td><td>locks、async/await</td><td>所有权 + Send/Sync</td><td>数据竞争预防</td></tr>
+<tr><td>性能</td><td>JIT 编译</td><td>AOT 编译</td><td>可预测、无 GC 暂停</td></tr>
+</tbody></table>
+</div>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch00-introduction.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch02-getting-started.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch00-introduction.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch02-getting-started.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

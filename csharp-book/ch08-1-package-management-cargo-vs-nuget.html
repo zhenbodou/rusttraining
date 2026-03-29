@@ -1,0 +1,456 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>包管理 — Cargo vs NuGet - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="包管理cargo-vs-nuget"><a class="header" href="#包管理cargo-vs-nuget">包管理：Cargo vs NuGet</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> <code>Cargo.toml</code> vs <code>.csproj</code>，版本说明符，<code>Cargo.lock</code>，
+用于条件编译的功能标志，以及常见 Cargo 命令映射到它们的 NuGet/dotnet 等价物。</p>
+<p><strong>难度：</strong> 🟢 初学者</p>
+</blockquote>
+<h3 id="依赖声明"><a class="header" href="#依赖声明">依赖声明</a></h3>
+<h4 id="c-nuget-依赖"><a class="header" href="#c-nuget-依赖">C# NuGet 依赖</a></h4>
+<pre><code class="language-xml">&lt;!-- MyApp.csproj --&gt;
+&lt;Project Sdk="Microsoft.NET.Sdk"&gt;
+  &lt;PropertyGroup&gt;
+    &lt;TargetFramework&gt;net8.0&lt;/TargetFramework&gt;
+  &lt;/PropertyGroup&gt;
+
+  &lt;PackageReference Include="Newtonsoft.Json" Version="13.0.3" /&gt;
+  &lt;PackageReference Include="Serilog" Version="3.0.1" /&gt;
+  &lt;PackageReference Include="Microsoft.AspNetCore.App" /&gt;
+
+  &lt;ProjectReference Include="../MyLibrary/MyLibrary.csproj" /&gt;
+&lt;/Project&gt;
+</code></pre>
+<h4 id="rust-cargo-依赖"><a class="header" href="#rust-cargo-依赖">Rust Cargo 依赖</a></h4>
+<pre><code class="language-toml"># Cargo.toml
+[package]
+name = "my_app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde_json = "1.0"               # 来自 crates.io（类似 NuGet）
+serde = { version = "1.0", features = ["derive"] }  # 带功能
+log = "0.4"
+tokio = { version = "1.0", features = ["full"] }
+
+# 本地依赖（类似 ProjectReference）
+my_library = { path = "../my_library" }
+
+# Git 依赖
+my_git_crate = { git = "https://github.com/user/repo" }
+
+# 开发依赖（类似测试包）
+[dev-dependencies]
+criterion = "0.5"               # 基准测试
+proptest = "1.0"               # 属性测试
+</code></pre>
+<h3 id="版本管理"><a class="header" href="#版本管理">版本管理</a></h3>
+<h4 id="c-包版本控制"><a class="header" href="#c-包版本控制">C# 包版本控制</a></h4>
+<pre><code class="language-xml">&lt;!-- 集中化包管理（Directory.Packages.props） --&gt;
+&lt;Project&gt;
+  &lt;PropertyGroup&gt;
+    &lt;ManagePackageVersionsCentrally&gt;true&lt;/ManagePackageVersionsCentrally&gt;
+  &lt;/PropertyGroup&gt;
+
+  &lt;PackageVersion Include="Newtonsoft.Json" Version="13.0.3" /&gt;
+  &lt;PackageVersion Include="Serilog" Version="3.0.1" /&gt;
+&lt;/Project&gt;
+
+&lt;!-- packages.lock.json 用于可重现的构建 --&gt;
+</code></pre>
+<h4 id="rust-版本管理"><a class="header" href="#rust-版本管理">Rust 版本管理</a></h4>
+<pre><code class="language-toml"># Cargo.toml - 语义化版本
+[dependencies]
+serde = "1.0"        # 兼容 1.x.x（&gt;=1.0.0，&lt;2.0.0）
+log = "0.4.17"       # 兼容 0.4.x（&gt;=0.4.17，&lt;0.5.0）
+regex = "=1.5.4"     # 精确版本
+chrono = "^0.4"      # 插入符要求（默认）
+uuid = "~1.3.0"      # 波浪号要求（&gt;=1.3.0，&lt;1.4.0）
+
+# Cargo.lock - 可重现构建的精确版本（自动生成）
+[[package]]
+name = "serde"
+version = "1.0.163"
+# ... 精确依赖树
+</code></pre>
+<h3 id="包源"><a class="header" href="#包源">包源</a></h3>
+<h4 id="c-包源"><a class="header" href="#c-包源">C# 包源</a></h4>
+<pre><code class="language-xml">&lt;!-- nuget.config --&gt;
+&lt;configuration&gt;
+  &lt;packageSources&gt;
+    &lt;add key="nuget.org" value="https://api.nuget.org/v3/index.json" /&gt;
+    &lt;add key="MyCompanyFeed" value="https://pkgs.dev.azure.com/company/_packaging/feed/nuget/v3/index.json" /&gt;
+  &lt;/packageSources&gt;
+&lt;/configuration&gt;
+</code></pre>
+<h4 id="rust-包源"><a class="header" href="#rust-包源">Rust 包源</a></h4>
+<pre><code class="language-toml"># .cargo/config.toml
+[source.crates-io]
+replace-with = "my-awesome-registry"
+
+[source.my-awesome-registry]
+registry = "https://my-intranet:8080/index"
+
+# 替代注册表
+[registries]
+my-registry = { index = "https://my-intranet:8080/index" }
+
+# 在 Cargo.toml 中
+[dependencies]
+my_crate = { version = "1.0", registry = "my-registry" }
+</code></pre>
+<h3 id="常见命令比较"><a class="header" href="#常见命令比较">常见命令比较</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>任务</th><th>C# 命令</th><th>Rust 命令</th></tr></thead><tbody>
+<tr><td>恢复包</td><td><code>dotnet restore</code></td><td><code>cargo fetch</code></td></tr>
+<tr><td>添加包</td><td><code>dotnet add package Newtonsoft.Json</code></td><td><code>cargo add serde_json</code></td></tr>
+<tr><td>移除包</td><td><code>dotnet remove package Newtonsoft.Json</code></td><td><code>cargo remove serde_json</code></td></tr>
+<tr><td>更新包</td><td><code>dotnet update</code></td><td><code>cargo update</code></td></tr>
+<tr><td>列出包</td><td><code>dotnet list package</code></td><td><code>cargo tree</code></td></tr>
+<tr><td>审计安全</td><td><code>dotnet list package --vulnerable</code></td><td><code>cargo audit</code></td></tr>
+<tr><td>清理构建</td><td><code>dotnet clean</code></td><td><code>cargo clean</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="功能条件编译"><a class="header" href="#功能条件编译">功能：条件编译</a></h3>
+<h4 id="c-条件编译"><a class="header" href="#c-条件编译">C# 条件编译</a></h4>
+<pre><code class="language-csharp">#if DEBUG
+    Console.WriteLine("Debug mode");
+#elif RELEASE
+    Console.WriteLine("Release mode");
+#endif
+
+// 项目文件功能
+&lt;PropertyGroup Condition="'$(Configuration)'=='Debug'"&gt;
+    &lt;DefineConstants&gt;DEBUG;TRACE&lt;/DefineConstants&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<h4 id="rust-功能门"><a class="header" href="#rust-功能门">Rust 功能门</a></h4>
+<pre><code class="language-toml"># Cargo.toml
+[features]
+default = ["json"]              # 默认功能
+json = ["serde_json"]          # 启用 serde_json 的功能
+xml = ["serde_xml"]            # 替代序列化
+advanced = ["json", "xml"]     # 组合功能
+
+[dependencies]
+serde_json = { version = "1.0", optional = true }
+serde_xml = { version = "0.4", optional = true }
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 基于功能的条件编译
+#[cfg(feature = "json")]
+use serde_json;
+
+#[cfg(feature = "xml")]
+use serde_xml;
+
+pub fn serialize_data(data: &amp;MyStruct) -&gt; String {
+    #[cfg(feature = "json")]
+    return serde_json::to_string(data).unwrap();
+
+    #[cfg(feature = "xml")]
+    return serde_xml::to_string(data).unwrap();
+
+    #[cfg(not(any(feature = "json", feature = "xml")))]
+    return "No serialization feature enabled".to_string();
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="使用外部-crates"><a class="header" href="#使用外部-crates">使用外部 Crates</a></h3>
+<h4 id="c-开发者的流行-crates"><a class="header" href="#c-开发者的流行-crates">C# 开发者的流行 Crates</a></h4>
+<div class="table-wrapper"><table><thead><tr><th>C# 库</th><th>Rust Crate</th><th>用途</th></tr></thead><tbody>
+<tr><td>Newtonsoft.Json</td><td><code>serde_json</code></td><td>JSON 序列化</td></tr>
+<tr><td>HttpClient</td><td><code>reqwest</code></td><td>HTTP 客户端</td></tr>
+<tr><td>Entity Framework</td><td><code>diesel</code> / <code>sqlx</code></td><td>ORM / SQL 工具包</td></tr>
+<tr><td>NLog/Serilog</td><td><code>log</code> + <code>env_logger</code></td><td>日志记录</td></tr>
+<tr><td>xUnit/NUnit</td><td>内置 <code>#[test]</code></td><td>单元测试</td></tr>
+<tr><td>Moq</td><td><code>mockall</code></td><td>Mocking</td></tr>
+<tr><td>Flurl</td><td><code>url</code></td><td>URL 操作</td></tr>
+<tr><td>Polly</td><td><code>tower</code></td><td>弹性模式</td></tr>
+</tbody></table>
+</div>
+<h4 id="示例http-客户端迁移"><a class="header" href="#示例http-客户端迁移">示例：HTTP 客户端迁移</a></h4>
+<pre><code class="language-csharp">// C# HttpClient 用法
+public class ApiClient
+{
+    private readonly HttpClient _httpClient;
+
+    public async Task&lt;User&gt; GetUserAsync(int id)
+    {
+        var response = await _httpClient.GetAsync($"/users/{id}");
+        var json = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject&lt;User&gt;(json);
+    }
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust reqwest 用法
+use reqwest;
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+struct User {
+    id: u32,
+    name: String,
+}
+
+struct ApiClient {
+    client: reqwest::Client,
+}
+
+impl ApiClient {
+    async fn get_user(&amp;self, id: u32) -&gt; Result&lt;User, reqwest::Error&gt; {
+        let user = self.client
+            .get(&amp;format!("https://api.example.com/users/{}", id))
+            .send()
+            .await?
+            .json::&lt;User&gt;()
+            .await?;
+
+        Ok(user)
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch08-crates-and-modules.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch09-error-handling.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch08-crates-and-modules.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch09-error-handling.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

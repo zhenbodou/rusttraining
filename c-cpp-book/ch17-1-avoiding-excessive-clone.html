@@ -1,0 +1,676 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>避免过度使用 clone() - Rust for C/C++ Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C/C++ Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="避免过度使用-clone"><a class="header" href="#避免过度使用-clone">避免过度使用 clone()</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> 为什么 <code>.clone()</code> 在 Rust 中是代码异味，如何重构所有权以消除不必要的复制，以及表明所有权设计问题的特定模式。</p>
+</blockquote>
+<ul>
+<li>来自 C++，<code>.clone()</code> 感觉像是安全的默认值——"只是复制它"。但过度克隆隐藏所有权问题并损害性能。</li>
+<li><strong>经验法则</strong>：如果你克隆是为了满足借用检查器，你可能需要重构所有权。</li>
+</ul>
+<h3 id="何时-clone-是错误的"><a class="header" href="#何时-clone-是错误的">何时 clone() 是错误的</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 坏：克隆 String 只是为了传递给仅读取它的函数
+fn log_message(msg: String) {  // 不必要地获取所有权
+    println!("[LOG] {}", msg);
+}
+let message = String::from("GPU 测试通过");
+log_message(message.clone());  // 浪费：分配全新的 String
+log_message(message);           // 原始值被消耗——克隆是多余的
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 好：接受借用——零分配
+fn log_message(msg: &amp;str) {    // 借用，不拥有
+    println!("[LOG] {}", msg);
+}
+let message = String::from("GPU 测试通过");
+log_message(&amp;message);          // 无克隆，无分配
+log_message(&amp;message);          // 可以再次调用——message 未被消耗
+<span class="boring">}</span></code></pre></pre>
+<h3 id="真实示例返回-str-而不是克隆"><a class="header" href="#真实示例返回-str-而不是克隆">真实示例：返回 <code>&amp;str</code> 而不是克隆</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 示例：healthcheck.rs——返回借用的视图，零分配
+pub fn serial_or_unknown(&amp;self) -&gt; &amp;str {
+    self.serial.as_deref().unwrap_or(UNKNOWN_VALUE)
+}
+
+pub fn model_or_unknown(&amp;self) -&gt; &amp;str {
+    self.model.as_deref().unwrap_or(UNKNOWN_VALUE)
+}
+<span class="boring">}</span></code></pre></pre>
+<p>C++ 等效将返回 <code>const std::string&amp;</code> 或 <code>std::string_view</code>——但在 C++ 中两者都不检查生命周期。在 Rust 中，借用检查器保证返回的 <code>&amp;str</code> 不能比 <code>self</code> 存活更久。</p>
+<h3 id="真实示例静态字符串切片根本无堆"><a class="header" href="#真实示例静态字符串切片根本无堆">真实示例：静态字符串切片——根本无堆</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 示例：healthcheck.rs——编译时字符串表
+const HBM_SCREEN_RECIPES: &amp;[&amp;str] = &amp;[
+    "hbm_ds_ntd", "hbm_ds_ntd_gfx", "hbm_dt_ntd", "hbm_dt_ntd_gfx",
+    "hbm_burnin_8h", "hbm_burnin_24h",
+];
+<span class="boring">}</span></code></pre></pre>
+<p>在 C++ 中这通常是 <code>std::vector&lt;std::string&gt;</code>（首次使用时堆分配）。Rust 的 <code>&amp;'static [&amp;'static str]</code> 生活在只读内存中——零运行时成本。</p>
+<h3 id="何时-clone-是适当的"><a class="header" href="#何时-clone-是适当的">何时 clone() 是适当的</a></h3>
+<div class="table-wrapper"><table><thead><tr><th><strong>情况</strong></th><th><strong>为什么 clone 可以</strong></th><th><strong>示例</strong></th></tr></thead><tbody>
+<tr><td><code>Arc::clone()</code> 用于线程</td><td>增加引用计数（~1 ns），不复制数据</td><td><code>let flag = stop_flag.clone();</code></td></tr>
+<tr><td>将数据移动到生成的线程</td><td>线程需要自己的副本</td><td><code>let ctx = ctx.clone(); thread::spawn(move || { ... })</code></td></tr>
+<tr><td>从 <code>&amp;self</code> 字段提取</td><td>无法从借用中移动</td><td>当返回拥有的 <code>String</code> 时 <code>self.name.clone()</code></td></tr>
+<tr><td><code>Option</code> 中包装的小型 <code>Copy</code> 类型</td><td><code>.copied()</code> 比 <code>.clone()</code> 更清晰</td><td><code>opt.get(0).copied()</code> 用于 <code>Option&lt;&amp;u32&gt;</code> → <code>Option&lt;u32&gt;</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="真实示例用于线程共享的-arcclone"><a class="header" href="#真实示例用于线程共享的-arcclone">真实示例：用于线程共享的 Arc::clone</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 示例：workload.rs——Arc::clone 便宜（引用计数增加）
+let stop_flag = Arc::new(AtomicBool::new(false));
+let stop_flag_clone = stop_flag.clone();   // ~1 ns，无数据复制
+let ctx_clone = ctx.clone();               // 为移动到线程克隆上下文
+
+let sensor_handle = thread::spawn(move || {
+    // ...使用 stop_flag_clone 和 ctx_clone
+});
+<span class="boring">}</span></code></pre></pre>
+<h3 id="检查清单我应该克隆吗"><a class="header" href="#检查清单我应该克隆吗">检查清单：我应该克隆吗？</a></h3>
+<ol>
+<li><strong>我可以接受 <code>&amp;str</code> / <code>&amp;T</code> 而不是 <code>String</code> / <code>T</code> 吗？</strong> → 借用，不克隆</li>
+<li><strong>我可以重构以避免需要两个所有者吗？</strong> → 通过引用传递或使用作用域</li>
+<li><strong>这是 <code>Arc::clone()</code> 吗？</strong> → 没关系，它是 O(1)</li>
+<li><strong>我将数据移动到线程/闭包吗？</strong> → 克隆是必要的</li>
+<li><strong>我在热点循环中克隆吗？</strong> → 分析并考虑借用或 <code>Cow&lt;T&gt;</code></li>
+</ol>
+<hr />
+<h2 id="cowa-t写时克隆能借用时借用必须时克隆"><a class="header" href="#cowa-t写时克隆能借用时借用必须时克隆"><code>Cow&lt;'a, T&gt;</code>：写时克隆——能借用时借用，必须时克隆</a></h2>
+<p><code>Cow</code>（Clone on Write）是一个 enum，持有<strong>要么</strong>借用引用<strong>要么</strong>拥有值。它相当于"可能时避免分配，但如果需要修改则分配"。C++ 没有直接等效——最接近的是有时返回 <code>const std::string&amp;</code> 有时返回 <code>std::string</code> 的函数。</p>
+<h3 id="为什么-cow-存在"><a class="header" href="#为什么-cow-存在">为什么 <code>Cow</code> 存在</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 无 Cow——你必须选择：始终借用或始终克隆
+fn normalize(s: &amp;str) -&gt; String {          // 始终分配！
+    if s.contains(' ') {
+        s.replace(' ', "_")               // 新 String（需要分配）
+    } else {
+        s.to_string()                     // 不必要的分配！
+    }
+}
+
+// 使用 Cow——不变时借用，修改时分配
+use std::borrow::Cow;
+
+fn normalize(s: &amp;str) -&gt; Cow&lt;'_, str&gt; {
+    if s.contains(' ') {
+        Cow::Owned(s.replace(' ', "_"))    // 分配（必须修改）
+    } else {
+        Cow::Borrowed(s)                   // 零分配（直通）
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="cow-如何工作"><a class="header" href="#cow-如何工作"><code>Cow</code> 如何工作</a></h3>
+<pre><pre class="playground"><code class="language-rust">use std::borrow::Cow;
+
+// Cow&lt;'a, str&gt; 本质上是：
+// enum Cow&lt;'a, str&gt; {
+//     Borrowed(&amp;'a str),     // 零成本引用
+//     Owned(String),          // 堆分配的拥有值
+// }
+
+fn greet(name: &amp;str) -&gt; Cow&lt;'_, str&gt; {
+    if name.is_empty() {
+        Cow::Borrowed("stranger")         // 静态字符串——无分配
+    } else if name.starts_with(' ') {
+        Cow::Owned(name.trim().to_string()) // 修改——需要分配
+    } else {
+        Cow::Borrowed(name)               // 直通——无分配
+    }
+}
+
+fn main() {
+    let g1 = greet("Alice");     // Cow::Borrowed("Alice")
+    let g2 = greet("");          // Cow::Borrowed("stranger")
+    let g3 = greet(" Bob ");     // Cow::Owned("Bob")
+
+    // Cow&lt;str&gt; 实现 Deref&lt;Target = str&gt;，所以你可以将它用作 &amp;str：
+    println!("Hello, {g1}!");    // 有效——Cow 自动解引用为 &amp;str
+    println!("Hello, {g2}!");
+    println!("Hello, {g3}!");
+}</code></pre></pre>
+<h3 id="真实用例配置值规范化"><a class="header" href="#真实用例配置值规范化">真实用例：配置值规范化</a></h3>
+<pre><pre class="playground"><code class="language-rust">use std::borrow::Cow;
+
+/// 规范化 SKU 名称：修剪空白，小写。
+/// 如果已规范化则返回 Cow::Borrowed（零分配）。
+fn normalize_sku(sku: &amp;str) -&gt; Cow&lt;'_, str&gt; {
+    let trimmed = sku.trim();
+    if trimmed == sku &amp;&amp; sku.chars().all(|c| c.is_lowercase() || !c.is_alphabetic()) {
+        Cow::Borrowed(sku)   // 已规范化——无分配
+    } else {
+        Cow::Owned(trimmed.to_lowercase())  // 需要修改——分配
+    }
+}
+
+fn main() {
+    let s1 = normalize_sku("server-x1");   // Borrowed——零分配
+    let s2 = normalize_sku("  Server-X1 "); // Owned——必须分配
+    println!("{s1}, {s2}"); // "server-x1, server-x1"
+}</code></pre></pre>
+<h3 id="何时使用-cow"><a class="header" href="#何时使用-cow">何时使用 <code>Cow</code></a></h3>
+<div class="table-wrapper"><table><thead><tr><th><strong>情况</strong></th><th><strong>使用 <code>Cow</code>？</strong></th></tr></thead><tbody>
+<tr><td>函数大多数时候返回输入不变</td><td>✅ 是——避免不必要的克隆</td></tr>
+<tr><td>解析/规范化字符串（修剪、小写、替换）</td><td>✅ 是——通常输入已经有效</td></tr>
+<tr><td>始终修改——每个代码路径分配</td><td>❌ 否——只返回 <code>String</code></td></tr>
+<tr><td>简单直通（从不修改）</td><td>❌ 否——只返回 <code>&amp;str</code></td></tr>
+<tr><td>长期存储在结构中的数据</td><td>❌ 否——使用 <code>String</code>（拥有）</td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p><strong>C++ 比较</strong>：<code>Cow&lt;str&gt;</code> 像返回 <code>std::variant&lt;std::string_view, std::string&gt;</code> 的函数
+——除了自动解引用且无样板访问值。</p>
+</blockquote>
+<hr />
+<h2 id="weakt打破引用循环rust-的-weak_ptr"><a class="header" href="#weakt打破引用循环rust-的-weak_ptr"><code>Weak&lt;T&gt;</code>：打破引用循环——Rust 的 <code>weak_ptr</code></a></h2>
+<p><code>Weak&lt;T&gt;</code> 是 C++ <code>std::weak_ptr&lt;T&gt;</code> 的 Rust 等效。它持有对 <code>Rc&lt;T&gt;</code> 或 <code>Arc&lt;T&gt;</code> 值的非拥有引用。当 <code>Weak</code> 引用仍然存在时值可以被释放——如果值消失则调用 <code>upgrade()</code> 返回 <code>None</code>。</p>
+<h3 id="为什么-weak-存在"><a class="header" href="#为什么-weak-存在">为什么 <code>Weak</code> 存在</a></h3>
+<p>如果两个值相互指向，<code>Rc&lt;T&gt;</code> 和 <code>Arc&lt;T&gt;</code> 创建引用循环——都不会达到 refcount 0，所以都不会被删除（内存泄漏）。
+<code>Weak</code> 打破循环：</p>
+<pre><pre class="playground"><code class="language-rust">use std::rc::{Rc, Weak};
+use std::cell::RefCell;
+
+#[derive(Debug)]
+struct Node {
+    value: String,
+    parent: RefCell&lt;Weak&lt;Node&gt;&gt;,      // Weak——不阻止父节点删除
+    children: RefCell&lt;Vec&lt;Rc&lt;Node&gt;&gt;&gt;,  // Strong——父节点拥有子节点
+}
+
+impl Node {
+    fn new(value: &amp;str) -&gt; Rc&lt;Node&gt; {
+        Rc::new(Node {
+            value: value.to_string(),
+            parent: RefCell::new(Weak::new()),
+            children: RefCell::new(Vec::new()),
+        })
+    }
+
+    fn add_child(parent: &amp;Rc&lt;Node&gt;, child: &amp;Rc&lt;Node&gt;) {
+        // 子节点获得父节点的弱引用（无循环）
+        *child.parent.borrow_mut() = Rc::downgrade(parent);
+        // 父节点获得子节点的强引用
+        parent.children.borrow_mut().push(Rc::clone(child));
+    }
+}
+
+fn main() {
+    let root = Node::new("root");
+    let child = Node::new("child");
+    Node::add_child(&amp;root, &amp;child);
+
+    // 通过 upgrade() 从子节点访问父节点
+    if let Some(parent) = child.parent.borrow().upgrade() {
+        println!("子节点的父节点：{}", parent.value); // "root"
+    }
+
+    println!("根强计数：{}", Rc::strong_count(&amp;root));  // 1
+    println!("根弱计数：{}", Rc::weak_count(&amp;root));      // 1
+}</code></pre></pre>
+<h3 id="c-比较"><a class="header" href="#c-比较">C++ 比较</a></h3>
+<pre><code class="language-cpp">// C++——weak_ptr 打破 shared_ptr 循环
+struct Node {
+    std::string value;
+    std::weak_ptr&lt;Node&gt; parent;                  // Weak——无所有权
+    std::vector&lt;std::shared_ptr&lt;Node&gt;&gt; children;  // Strong——拥有子节点
+
+    static auto create(const std::string&amp; v) {
+        return std::make_shared&lt;Node&gt;(Node{v, {}, {}});
+    }
+};
+
+auto root = Node::create("root");
+auto child = Node::create("child");
+child-&gt;parent = root;          // weak_ptr 赋值
+root-&gt;children.push_back(child);
+
+if (auto p = child-&gt;parent.lock()) {   // lock() → shared_ptr 或 null
+    std::cout &lt;&lt; "父节点：" &lt;&lt; p-&gt;value &lt;&lt; std::endl;
+}
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>C++</th><th>Rust</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>shared_ptr&lt;T&gt;</code></td><td><code>Rc&lt;T&gt;</code>（单线程）/ <code>Arc&lt;T&gt;</code>（多线程）</td><td>相同语义</td></tr>
+<tr><td><code>weak_ptr&lt;T&gt;</code></td><td><code>Weak&lt;T&gt;</code> 来自 <code>Rc::downgrade()</code> / <code>Arc::downgrade()</code></td><td>相同语义</td></tr>
+<tr><td><code>weak_ptr::lock()</code> → <code>shared_ptr</code> 或 null</td><td><code>Weak::upgrade()</code> → <code>Option&lt;Rc&lt;T&gt;&gt;</code></td><td>如果删除则为 <code>None</code></td></tr>
+<tr><td><code>shared_ptr::use_count()</code></td><td><code>Rc::strong_count()</code></td><td>相同含义</td></tr>
+</tbody></table>
+</div>
+<h3 id="何时使用-weak"><a class="header" href="#何时使用-weak">何时使用 <code>Weak</code></a></h3>
+<div class="table-wrapper"><table><thead><tr><th><strong>情况</strong></th><th><strong>模式</strong></th></tr></thead><tbody>
+<tr><td>父↔子树关系</td><td>父节点持有 <code>Rc&lt;Child&gt;</code>，子节点持有 <code>Weak&lt;Parent&gt;</code></td></tr>
+<tr><td>观察者模式/事件监听器</td><td>事件源持有 <code>Weak&lt;Observer&gt;</code>，观察者持有 <code>Rc&lt;Source&gt;</code></td></tr>
+<tr><td>不阻止删除的缓存</td><td><code>HashMap&lt;Key, Weak&lt;Value&gt;&gt;</code>——条目自然失效</td></tr>
+<tr><td>打破图结构中的循环</td><td>交叉链接使用 <code>Weak</code>，树边使用 <code>Rc</code>/<code>Arc</code></td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p><strong>在新代码中优先使用 arena 模式</strong>（案例研究 2）而不是 <code>Rc/Weak</code> 用于树结构。
+<code>Vec&lt;T&gt;</code> + 索引更简单、更快，且零引用计数开销。当你需要具有动态生命周期的共享所有权时使用 <code>Rc/Weak</code>。</p>
+</blockquote>
+<hr />
+<h2 id="copy-vs-clonepartialeq-vs-eq何时派生什么"><a class="header" href="#copy-vs-clonepartialeq-vs-eq何时派生什么">Copy vs Clone，PartialEq vs Eq——何时派生什么</a></h2>
+<ul>
+<li><strong>Copy ≈ C++ 可平凡复制（无自定义复制构造函数/析构函数）。</strong> 像 <code>int</code>、<code>enum</code> 和简单 POD 结构这样的类型——编译器自动生成按位 <code>memcpy</code>。在 Rust 中，<code>Copy</code> 是相同的想法：赋值 <code>let b = a;</code> 执行隐式按位复制且两个变量都保持有效。</li>
+<li><strong>Clone ≈ C++ 复制构造函数/<code>operator=</code> 深复制。</strong> 当 C++ 类有自定义复制构造函数（例如，深复制 <code>std::vector</code> 成员）时，Rust 中的等效是实现 <code>Clone</code>。你必须显式调用 <code>.clone()</code>——Rust 从不隐藏 <code>=</code> 后面的昂贵复制。</li>
+<li><strong>关键区别：</strong> 在 C++ 中，平凡复制和深复制都通过相同的 <code>=</code> 语法隐式发生。Rust 强制你选择：<code>Copy</code> 类型静默复制（便宜），非 <code>Copy</code> 类型默认<strong>移动</strong>，你必须选择显式复制使用 <code>.clone()</code>。</li>
+<li>类似地，C++ <code>operator==</code> 不区分 <code>a == a</code> 始终成立的类型（如整数）和它不成立的类型（如带 NaN 的 <code>float</code>）。Rust 将此编码到 <code>PartialEq</code> vs <code>Eq</code>。</li>
+</ul>
+<h3 id="copy-vs-clone"><a class="header" href="#copy-vs-clone">Copy vs Clone</a></h3>
+<div class="table-wrapper"><table><thead><tr><th></th><th><strong>Copy</strong></th><th><strong>Clone</strong></th></tr></thead><tbody>
+<tr><td><strong>工作原理</strong></td><td>按位 memcpy（隐式）</td><td>自定义逻辑（显式 <code>.clone()</code>）</td></tr>
+<tr><td><strong>何时发生</strong></td><td>赋值时：<code>let b = a;</code></td><td>仅当你调用 <code>.clone()</code> 时</td></tr>
+<tr><td><strong>复制/克隆后</strong></td><td><code>a</code> 和 <code>b</code> 都有效</td><td><code>a</code> 和 <code>b</code> 都有效</td></tr>
+<tr><td><strong>无任一</strong></td><td><code>let b = a;</code><strong>移动</strong><code>a</code>（a 消失）</td><td><code>let b = a;</code><strong>移动</strong><code>a</code>（a 消失）</td></tr>
+<tr><td><strong>允许用于</strong></td><td>无堆数据的类型</td><td>任何类型</td></tr>
+<tr><td><strong>C++ 类比</strong></td><td>可平凡复制/POD 类型（无自定义复制构造函数）</td><td>自定义复制构造函数（深复制）</td></tr>
+</tbody></table>
+</div>
+<h3 id="真实示例copy简单-enum"><a class="header" href="#真实示例copy简单-enum">真实示例：Copy——简单 enum</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 来自 fan_diag/src/sensor.rs——全部单元变体，适合 1 字节
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+pub enum FanStatus {
+    #[default]
+    Normal,
+    Low,
+    High,
+    Missing,
+    Failed,
+    Unknown,
+}
+
+let status = FanStatus::Normal;
+let copy = status;   // 隐式复制——status 仍然有效
+println!("{:?} {:?}", status, copy);  // 两者有效
+<span class="boring">}</span></code></pre></pre>
+<h3 id="真实示例copy带整数负载的-enum"><a class="header" href="#真实示例copy带整数负载的-enum">真实示例：Copy——带整数负载的 enum</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 示例：healthcheck.rs——u32 负载是 Copy，所以整个 enum 也是
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum HealthcheckStatus {
+    Pass,
+    ProgramError(u32),
+    DmesgError(u32),
+    RasError(u32),
+    OtherError(u32),
+    Unknown,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="真实示例仅-clone带堆数据的结构"><a class="header" href="#真实示例仅-clone带堆数据的结构">真实示例：仅 Clone——带堆数据的结构</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 示例：components.rs——String 阻止 Copy
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FruData {
+    pub technology: DeviceTechnology,
+    pub physical_location: String,      // ← String：堆分配，不能 Copy
+    pub expected: bool,
+    pub removable: bool,
+}
+// let a = fru_data;   → 移动（a 消失）
+// let a = fru_data.clone();  → 克隆（fru_data 仍然有效，新堆分配）
+<span class="boring">}</span></code></pre></pre>
+<h3 id="规则可以是-copy-吗"><a class="header" href="#规则可以是-copy-吗">规则：可以是 Copy 吗？</a></h3>
+<pre><code class="language-text">类型是否包含 String、Vec、Box、HashMap、
+Rc、Arc 或任何其他堆拥有类型？
+    是 → 仅 Clone（不能是 Copy）
+    否  → 你可以派生 Copy（如果类型小则应该）
+</code></pre>
+<h3 id="partialeq-vs-eq"><a class="header" href="#partialeq-vs-eq">PartialEq vs Eq</a></h3>
+<div class="table-wrapper"><table><thead><tr><th></th><th><strong>PartialEq</strong></th><th><strong>Eq</strong></th></tr></thead><tbody>
+<tr><td><strong>它给你什么</strong></td><td><code>==</code> 和 <code>!=</code> 运算符</td><td>标记："相等是自反的"</td></tr>
+<tr><td><strong>自反？(a == a)</strong></td><td>不保证</td><td><strong>保证</strong></td></tr>
+<tr><td><strong>为什么重要</strong></td><td><code>f32::NAN != f32::NAN</code></td><td><code>HashMap</code> 键<strong>需要</strong> <code>Eq</code></td></tr>
+<tr><td><strong>何时派生</strong></td><td>几乎总是</td><td>当类型无 <code>f32</code>/<code>f64</code> 字段时</td></tr>
+<tr><td><strong>C++ 类比</strong></td><td><code>operator==</code></td><td>无直接等效（C++ 不检查）</td></tr>
+</tbody></table>
+</div>
+<h3 id="真实示例eq用作-hashmap-键"><a class="header" href="#真实示例eq用作-hashmap-键">真实示例：Eq——用作 HashMap 键</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 来自 hms_trap/src/cpu_handler.rs——Hash 需要 Eq
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum CpuFaultType {
+    InvalidFaultType,
+    CpuCperFatalErr,
+    CpuLpddr5UceErr,
+    CpuC2CUceFatalErr,
+    // ...
+}
+// 用作：HashMap&lt;CpuFaultType, FaultHandler&gt;
+// HashMap 键必须是 Eq + Hash——仅 PartialEq 不会编译
+<span class="boring">}</span></code></pre></pre>
+<h3 id="真实示例不可能-eq类型包含-f32"><a class="header" href="#真实示例不可能-eq类型包含-f32">真实示例：不可能 Eq——类型包含 f32</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 示例：types.rs——f32 阻止 Eq
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct TemperatureSensors {
+    pub warning_threshold: Option&lt;f32&gt;,   // ← f32 有 NaN ≠ NaN
+    pub critical_threshold: Option&lt;f32&gt;,  // ← 不能派生 Eq
+    pub sensor_names: Vec&lt;String&gt;,
+}
+// 不能用作 HashMap 键。不能派生 Eq。
+// 因为：f32::NAN == f32::NAN 为 false，违反自反性。
+<span class="boring">}</span></code></pre></pre>
+<h3 id="partialord-vs-ord"><a class="header" href="#partialord-vs-ord">PartialOrd vs Ord</a></h3>
+<div class="table-wrapper"><table><thead><tr><th></th><th><strong>PartialOrd</strong></th><th><strong>Ord</strong></th></tr></thead><tbody>
+<tr><td><strong>它给你什么</strong></td><td><code>&lt;</code>、<code>&gt;</code>、<code>&lt;=</code>、<code>&gt;=</code></td><td><code>.sort()</code>、<code>BTreeMap</code> 键</td></tr>
+<tr><td><strong>全部顺序？</strong></td><td>否（某些对可能不可比较）</td><td><strong>是</strong>（每对都可比较）</td></tr>
+<tr><td><strong>f32/f64？</strong></td><td>仅 PartialOrd（NaN 破坏顺序）</td><td>不能派生 Ord</td></tr>
+</tbody></table>
+</div>
+<h3 id="真实示例ord严重性排名"><a class="header" href="#真实示例ord严重性排名">真实示例：Ord——严重性排名</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 来自 hms_trap/src/fault.rs——变体顺序定义严重性
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum FaultSeverity {
+    Info,      // 最低（判别式 0）
+    Warning,   //         （判别式 1）
+    Error,     //         （判别式 2）
+    Critical,  // 最高（判别式 3）
+}
+// FaultSeverity::Info &lt; FaultSeverity::Critical → true
+// 启用：if severity &gt;= FaultSeverity::Error { escalate(); }
+<span class="boring">}</span></code></pre></pre>
+<h3 id="真实示例ord用于比较的诊断级别"><a class="header" href="#真实示例ord用于比较的诊断级别">真实示例：Ord——用于比较的诊断级别</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 示例：orchestration.rs
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default)]
+pub enum GpuDiagLevel {
+    #[default]
+    Quick,     // 最低
+    Standard,
+    Extended,
+    Full,      // 最高
+}
+// 启用：if requested_level &gt;= GpuDiagLevel::Extended { run_extended_tests(); }
+<span class="boring">}</span></code></pre></pre>
+<h3 id="派生决策树"><a class="header" href="#派生决策树">派生决策树</a></h3>
+<pre><code class="language-text">                        你的新类型
+                            │
+                   包含 String/Vec/Box？
+                      /              \
+                    是                否
+                     │                  │
+              仅 Clone          Clone + Copy
+                     │                  │
+              包含 f32/f64？    包含 f32/f64？
+                /          \         /          \
+              是           否     是           否
+               │             │      │             │
+         仅 PartialEq   PartialEq  仅 PartialEq  PartialEq
+                          │                      │
+                    需要排序？           需要排序？
+                      /       \               /       \
+                    是        否            是        否
+                     │          │              │          │
+               PartialOrd    完成        PartialOrd    完成
+               + Ord                     + Ord
+                     │                        │
+               需要作为                  需要作为
+               map 键？                 map 键？
+                  │                        │
+                + Hash                   + Hash
+</code></pre>
+<h3 id="快速参考来自生产-rust-代码的常见派生组合"><a class="header" href="#快速参考来自生产-rust-代码的常见派生组合">快速参考：来自生产 Rust 代码的常见派生组合</a></h3>
+<div class="table-wrapper"><table><thead><tr><th><strong>类型类别</strong></th><th><strong>典型派生</strong></th><th><strong>示例</strong></th></tr></thead><tbody>
+<tr><td>简单状态 enum</td><td><code>Copy, Clone, PartialEq, Eq, Default</code></td><td><code>FanStatus</code></td></tr>
+<tr><td>用作 HashMap 键的 enum</td><td><code>Copy, Clone, PartialEq, Eq, Hash</code></td><td><code>CpuFaultType</code>、<code>SelComponent</code></td></tr>
+<tr><td>可排序的严重性 enum</td><td><code>Copy, Clone, PartialEq, Eq, PartialOrd, Ord</code></td><td><code>FaultSeverity</code>、<code>GpuDiagLevel</code></td></tr>
+<tr><td>带 String 的数据结构</td><td><code>Clone, Debug, Serialize, Deserialize</code></td><td><code>FruData</code>、<code>OverallSummary</code></td></tr>
+<tr><td>可序列化配置</td><td><code>Clone, Debug, Default, Serialize, Deserialize</code></td><td><code>DiagConfig</code></td></tr>
+</tbody></table>
+</div>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch17-best-practices.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch17-2-avoiding-unchecked-indexing.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch17-best-practices.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch17-2-avoiding-unchecked-indexing.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

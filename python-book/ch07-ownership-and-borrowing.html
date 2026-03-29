@@ -1,0 +1,565 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>7. 所有权和借用 - Rust for Python Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for Python Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="理解所有权"><a class="header" href="#理解所有权">理解所有权</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> 为什么 Rust 有所有权（无 GC！），move 语义 vs Python 的引用计数，
+借用（<code>&amp;</code> 和 <code>&amp;mut</code>），生命周期基础，以及智能指针（<code>Box</code>、<code>Rc</code>、<code>Arc</code>）。</p>
+<p><strong>难度：</strong> 🟡 中级</p>
+</blockquote>
+<p>这是 Python 开发者最难的概念。在 Python 中，你从不考虑谁"拥有"
+数据 —— 垃圾回收器处理它。在 Rust 中，每个值恰好有一个
+所有者，编译器在编译时跟踪这个。</p>
+<h3 id="python到处共享引用"><a class="header" href="#python到处共享引用">Python：到处共享引用</a></h3>
+<pre><code class="language-python"># Python —— 一切都是引用，gc 清理
+a = [1, 2, 3]
+b = a              # b 和 a 指向同一个列表
+b.append(4)
+print(a)            # [1, 2, 3, 4] —— 惊喜！a 也变了
+
+# 谁拥有这个列表？a 和 b 都引用它。
+# 垃圾回收器在没有引用时释放它。
+# 你从不考虑这个。
+</code></pre>
+<h3 id="rust单一所有权"><a class="header" href="#rust单一所有权">Rust：单一所有权</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 每个值恰好有一个所有者
+let a = vec![1, 2, 3];
+let b = a;           # 所有权从 a MOVE 到 b
+<span class="boring">println!("{:?}", a); # ❌ 编译错误：move 后使用值
+</span>
+<span class="boring">a 不再存在。b 是唯一所有者。
+</span>println!("{:?}", b); # ✅ [1, 2, 3]
+
+<span class="boring">当 b 超出作用域时，Vec 被释放。确定性的。无 GC。
+</span><span class="boring">}</span></code></pre></pre>
+<h3 id="三个所有权规则"><a class="header" href="#三个所有权规则">三个所有权规则</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>1. 每个值恰好有一个所有者变量。
+2. 当所有者超出作用域时，值被 drop（释放）。
+3. 所有权可以转移（move）但不能复制（除非 Clone）。
+<span class="boring">}</span></code></pre></pre>
+<h3 id="move-语义--python-最大的冲击"><a class="header" href="#move-语义--python-最大的冲击">Move 语义 —— Python 最大的冲击</a></h3>
+<pre><code class="language-python"># Python —— 赋值复制引用，不是数据
+def process(data):
+    data.append(42)
+    # 原始列表被修改！
+
+my_list = [1, 2, 3]
+process(my_list)
+print(my_list)       # [1, 2, 3, 42] —— 被 process 修改！
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 传递给函数 MOVE 所有权（对于非 Copy 类型）
+fn process(mut data: Vec&lt;i32&gt;) -&gt; Vec&lt;i32&gt; {
+    data.push(42);
+    data  # 必须返回它以归还所有权！
+}
+
+let my_vec = vec![1, 2, 3];
+let my_vec = process(my_vec);  # 所有权移入并移出
+println!("{:?}", my_vec);      # [1, 2, 3, 42]
+
+<span class="boring">或更好 —— 借用而不是 move：
+</span>fn process_borrowed(data: &amp;mut Vec&lt;i32&gt;) {
+    data.push(42);
+}
+
+let mut my_vec = vec![1, 2, 3];
+process_borrowed(&amp;mut my_vec);  # 临时借出
+println!("{:?}", my_vec);       # [1, 2, 3, 42] —— 仍然是我们的
+<span class="boring">}</span></code></pre></pre>
+<h3 id="所有权可视化"><a class="header" href="#所有权可视化">所有权可视化</a></h3>
+<pre><code class="language-text">Python：                              Rust：
+
+  a ──────┐                           a ──→ [1, 2, 3]
+           ├──→ [1, 2, 3]
+  b ──────┘                           之后：let b = a;
+
+  （a 和 b 共享一个对象）          a（无效，已 move）
+  （refcount = 2）                  b ──→ [1, 2, 3]
+                                    （只有 b 拥有数据）
+
+  del a → refcount = 1              drop(b) → 数据释放
+  del b → refcount = 0 → 释放        （确定性，无 GC）
+</code></pre>
+<pre class="mermaid">stateDiagram-v2
+    state &quot;Python（引用计数）&quot; as PY {
+        [*] --&gt; a_owns: a = [1,2,3]
+        a_owns --&gt; shared: b = a
+        shared --&gt; b_only: del a (refcount 2→1)
+        b_only --&gt; freed: del b (refcount 1→0)
+        note right of shared: a 和 b 都指向\n同一个对象
+    }
+    state &quot;Rust（所有权 Move）&quot; as RS {
+        [*] --&gt; a_owns2: let a = vec![1,2,3]
+        a_owns2 --&gt; b_owns: let b = a (MOVE)
+        b_owns --&gt; freed2: b 超出作用域
+        note right of b_owns: a 在 move 后无效\n如果使用则编译错误
+    }
+</pre>
+<hr />
+<h2 id="move-语义-vs-引用计数"><a class="header" href="#move-语义-vs-引用计数">Move 语义 vs 引用计数</a></h2>
+<h3 id="copy-vs-move"><a class="header" href="#copy-vs-move">Copy vs Move</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 简单类型（整数、浮点数、bool、char）被复制，不是 move
+let x = 42;
+let y = x;    # x 被复制到 y（两者都有效）
+println!("{x} {y}");  # ✅ 42 42
+
+<span class="boring">堆分配类型（String、Vec、HashMap）被 move
+</span>let s1 = String::from("hello");
+let s2 = s1;  # s1 被 move 到 s2
+<span class="boring">println!("{s1}");  # ❌ 错误：move 后使用值
+</span>
+<span class="boring">要显式复制堆数据，使用 .clone()
+</span>let s1 = String::from("hello");
+let s2 = s1.clone();  # 深复制
+println!("{s1} {s2}");  # ✅ hello hello（两者都有效）
+<span class="boring">}</span></code></pre></pre>
+<h3 id="python-开发者的心智模型"><a class="header" href="#python-开发者的心智模型">Python 开发者的心智模型</a></h3>
+<pre><code class="language-text">Python：                    Rust：
+─────────                  ─────
+int, float, bool           Copy 类型（i32、f64、bool、char）
+→ 赋值时复制              → 赋值时复制（行为相似）
+                           （注意：Python 缓存小整数；Rust 复制始终可预测）
+
+list, dict, str            Move 类型（Vec、HashMap、String）
+→ 共享引用                → 所有权转移（行为不同！）
+→ gc 清理                 → 所有者 drop 数据
+→ 用 list(x) 克隆          → 用 x.clone() 克隆
+   或 copy.deepcopy(x)
+</code></pre>
+<h3 id="python-的共享模型导致-bug-时"><a class="header" href="#python-的共享模型导致-bug-时">Python 的共享模型导致 bug 时</a></h3>
+<pre><code class="language-python"># Python —— 意外别名
+def remove_duplicates(items):
+    seen = set()
+    result = []
+    for item in items:
+        if item not in seen:
+            seen.add(item)
+            result.append(item)
+    return result
+
+original = [1, 2, 2, 3, 3, 3]
+alias = original          # 别名，不是复制
+unique = remove_duplicates(alias)
+# original 仍然是 [1, 2, 2, 3, 3, 3] —— 但只是因为我们没有修改
+# 如果 remove_duplicates 修改输入，original 也会受影响
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::collections::HashSet;
+
+// Rust —— 所有权防止意外别名
+fn remove_duplicates(items: &amp;[i32]) -&gt; Vec&lt;i32&gt; {
+    let mut seen = HashSet::new();
+    items.iter()
+        .filter(|&amp;&amp;item| seen.insert(item))
+        .copied()
+        .collect()
+}
+
+let original = vec![1, 2, 2, 3, 3, 3];
+let unique = remove_duplicates(&amp;original); # 借用 —— 不能修改
+<span class="boring">original 保证不变 —— 编译器通过 &amp; 阻止修改
+</span><span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="借用和生命周期"><a class="header" href="#借用和生命周期">借用和生命周期</a></h2>
+<h3 id="借用--借书"><a class="header" href="#借用--借书">借用 = 借书</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>将所有权想象成一本实体书：
+
+Python：  每个人都有复印件（共享引用 + GC）
+Rust：    一个人拥有这本书。其他人可以：
+         - &amp;book     = 看它（不可变借用，允许许多）
+         - &amp;mut book = 在里面写（可变借用，独占）
+         - book      = 送走它（move）
+<span class="boring">}</span></code></pre></pre>
+<h3 id="借用规则"><a class="header" href="#借用规则">借用规则</a></h3>
+<pre class="mermaid">flowchart TD
+    R[&quot;借用规则&quot;] --&gt; IMM[&quot;✅ 许多 &amp;T\n（共享/不可变）&quot;]
+    R --&gt; MUT[&quot;✅ 一个 &amp;mut T\n（独占/可变）&quot;]
+    R --&gt; CONFLICT[&quot;❌ &amp;T + &amp;mut T\n（永远不能同时）&quot;]
+    IMM --&gt; SAFE[&quot;多个读者，安全&quot;]
+    MUT --&gt; SAFE2[&quot;单个写入者，安全&quot;]
+    CONFLICT --&gt; ERR[&quot;编译错误！&quot;]
+    style IMM fill:#d4edda
+    style MUT fill:#d4edda
+    style CONFLICT fill:#f8d7da
+    style ERR fill:#f8d7da,stroke:#dc3545
+</pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">规则 1：你可以有许多不可变借用或一个可变借用（不能同时）
+</span>
+let mut data = vec![1, 2, 3];
+
+<span class="boring">多个不可变借用 —— 可以
+</span>let a = &amp;data;
+let b = &amp;data;
+println!("{:?} {:?}", a, b);  # ✅
+
+<span class="boring">可变借用 —— 必须独占
+</span>let c = &amp;mut data;
+c.push(4);
+<span class="boring">println!("{:?}", a);  # ❌ 错误：可变借用存在时不能使用不可变借用
+</span>
+<span class="boring">这在编译时防止数据竞争！
+</span><span class="boring">Python 没有等价物 —— 这就是为什么 Python dict 在迭代时被修改会在运行时崩溃。
+</span><span class="boring">}</span></code></pre></pre>
+<h3 id="生命周期--简要介绍"><a class="header" href="#生命周期--简要介绍">生命周期 —— 简要介绍</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">生命周期回答："这个引用存活多久？"
+</span><span class="boring">通常编译器推断它们。你很少显式编写它们。
+</span>
+<span class="boring">简单情况 —— 编译器处理：
+</span>fn first_word(s: &amp;str) -&gt; &amp;str {
+    s.split_whitespace().next().unwrap_or("")
+}
+<span class="boring">编译器知道：返回的 &amp;str 与输入 &amp;str 存活时间相同
+</span>
+<span class="boring">当你需要显式生命周期时（罕见）：
+</span>fn longest&lt;'a&gt;(a: &amp;'a str, b: &amp;'a str) -&gt; &amp;'a str {
+    if a.len() &gt; b.len() { a } else { b }
+}
+<span class="boring">'a 说："返回值与两个输入存活时间相同"
+</span><span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>对于 Python 开发者</strong>：最初不要担心生命周期。编译器会在你需要时告诉你，95% 的时间它会自动推断它们。
+将生命周期注解视为你在编译器无法自行找出关系时给它的提示。</p>
+</blockquote>
+<hr />
+<h2 id="智能指针"><a class="header" href="#智能指针">智能指针</a></h2>
+<p>对于单一所有权太受限的情况，Rust 提供智能指针。
+这些更接近 Python 的引用模型 —— 但显式且选择加入。</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Box&lt;T&gt; —— 堆分配，单一所有者（如 Python 的正常分配）
+let boxed = Box::new(42);  # 堆分配 i32
+
+// Rc&lt;T&gt; —— 引用计数（如 Python 的 refcount！）
+use std::rc::Rc;
+let shared = Rc::new(vec![1, 2, 3]);
+let clone1 = Rc::clone(&amp;shared);  # 增加 refcount
+let clone2 = Rc::clone(&amp;shared);  # 增加 refcount
+<span class="boring">所有三个指向同一个 Vec。当所有都被 drop 时，Vec 被释放。
+</span><span class="boring">类似于 Python 的引用计数，但 Rc 不处理循环 ——
+</span><span class="boring">使用 Weak&lt;T&gt; 打破循环（Python 的 GC 自动处理循环）
+</span>
+// Arc&lt;T&gt; —— 原子引用计数（用于多线程代码的 Rc）
+use std::sync::Arc;
+let thread_safe = Arc::new(vec![1, 2, 3]);
+<span class="boring">跨线程共享时使用 Arc（Rc 是单线程的）
+</span>
+// RefCell&lt;T&gt; —— 运行时借用检查（如 Python 的"什么都可以"模型）
+use std::cell::RefCell;
+let cell = RefCell::new(42);
+*cell.borrow_mut() = 99;  # 运行时可变借用（如果双重借用则 panic）
+<span class="boring">}</span></code></pre></pre>
+<h3 id="何时使用每个"><a class="header" href="#何时使用每个">何时使用每个</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>智能指针</th><th>Python 类比</th><th>用例</th></tr></thead><tbody>
+<tr><td><code>Box&lt;T&gt;</code></td><td>正常分配</td><td>大数据、递归类型、trait 对象</td></tr>
+<tr><td><code>Rc&lt;T&gt;</code></td><td>Python 默认 refcount</td><td>共享所有权，单线程</td></tr>
+<tr><td><code>Arc&lt;T&gt;</code></td><td>线程安全 refcount</td><td>共享所有权，多线程</td></tr>
+<tr><td><code>RefCell&lt;T&gt;</code></td><td>Python 的"就修改它"</td><td>内部可变性（逃生舱）</td></tr>
+<tr><td><code>Rc&lt;RefCell&lt;T&gt;&gt;</code></td><td>Python 正常对象模型</td><td>共享 + 可变（图结构）</td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p><strong>关键见解</strong>：<code>Rc&lt;RefCell&lt;T&gt;&gt;</code> 给你 Python 般的语义（共享、可变数据）
+但你必须显式选择加入。Rust 的默认（拥有、move）更快并避免
+引用计数的开销。对于带循环的图状结构，使用 <code>Weak&lt;T&gt;</code>
+打破引用循环 —— 与 Python 不同，Rust 的 <code>Rc</code> 没有循环收集器。</p>
+</blockquote>
+<blockquote>
+<p>📌 <strong>另见</strong>：<a href="ch13-concurrency.html">第 13 章 — 并发</a> 涵盖用于多线程共享状态的 <code>Arc&lt;Mutex&lt;T&gt;&gt;</code>。</p>
+</blockquote>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：发现 Borrow Checker 错误</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：以下代码有 3 个 borrow checker 错误。识别每个错误并修复它们，不使用 <code>.clone()</code>：</p>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let mut names = vec!["Alice".to_string(), "Bob".to_string()];
+    let first = &amp;names[0];
+    names.push("Charlie".to_string());
+    println!("First: {first}");
+
+    let greeting = make_greeting(names[0]);
+    println!("{greeting}");
+}
+
+fn make_greeting(name: String) -&gt; String {
+    format!("Hello, {name}!")
+}</code></pre></pre>
+<details>
+<summary>🔑 解答</summary>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let mut names = vec!["Alice".to_string(), "Bob".to_string()];
+    let first = &amp;names[0];
+    println!("First: {first}"); # 在可变之前使用借用
+    names.push("Charlie".to_string()); # 现在安全 —— 无存活的不可变借用
+
+    let greeting = make_greeting(&amp;names[0]); # 传递引用，不是拥有
+    println!("{greeting}");
+}
+
+fn make_greeting(name: &amp;str) -&gt; String { # 接受 &amp;str，不是 String
+    format!("Hello, {name}!")
+}</code></pre></pre>
+<p><strong>修复的错误</strong>：</p>
+<ol>
+<li><strong>不可变借用 + 可变</strong>：<code>first</code> 借用 <code>names</code>，然后 <code>push</code> 修改它。修复：在 push 之前使用 <code>first</code>。</li>
+<li><strong>从 Vec move</strong>：<code>names[0]</code> 尝试从 Vec move String（不允许）。修复：用 <code>&amp;names[0]</code> 借用。</li>
+<li><strong>函数获取所有权</strong>：<code>make_greeting(String)</code> 消耗值。修复：改为接受 <code>&amp;str</code>。</li>
+</ol>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch06-enums-and-pattern-matching.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch08-crates-and-modules.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch06-enums-and-pattern-matching.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch08-crates-and-modules.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,540 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>8. Tokio 深度解析 - Async Rust: From Futures to Production</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Async Rust: From Futures to Production</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="8-tokio-深度解析-"><a class="header" href="#8-tokio-深度解析-">8. Tokio 深度解析 🟡</a></h1>
+<blockquote>
+<p><strong>你将学到什么：</strong></p>
+<ul>
+<li>运行时类型：多线程 vs 当前线程以及何时使用每种</li>
+<li><code>tokio::spawn</code>、<code>'static</code> 要求和 <code>JoinHandle</code></li>
+<li>任务取消语义（drop 时取消）</li>
+<li>同步原语：Mutex、RwLock、Semaphore 和所有四种 channel 类型</li>
+</ul>
+</blockquote>
+<h2 id="运行时类型多线程-vs-当前线程"><a class="header" href="#运行时类型多线程-vs-当前线程">运行时类型：多线程 vs 当前线程</a></h2>
+<p>Tokio 提供两种运行时配置：</p>
+<pre><pre class="playground"><code class="language-rust">// 多线程（#[tokio::main] 默认）
+// 使用工作窃取线程池——任务可以在线程之间移动
+#[tokio::main]
+async fn main() {
+    // N 个工作线程（默认 = CPU 核心数）
+    // 任务是 Send + 'static
+}
+
+// 当前线程——所有内容在一个线程上运行
+#[tokio::main(flavor = "current_thread")]
+async fn main() {
+    // 单线程——任务不需要是 Send
+    // 更轻量，适合简单工具或 WASM
+}
+
+// 手动运行时构建：
+let rt = tokio::runtime::Builder::new_multi_thread()
+    .worker_threads(4)
+    .enable_all()
+    .build()
+    .unwrap();
+
+rt.block_on(async {
+    println!("Running on custom runtime");
+});</code></pre></pre>
+<pre class="mermaid">graph TB
+    subgraph &quot;多线程（默认）&quot;
+        MT_Q1[&quot;线程 1&lt;br/&gt;任务 A、任务 D&quot;]
+        MT_Q2[&quot;线程 2&lt;br/&gt;任务 B&quot;]
+        MT_Q3[&quot;线程 3&lt;br/&gt;任务 C、任务 E&quot;]
+        STEAL[&quot;工作窃取：&lt;br/&gt;空闲线程从繁忙线程窃取&quot;]
+        MT_Q1 &lt;--&gt; STEAL
+        MT_Q2 &lt;--&gt; STEAL
+        MT_Q3 &lt;--&gt; STEAL
+    end
+
+    subgraph &quot;当前线程&quot;
+        ST_Q[&quot;单线程&lt;br/&gt;任务 A → 任务 B → 任务 C → 任务 D&quot;]
+    end
+
+    style MT_Q1 fill:#c8e6c9,color:#000
+    style MT_Q2 fill:#c8e6c9,color:#000
+    style MT_Q3 fill:#c8e6c9,color:#000
+    style ST_Q fill:#bbdefb,color:#000
+</pre>
+<h3 id="tokiospawn-和-static-要求"><a class="header" href="#tokiospawn-和-static-要求">tokio::spawn 和 'static 要求</a></h3>
+<p><code>tokio::spawn</code> 将 future 放到运行时的任务队列中。因为它可能在<em>任何</em>工作线程上在<em>任何</em>时间运行，future 必须是 <code>Send + 'static</code>：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use tokio::task;
+
+async fn example() {
+    let data = String::from("hello");
+
+    // ✅ 有效：将所有权移入任务
+    let handle = task::spawn(async move {
+        println!("{data}");
+        data.len()
+    });
+
+    let len = handle.await.unwrap();
+    println!("Length: {len}");
+}
+
+async fn problem() {
+    let data = String::from("hello");
+
+    // ❌ 失败：data 被借用，不是 'static
+    // task::spawn(async {
+    //     println!("{data}"); // 借用 `data`——不是 'static
+    // });
+
+    // ❌ 失败：Rc 不是 Send
+    // let rc = std::rc::Rc::new(42);
+    // task::spawn(async move {
+    //     println!("{rc}"); // Rc 是 !Send——不能跨线程边界
+    // });
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>为什么是 <code>'static</code>？</strong> 生成的任务独立运行——它可能比创建它的作用域存活得更久。编译器无法证明引用将保持有效，所以它要求拥有的数据。</p>
+<p><strong>为什么是 <code>Send</code>？</strong> 任务可能在不同于它挂起的线程上恢复。在 <code>.await</code> 点之间持有的所有数据必须安全地在线程之间发送。</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 常见模式：克隆共享数据到任务中
+let shared = Arc::new(config);
+
+for i in 0..10 {
+    let shared = Arc::clone(&amp;shared); // 克隆 Arc，而不是数据
+    tokio::spawn(async move {
+        process_item(i, &amp;shared).await;
+    });
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="joinhandle-和任务取消"><a class="header" href="#joinhandle-和任务取消">JoinHandle 和任务取消</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use tokio::task::JoinHandle;
+use tokio::time::{sleep, Duration};
+
+async fn cancellation_example() {
+    let handle: JoinHandle&lt;String&gt; = tokio::spawn(async {
+        sleep(Duration::from_secs(10)).await;
+        "completed".to_string()
+    });
+
+    // 通过 drop handle 来取消任务？不——任务继续运行！
+    // drop(handle); // 任务在后台继续
+
+    // 要实际取消，调用 abort()：
+    handle.abort();
+
+    // await 被 abort 的任务返回 JoinError
+    match handle.await {
+        Ok(val) =&gt; println!("Got: {val}"),
+        Err(e) if e.is_cancelled() =&gt; println!("Task was cancelled"),
+        Err(e) =&gt; println!("Task panicked: {e}"),
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>重要</strong>：在 tokio 中 drop <code>JoinHandle</code> <strong>不会</strong>取消任务。
+任务变成<em>分离的</em>并继续运行。你必须显式调用
+<code>.abort()</code> 来取消它。这与直接 drop <code>Future</code> 不同，
+后者确实会取消/drop 底层计算。</p>
+</blockquote>
+<h3 id="tokio-同步原语"><a class="header" href="#tokio-同步原语">Tokio 同步原语</a></h3>
+<p>Tokio 提供异步感知的同步原语。关键原则：<strong>不要在 <code>.await</code> 点之间使用 <code>std::sync::Mutex</code></strong>。</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use tokio::sync::{Mutex, RwLock, Semaphore, mpsc, oneshot, broadcast, watch};
+
+// --- Mutex ---
+// 异步互斥锁：lock() 方法是异步的，不会阻塞线程
+let data = Arc::new(Mutex::new(vec![1, 2, 3]));
+{
+    let mut guard = data.lock().await; // 非阻塞锁
+    guard.push(4);
+} // Guard 在这里 drop——锁释放
+
+// --- Channel ---
+// mpsc：多生产者，单消费者
+let (tx, mut rx) = mpsc::channel::&lt;String&gt;(100); // 有界缓冲区
+
+tokio::spawn(async move {
+    tx.send("hello".into()).await.unwrap();
+});
+
+let msg = rx.recv().await.unwrap();
+
+// oneshot：单个值，单个消费者
+let (tx, rx) = oneshot::channel::&lt;i32&gt;();
+tx.send(42).unwrap(); // 不需要 await——要么发送要么失败
+let val = rx.await.unwrap();
+
+// broadcast：多生产者，多消费者（所有都收到每条消息）
+let (tx, _) = broadcast::channel::&lt;String&gt;(100);
+let mut rx1 = tx.subscribe();
+let mut rx2 = tx.subscribe();
+
+// watch：单个值，多消费者（只有最新值）
+let (tx, rx) = watch::channel(0u64);
+tx.send(42).unwrap();
+println!("Latest: {}", *rx.borrow());
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>注意</strong>：为了简洁，这些 channel 示例中使用了 <code>.unwrap()</code>。
+在生产中，优雅地处理发送/接收错误——失败的 <code>.send()</code> 意味着
+接收者被 drop，失败的 <code>.recv()</code> 意味着 channel 已关闭。</p>
+</blockquote>
+<pre class="mermaid">graph LR
+    subgraph &quot;Channel 类型&quot;
+        direction TB
+        MPSC[&quot;mpsc&lt;br/&gt;N→1&lt;br/&gt;缓冲队列&quot;]
+        ONESHOT[&quot;oneshot&lt;br/&gt;1→1&lt;br/&gt;单个值&quot;]
+        BROADCAST[&quot;broadcast&lt;br/&gt;N→N&lt;br/&gt;所有接收者收到所有&quot;]
+        WATCH[&quot;watch&lt;br/&gt;1→N&lt;br/&gt;仅最新值&quot;]
+    end
+
+    P1[&quot;生产者 1&quot;] --&gt; MPSC
+    P2[&quot;生产者 2&quot;] --&gt; MPSC
+    MPSC --&gt; C1[&quot;消费者&quot;]
+
+    P3[&quot;生产者&quot;] --&gt; ONESHOT
+    ONESHOT --&gt; C2[&quot;消费者&quot;]
+
+    P4[&quot;生产者&quot;] --&gt; BROADCAST
+    BROADCAST --&gt; C3[&quot;消费者 1&quot;]
+    BROADCAST --&gt; C4[&quot;消费者 2&quot;]
+
+    P5[&quot;生产者&quot;] --&gt; WATCH
+    WATCH --&gt; C5[&quot;消费者 1&quot;]
+    WATCH --&gt; C6[&quot;消费者 2&quot;]
+</pre>
+<h2 id="案例研究为通知服务选择正确的-channel"><a class="header" href="#案例研究为通知服务选择正确的-channel">案例研究：为通知服务选择正确的 Channel</a></h2>
+<p>你正在构建一个通知服务，其中：</p>
+<ul>
+<li>多个 API 处理器产生事件</li>
+<li>单个后台任务批量发送它们</li>
+<li>配置监视器在运行时更新速率限制</li>
+<li>关闭信号必须到达所有组件</li>
+</ul>
+<p><strong>每个用什么 channel？</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>需求</th><th>Channel</th><th>为什么</th></tr></thead><tbody>
+<tr><td>API 处理器 → 批处理器</td><td><code>mpsc</code>（有界）</td><td>N 个生产者，1 个消费者。有界用于背压——如果批处理器落后，API 处理器减速而不是 OOM</td></tr>
+<tr><td>配置监视器 → 速率限制器</td><td><code>watch</code></td><td>只有最新配置重要。多个读取器（每个工作器）看到当前值</td></tr>
+<tr><td>关闭信号 → 所有组件</td><td><code>broadcast</code></td><td>每个组件必须独立接收关闭通知</td></tr>
+<tr><td>单个健康检查响应</td><td><code>oneshot</code></td><td>请求/响应模式——一个值，然后完成</td></tr>
+</tbody></table>
+</div><pre class="mermaid">graph LR
+    subgraph &quot;通知服务&quot;
+        direction TB
+        API1[&quot;API 处理器 1&quot;] --&gt;|mpsc| BATCH[&quot;批处理器&quot;]
+        API2[&quot;API 处理器 2&quot;] --&gt;|mpsc| BATCH
+        CONFIG[&quot;配置监视器&quot;] --&gt;|watch| RATE[&quot;速率限制器&quot;]
+        CTRL[&quot;Ctrl+C&quot;] --&gt;|broadcast| API1
+        CTRL --&gt;|broadcast| BATCH
+        CTRL --&gt;|broadcast| RATE
+    end
+
+    style API1 fill:#d4efdf,stroke:#27ae60,color:#000
+    style API2 fill:#d4efdf,stroke:#27ae60,color:#000
+    style BATCH fill:#e8f4f8,stroke:#2980b9,color:#000
+    style CONFIG fill:#fef9e7,stroke:#f39c12,color:#000
+    style RATE fill:#fef9e7,stroke:#f39c12,color:#000
+    style CTRL fill:#fadbd8,stroke:#e74c3c,color:#000
+</pre>
+<details>
+<summary><strong>🏋️ 练习：构建任务池</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：构建一个函数 <code>run_with_limit</code>，它接受异步闭包列表和并发限制，最多同时执行 N 个任务。使用 <code>tokio::sync::Semaphore</code>。</p>
+<details>
+<summary>🔑 答案</summary>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::future::Future;
+use std::sync::Arc;
+use tokio::sync::Semaphore;
+
+async fn run_with_limit&lt;F, Fut, T&gt;(tasks: Vec&lt;F&gt;, limit: usize) -&gt; Vec&lt;T&gt;
+where
+    F: FnOnce() -&gt; Fut + Send + 'static,
+    Fut: Future&lt;Output = T&gt; + Send + 'static,
+    T: Send + 'static,
+{
+    let semaphore = Arc::new(Semaphore::new(limit));
+    let mut handles = Vec::new();
+
+    for task in tasks {
+        let permit = Arc::clone(&amp;semaphore);
+        let handle = tokio::spawn(async move {
+            let _permit = permit.acquire().await.unwrap();
+            // 许可在任务运行时持有，然后 drop
+            task().await
+        });
+        handles.push(handle);
+    }
+
+    let mut results = Vec::new();
+    for handle in handles {
+        results.push(handle.await.unwrap());
+    }
+    results
+}
+
+// 用法：
+// let tasks: Vec&lt;_&gt; = urls.into_iter().map(|url| {
+//     move || async move { fetch(url).await }
+// }).collect();
+// let results = run_with_limit(tasks, 10).await; // 最多 10 个并发
+<span class="boring">}</span></code></pre></pre>
+<p><strong>关键要点</strong>：<code>Semaphore</code> 是在 tokio 中限制并发的标准方法。每个任务在开始工作之前获得许可。当信号量已满时，新任务异步等待（非阻塞）直到有空位。</p>
+</details>
+</details>
+<blockquote>
+<p><strong>关键要点 — Tokio 深度解析</strong></p>
+<ul>
+<li>对服务器使用 <code>multi_thread</code>（默认）；对 CLI 工具、测试或 <code>!Send</code> 类型使用 <code>current_thread</code></li>
+<li><code>tokio::spawn</code> 需要 <code>'static</code> future——使用 <code>Arc</code> 或 channel 共享数据</li>
+<li>drop <code>JoinHandle</code> <strong>不会</strong>取消任务——显式调用 <code>.abort()</code></li>
+<li>根据需要选择同步原语：<code>Mutex</code> 用于共享状态，<code>Semaphore</code> 用于并发限制，<code>mpsc</code>/<code>oneshot</code>/<code>broadcast</code>/<code>watch</code> 用于通信</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>另见：</strong> <a href="ch09-when-tokio-isnt-the-right-fit.html">第 9 章 — 何时 Tokio 不是最佳选择</a> 了解 spawn 的替代方案，<a href="ch12-common-pitfalls.html">第 12 章 — 常见陷阱</a> 了解 MutexGuard 跨 await 的 bug</p>
+</blockquote>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch07-executors-and-runtimes.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch09-when-tokio-isnt-the-right-fit.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch07-executors-and-runtimes.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch09-when-tokio-isnt-the-right-fit.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

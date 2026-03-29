@@ -1,0 +1,361 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>15. 来自实践领域的十四个技巧 - Type-Driven Correctness in Rust</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Type-Driven Correctness in Rust</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="来自实践经验的十四个技巧-"><a class="header" href="#来自实践经验的十四个技巧-">来自实践经验的十四个技巧 🟡</a></h1>
+<blockquote>
+<p><strong>你将学到：</strong> 十四个较小的正确构造技术 —— 从哨兵消除和密封 trait 到会话类型、<code>Pin</code>、RAII 和 <code>#[must_use]</code> —— 每个都消除特定的 bug 类，几乎零努力。</p>
+<p><strong>交叉引用：</strong> <a href="ch02-typed-command-interfaces-request-determi.html">ch02</a>（密封 trait 扩展 ch02）、<a href="ch05-protocol-state-machines-type-state-for-r.html">ch05</a>（类型状态构建器扩展 ch05）、<a href="ch07-validated-boundaries-parse-dont-validate.html">ch07</a>（FromStr 扩展 ch07）</p>
+</blockquote>
+<h2 id="来自实践经验的十四个技巧"><a class="header" href="#来自实践经验的十四个技巧">来自实践经验的十四个技巧</a></h2>
+<p>八个核心模式（ch02-ch09）涵盖主要的正确构造技术。本章收集<strong>较小但高价值</strong>的技巧，这些技巧在生产 Rust 代码中反复出现 —— 每个技巧都以零或接近零的努力消除特定类别的 bug。</p>
+<h3 id="技巧-1--边界处的哨兵--option"><a class="header" href="#技巧-1--边界处的哨兵--option">技巧 1 —— 边界处的哨兵 → <code>Option</code></a></h3>
+<p>硬件协议充满哨兵值：IPMI 使用 <code>0xFF</code> 表示"传感器不存在"，PCI 使用 <code>0xFFFF</code> 表示"无设备"，SMBIOS 使用 <code>0x00</code> 表示"未知"。如果你将这些哨兵作为普通整数携带在代码中，每个消费者必须记住检查魔法值。如果即使一个比较忘记，你就会得到幻影 255°C 读数或虚假的供应商 ID 匹配。</p>
+<p><strong>规则：</strong> 在第一个解析边界将哨兵转换为 <code>Option</code>，并<em>仅</em>在序列化边界转换回哨兵。</p>
+<h4 id="反模式来自-pcie_treesrclspcirs"><a class="header" href="#反模式来自-pcie_treesrclspcirs">反模式（来自 <code>pcie_tree/src/lspci.rs</code>）</a></h4>
+<pre><code class="language-rust ignore">// 哨兵在内部携带 —— 每个比较必须记住
+let mut current_vendor_id: u16 = 0xFFFF;
+let mut current_device_id: u16 = 0xFFFF;</code></pre>
+<h4 id="正确模式来自-nic_selsrceventsrs"><a class="header" href="#正确模式来自-nic_selsrceventsrs">正确模式（来自 <code>nic_sel/src/events.rs</code>）</a></h4>
+<pre><code class="language-rust ignore">pub struct ThermalEvent {
+    pub record_id: u16,
+    pub temperature: Option&lt;u8&gt;,  // 如果传感器报告 0xFF 则为 None
+}
+
+impl ThermalEvent {
+    pub fn from_raw(record_id: u16, raw_temp: u8) -&gt; Self {
+        ThermalEvent {
+            record_id,
+            temperature: if raw_temp != 0xFF { Some(raw_temp) } else { None },
+        }
+    }
+}</code></pre>
+<p>现在每个消费者<em>必须</em>处理 <code>None</code> 情况 —— 编译器强制它：</p>
+<pre><code class="language-rust ignore">fn is_overtemp(temp: Option&lt;u8&gt;, threshold: u8) -&gt; bool {
+    temp.map_or(false, |t| t &gt; threshold)
+}</code></pre>
+<h3 id="技巧-2--密封-trait"><a class="header" href="#技巧-2--密封-trait">技巧 2 —— 密封 Trait</a></h3>
+<p>第 2 章介绍了带有将每个命令绑定到其响应的关联类型的 <code>IpmiCmd</code>。但有一个漏洞：如果<em>任何</em>代码可以实现 <code>IpmiCmd</code>，某人可以编写 <code>MaliciousCmd</code>，其 <code>parse_response</code> 返回错误类型或 panic。<strong>密封 trait</strong> 通过使 trait 需要只有你的 crate 可以实现的<em>私有</em> supertrait 来关闭此漏洞。</p>
+<pre><code class="language-rust ignore">mod private { pub trait Sealed {} }
+
+pub trait IpmiCmd: private::Sealed {
+    type Response;
+    fn net_fn(&amp;self) -&gt; u8;
+    fn cmd_byte(&amp;self) -&gt; u8;
+    fn payload(&amp;self) -&gt; Vec&lt;u8&gt;;
+    fn parse_response(&amp;self, raw: &amp;[u8]) -&gt; io::Result&lt;Self::Response&gt;;
+}
+
+pub struct ReadTemp { pub sensor_id: u8 }
+impl private::Sealed for ReadTemp {}
+impl IpmiCmd for ReadTemp {
+    type Response = Celsius;
+    // ... 实现 ...
+}</code></pre>
+<h3 id="技巧-3--用于演进枚举的-non_exhaustive"><a class="header" href="#技巧-3--用于演进枚举的-non_exhaustive">技巧 3 —— 用于演进枚举的 <code>#[non_exhaustive]</code></a></h3>
+<p>标记枚举 <code>#[non_exhaustive]</code> 强制<strong>外部 crate</strong> 匹配它时包含通配符臂。在定义 crate 内，<code>#[non_exhaustive]</code> 没有效果 —— 你仍然可以编写穷举匹配。</p>
+<pre><code class="language-rust ignore">#[non_exhaustive]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum SkuVariant {
+    S1001, S2001, S2002, S2003, S3001,
+}</code></pre>
+<h3 id="技巧-4--类型状态构建器"><a class="header" href="#技巧-4--类型状态构建器">技巧 4 —— 类型状态构建器</a></h3>
+<p>第 5 章展示了<em>协议</em>的类型状态（会话生命周期、链路训练）。相同的想法适用于<em>构建器</em> —— 结构体，其 <code>build()</code> / <code>finish()</code> 仅在所有必需字段设置后可调用。</p>
+<pre><code class="language-rust ignore">pub struct Missing;
+pub struct Set&lt;T&gt;(T);
+
+pub struct DerBuilder&lt;Mnemonic, FaultClass&gt; {
+    marker: String, fault_code: u32, mnemonic: Mnemonic, fault_class: FaultClass,
+}
+
+impl DerBuilder&lt;Set&lt;String&gt;, Set&lt;String&gt;&gt; {
+    pub fn finish(self) -&gt; Der { /* ... */ }
+}
+
+// ✅ 编译
+DerBuilder::new("ERR", 1).mnemonic("X").fault_class("Y").finish();
+// ❌ 编译错误：finish() 在 DerBuilder&lt;Set&lt;String&gt;, Missing&gt; 上不存在</code></pre>
+<h3 id="技巧-5--fromstr-作为验证边界"><a class="header" href="#技巧-5--fromstr-作为验证边界">技巧 5 —— <code>FromStr</code> 作为验证边界</a></h3>
+<p>对于<strong>字符串</strong>输入 —— 配置文件、CLI 参数、JSON 字段 —— 类比边界是 <code>FromStr</code>。</p>
+<pre><code class="language-rust ignore">impl FromStr for DiagLevel {
+    type Err = String;
+    fn from_str(s: &amp;str) -&gt; Result&lt;Self, Self::Err&gt; {
+        match s.to_lowercase().as_str() {
+            "quick" =&gt; Ok(DiagLevel::Quick),
+            "standard" =&gt; Ok(DiagLevel::Standard),
+            "extended" =&gt; Ok(DiagLevel::Extended),
+            other =&gt; Err(format!("unknown diag level: '{other}'")),
+        }
+    }
+}</code></pre>
+<h3 id="技巧-6-14"><a class="header" href="#技巧-6-14">技巧 6-14</a></h3>
+<p>（由于篇幅限制，以下是简要摘要）</p>
+<div class="table-wrapper"><table><thead><tr><th>技巧</th><th>描述</th></tr></thead><tbody>
+<tr><td>6. 常量泛型用于编译时大小验证</td><td><code>RegisterBank&lt;const N: usize&gt;</code> 强制执行固定大小</td></tr>
+<tr><td>7. <code>unsafe</code> 周围的安全包装器</td><td>将每个 <code>unsafe</code> 块包装在安全抽象中</td></tr>
+<tr><td>8. 异步类型状态机</td><td>在 <code>.await</code> 点使用类型状态，消耗 <code>self</code></td></tr>
+<tr><td>9. 通过常量断言的精化类型</td><td><code>const fn</code> + <code>assert!</code> 在编译时验证</td></tr>
+<tr><td>10. 会话类型</td><td>类型化通道用于有序协议</td></tr>
+<tr><td>11. <code>Pin</code> 用于自引用结构</td><td>防止移动包含自引用的结构</td></tr>
+<tr><td>12. RAII / Drop</td><td>资源获取即初始化</td></tr>
+<tr><td>13. 错误类型层次结构</td><td>使用枚举用于结构化错误处理</td></tr>
+<tr><td>14. <code>#[must_use]</code></td><td>强制使用返回值</td></tr>
+</tbody></table>
+</div>
+<h2 id="关键要点"><a class="header" href="#关键要点">关键要点</a></h2>
+<ol>
+<li><strong>哨兵 → <code>Option</code> 在边界</strong> —— 编译器强制处理缺失值。</li>
+<li><strong>密封 trait 防止外部实现</strong> —— 安全依赖正确实现。</li>
+<li><strong><code>#[non_exhaustive]</code> 用于演进枚举</strong> —— 外部匹配需要通配符。</li>
+<li><strong>类型状态构建器防止不完整构造</strong> —— <code>finish()</code> 门控在 <code>Set</code> 上。</li>
+<li><strong><code>FromStr</code> 验证字符串输入</strong> —— 拼写错误立即失败。</li>
+<li><strong>常量泛型强制执行固定大小</strong> —— 编译时大小验证。</li>
+<li><strong>安全包装器围绕 <code>unsafe</code></strong> —— 包含并审计不安全性。</li>
+<li><strong>异步类型状态</strong> —— 在 <code>.await</code> 点使用类型状态。</li>
+<li><strong>常量断言用于编译时证明</strong> —— <code>const fn</code> + <code>assert!</code>。</li>
+<li><strong>会话类型用于有序通道操作</strong> —— 类型化通道。</li>
+<li><strong><code>Pin</code> 用于自引用结构</strong> —— 防止移动。</li>
+<li><strong>RAII / Drop 用于资源清理</strong> —— 编译器插入调用。</li>
+<li><strong>错误类型层次结构</strong> —— 枚举用于结构化错误。</li>
+<li><strong><code>#[must_use]</code> 用于重要返回值</strong> —— 强制使用。</li>
+</ol>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch18-redfish-server-walkthrough.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch12-exercises.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch18-redfish-server-walkthrough.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch12-exercises.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

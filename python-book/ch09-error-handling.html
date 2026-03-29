@@ -1,0 +1,547 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>9. 错误处理 - Rust for Python Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for Python Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="异常-vs-result"><a class="header" href="#异常-vs-result">异常 vs Result</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> <code>Result&lt;T, E&gt;</code> vs <code>try</code>/<code>except</code>，<code>?</code> 运算符用于简洁的错误传播，
+使用 <code>thiserror</code> 自定义错误类型，<code>anyhow</code> 用于应用程序，以及为什么显式错误防止隐藏 bug。</p>
+<p><strong>难度：</strong> 🟡 中级</p>
+</blockquote>
+<p>这是 Python 开发者最大的心智转变之一。Python 使用异常
+进行错误处理 —— 错误可以从任何地方抛出并在任何地方捕获（或根本不捕获）。
+Rust 使用 <code>Result&lt;T, E&gt;</code> —— 错误是必须显式处理的值。</p>
+<h3 id="python-异常处理"><a class="header" href="#python-异常处理">Python 异常处理</a></h3>
+<pre><code class="language-python"># Python —— 异常可以从任何地方抛出
+import json
+
+def load_config(path: str) -&gt; dict:
+    try:
+        with open(path) as f:
+            data = json.load(f)     # 可以抛出 JSONDecodeError
+            if "version" not in data:
+                raise ValueError("Missing version field")
+            return data
+    except FileNotFoundError:
+        print(f"Config file not found: {path}")
+        return {}
+    except json.JSONDecodeError as e:
+        print(f"Invalid JSON: {e}")
+        return {}
+    # 这个函数可以抛出什么其他异常？
+    # IOError？PermissionError？UnicodeDecodeError？
+    # 你无法从函数签名看出！
+</code></pre>
+<h3 id="rust-基于-result-的错误处理"><a class="header" href="#rust-基于-result-的错误处理">Rust 基于 Result 的错误处理</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 错误是返回值，在函数签名中可见
+use std::fs;
+use serde_json::Value;
+
+fn load_config(path: &amp;str) -&gt; Result&lt;Value, ConfigError&gt; {
+    let contents = fs::read_to_string(path)    # 返回 Result
+        .map_err(|e| ConfigError::FileError(e.to_string()))?;
+
+    let data: Value = serde_json::from_str(&amp;contents)  # 返回 Result
+        .map_err(|e| ConfigError::ParseError(e.to_string()))?;
+
+    if data.get("version").is_none() {
+        return Err(ConfigError::MissingField("version".to_string()));
+    }
+
+    Ok(data)
+}
+
+#[derive(Debug)]
+enum ConfigError {
+    FileError(String),
+    ParseError(String),
+    MissingField(String),
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="关键差异"><a class="header" href="#关键差异">关键差异</a></h3>
+<pre><code class="language-text">Python：                                 Rust：
+─────────                               ─────
+- 错误是异常（抛出）                     - 错误是值（返回）
+- 隐藏控制流（栈展开）                   - 显式控制流（? 运算符）
+- 无法从签名看出什么错误                 - 必须在返回类型中看到错误
+- 未捕获异常在运行时崩溃                 - 未处理 Result 是编译警告
+- try/except 是可选的                    - 处理 Result 是必需的
+- 宽泛 except 捕获一切                   - match 臂是穷尽的
+</code></pre>
+<h3 id="两个-result-变体"><a class="header" href="#两个-result-变体">两个 Result 变体</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Result&lt;T, E&gt; 恰好有两个变体：
+enum Result&lt;T, E&gt; {
+    Ok(T),    # 成功 —— 包含值（如 Python 的返回值）
+    Err(E),   # 失败 —— 包含错误（如 Python 的抛出异常）
+}
+
+// 使用 Result：
+fn divide(a: f64, b: f64) -&gt; Result&lt;f64, String&gt; {
+    if b == 0.0 {
+        Err("Division by zero".to_string())  # 如：raise ValueError("...")
+    } else {
+        Ok(a / b)                             # 如：return a / b
+    }
+}
+
+// 处理 Result —— 如 try/except 但显式
+match divide(10.0, 0.0) {
+    Ok(result) =&gt; println!("Result: {result}"),
+    Err(msg) =&gt; println!("Error: {msg}"),
+}
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="-运算符"><a class="header" href="#-运算符">? 运算符</a></h2>
+<p><code>?</code> 运算符是 Rust 等价于让异常向上传播到调用栈，
+但它是可见且显式的。</p>
+<h3 id="python--隐式传播"><a class="header" href="#python--隐式传播">Python —— 隐式传播</a></h3>
+<pre><code class="language-python"># Python —— 异常静默向上传播到调用栈
+def read_username() -&gt; str:
+    with open("config.txt") as f:      # FileNotFoundError 传播
+        return f.readline().strip()    # IOError 传播
+
+def greet():
+    name = read_username()             # 如果这里抛出，greet() 也抛出
+    print(f"Hello, {name}!")           # 错误时跳过
+
+# 错误传播是不可见的 —— 你必须阅读实现
+# 才知道什么异常可能逃逸。
+</code></pre>
+<h3 id="rust--使用--显式传播"><a class="header" href="#rust--使用--显式传播">Rust —— 使用 ? 显式传播</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— ? 传播错误，但在代码和签名中都可见
+use std::fs;
+use std::io;
+
+fn read_username() -&gt; Result&lt;String, io::Error&gt; {
+    let contents = fs::read_to_string("config.txt")?;  # ? = Err 时传播
+    Ok(contents.lines().next().unwrap_or("").to_string())
+}
+
+fn greet() -&gt; Result&lt;(), io::Error&gt; {
+    let name = read_username()?;       # ? = 如果 Err，立即返回 Err
+    println!("Hello, {name}!");        # 仅在 Ok 时到达
+    Ok(())
+}
+
+<span class="boring">? 说："如果这是 Err，立即从这个函数返回它。"
+</span><span class="boring">它像 Python 的异常传播，但：
+</span><span class="boring">1. 它是可见的（你看到 ?）
+</span><span class="boring">2. 它在返回类型中（Result&lt;..., io::Error&gt;）
+</span><span class="boring">3. 编译器确保你在某处处理它
+</span><span class="boring">}</span></code></pre></pre>
+<h3 id="使用--链式调用"><a class="header" href="#使用--链式调用">使用 ? 链式调用</a></h3>
+<pre><code class="language-python"># Python —— 多个可能失败的操作
+def process_file(path: str) -&gt; dict:
+    with open(path) as f:                    # 可能失败
+        text = f.read()                       # 可能失败
+    data = json.loads(text)                   # 可能失败
+    validate(data)                            # 可能失败
+    return transform(data)                    # 可能失败
+    # 这些都可能抛出 —— 而且异常类型各不相同！
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 相同链，但显式
+fn process_file(path: &amp;str) -&gt; Result&lt;Data, AppError&gt; {
+    let text = fs::read_to_string(path)?;     # ? 传播 io::Error
+    let data: Value = serde_json::from_str(&amp;text)?;  # ? 传播 serde 错误
+    let validated = validate(&amp;data)?;          # ? 传播验证错误
+    let result = transform(&amp;validated)?;       # ? 传播 transform 错误
+    Ok(result)
+}
+<span class="boring">每个 ? 都是潜在的提前返回 —— 而且它们都可见！
+</span><span class="boring">}</span></code></pre></pre>
+<pre class="mermaid">flowchart TD
+    A[&quot;read_to_string(path)?&quot;] --&gt;|Ok| B[&quot;serde_json::from_str?&quot;]
+    A --&gt;|Err| X[&quot;返回 Err(io::Error)&quot;]
+    B --&gt;|Ok| C[&quot;validate(&amp;data)?&quot;]
+    B --&gt;|Err| Y[&quot;返回 Err(serde::Error)&quot;]
+    C --&gt;|Ok| D[&quot;transform(&amp;validated)?&quot;]
+    C --&gt;|Err| Z[&quot;返回 Err(ValidationError)&quot;]
+    D --&gt;|Ok| E[&quot;Ok(result) ✅&quot;]
+    D --&gt;|Err| W[&quot;返回 Err(TransformError)&quot;]
+    style E fill:#d4edda,stroke:#28a745
+    style X fill:#f8d7da,stroke:#dc3545
+    style Y fill:#f8d7da,stroke:#dc3545
+    style Z fill:#f8d7da,stroke:#dc3545
+    style W fill:#f8d7da,stroke:#dc3545
+</pre>
+<blockquote>
+<p>每个 <code>?</code> 都是退出点 —— 与 Python 的 try/except 不同，在不阅读文档的情况下你无法看出哪行可能抛出。</p>
+<p>📌 <strong>另见</strong>：<a href="ch15-migration-patterns.html">第 15 章 — 迁移模式</a> 涵盖在真实代码库中将 Python try/except 模式转换为 Rust。</p>
+</blockquote>
+<hr />
+<h2 id="使用-thiserror-自定义错误类型"><a class="header" href="#使用-thiserror-自定义错误类型">使用 thiserror 自定义错误类型</a></h2>
+<pre class="mermaid">graph TD
+    AE[&quot;AppError（enum）&quot;] --&gt; NF[&quot;NotFound\n{ entity, id }&quot;]
+    AE --&gt; VE[&quot;Validation\n{ field, message }&quot;]
+    AE --&gt; IO[&quot;Io(std::io::Error)\n#[from]&quot;]
+    AE --&gt; JSON[&quot;Json(serde_json::Error)\n#[from]&quot;]
+    IO2[&quot;std::io::Error&quot;] --&gt;|&quot;通过 From 自动转换&quot;| IO
+    JSON2[&quot;serde_json::Error&quot;] --&gt;|&quot;通过 From 自动转换&quot;| JSON
+    style AE fill:#d4edda,stroke:#28a745
+    style NF fill:#fff3cd
+    style VE fill:#fff3cd
+    style IO fill:#fff3cd
+    style JSON fill:#fff3cd
+    style IO2 fill:#f8d7da
+    style JSON2 fill:#f8d7da
+</pre>
+<blockquote>
+<p><code>#[from]</code> 属性自动生成 <code>impl From&lt;io::Error&gt; for AppError</code>，所以 <code>?</code> 自动将库错误转换为你的应用错误。</p>
+</blockquote>
+<h3 id="python-自定义异常"><a class="header" href="#python-自定义异常">Python 自定义异常</a></h3>
+<pre><code class="language-python"># Python —— 自定义异常类
+class AppError(Exception):
+    pass
+
+class NotFoundError(AppError):
+    def __init__(self, entity: str, id: int):
+        self.entity = entity
+        self.id = id
+        super().__init__(f"{entity} with id {id} not found")
+
+class ValidationError(AppError):
+    def __init__(self, field: str, message: str):
+        self.field = field
+        super().__init__(f"Validation error on {field}: {message}")
+
+# 使用：
+def find_user(user_id: int) -&gt; dict:
+    if user_id not in users:
+        raise NotFoundError("User", user_id)
+    return users[user_id]
+</code></pre>
+<h3 id="rust-使用-thiserror-自定义错误"><a class="header" href="#rust-使用-thiserror-自定义错误">Rust 使用 thiserror 自定义错误</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 使用 thiserror 的错误 enum（最流行的方法）
+<span class="boring">Cargo.toml：thiserror = "2"
+</span>
+use thiserror::Error;
+
+#[derive(Debug, Error)]
+enum AppError {
+    #[error("{entity} with id {id} not found")]
+    NotFound { entity: String, id: i64 },
+
+    #[error("Validation error on {field}: {message}")]
+    Validation { field: String, message: String },
+
+    #[error("IO error: {0}")]
+    Io(#[from] std::io::Error),        # 从 io::Error 自动转换
+
+    #[error("JSON error: {0}")]
+    Json(#[from] serde_json::Error),   # 从 serde 错误自动转换
+}
+
+<span class="boring">使用：
+</span>fn find_user(user_id: i64) -&gt; Result&lt;User, AppError&gt; {
+    users.get(&amp;user_id)
+        .cloned()
+        .ok_or(AppError::NotFound {
+            entity: "User".to_string(),
+            id: user_id,
+        })
+}
+
+<span class="boring">#[from] 属性意味着 ? 自动转换 io::Error → AppError::Io
+</span>fn load_users(path: &amp;str) -&gt; Result&lt;Vec&lt;User&gt;, AppError&gt; {
+    let data = fs::read_to_string(path)?;  # io::Error → AppError::Io 自动
+    let users: Vec&lt;User&gt; = serde_json::from_str(&amp;data)?;  # → AppError::Json
+    Ok(users)
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="错误处理快速参考"><a class="header" href="#错误处理快速参考">错误处理快速参考</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Python</th><th>Rust</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>raise ValueError("msg")</code></td><td><code>return Err(AppError::Validation {...})</code></td><td>显式返回</td></tr>
+<tr><td><code>try: ... except:</code></td><td><code>match result { Ok(v) =&gt; ..., Err(e) =&gt; ... }</code></td><td>穷尽</td></tr>
+<tr><td><code>except ValueError as e:</code></td><td><code>Err(AppError::Validation { .. }) =&gt;</code></td><td>模式匹配</td></tr>
+<tr><td><code>raise ... from e</code></td><td><code>#[from]</code> 属性或 <code>.map_err()</code></td><td>错误链</td></tr>
+<tr><td><code>finally:</code></td><td><code>Drop</code> trait（自动）</td><td>确定性清理</td></tr>
+<tr><td><code>with open(...):</code></td><td>基于作用域的 drop（自动）</td><td>RAII 模式</td></tr>
+<tr><td>异常静默传播</td><td><code>?</code> 可见传播</td><td>始终在返回类型中</td></tr>
+<tr><td><code>isinstance(e, ValueError)</code></td><td><code>matches!(e, AppError::Validation {..})</code></td><td>类型检查</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：解析配置值</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：编写一个函数 <code>parse_port(s: &amp;str) -&gt; Result&lt;u16, String&gt;</code>：</p>
+<ol>
+<li>拒绝空字符串，错误为 <code>"empty input"</code></li>
+<li>解析字符串为 <code>u16</code>，将解析错误映射为 <code>"invalid number: {original_error}"</code></li>
+<li>拒绝低于 1024 的端口，错误为 <code>"port {n} is privileged"</code></li>
+</ol>
+<p>用 <code>""</code>、<code>"hello"</code>、<code>"80"</code> 和 <code>"8080"</code> 调用它并打印结果。</p>
+<details>
+<summary>🔑 解答</summary>
+<pre><pre class="playground"><code class="language-rust">fn parse_port(s: &amp;str) -&gt; Result&lt;u16, String&gt; {
+    if s.is_empty() {
+        return Err("empty input".to_string());
+    }
+    let port: u16 = s.parse().map_err(|e| format!("invalid number: {e}"))?;
+    if port &lt; 1024 {
+        return Err(format!("port {port} is privileged"));
+    }
+    Ok(port)
+}
+
+fn main() {
+    for input in ["", "hello", "80", "8080"] {
+        match parse_port(input) {
+            Ok(port) =&gt; println!("✅ {input} → {port}"),
+            Err(e) =&gt; println!("❌ {input:?} → {e}"),
+        }
+    }
+}</code></pre></pre>
+<p><strong>关键要点</strong>：<code>?</code> 与 <code>.map_err()</code> 是 Rust 替换 <code>try/except ValueError as e: raise ConfigError(...) from e</code> 的方式。每个错误路径在返回类型中都可见。</p>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch08-crates-and-modules.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch10-traits-and-generics.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch08-crates-and-modules.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch10-traits-and-generics.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

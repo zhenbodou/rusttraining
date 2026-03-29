@@ -1,0 +1,437 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>16. 案例研究：真实的 C++ 到 Rust 转换 - Rust for C/C++ Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C/C++ Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="案例研究概述c-到-rust-翻译"><a class="header" href="#案例研究概述c-到-rust-翻译">案例研究概述：C++ 到 Rust 翻译</a></h1>
+<blockquote>
+<p><strong>你将学到：</strong> 从 ~100K 行 C++ 到 ~90K 行 Rust（跨 ~20 个 crate）的真实翻译经验教训。五个关键转换模式和背后的架构决策。</p>
+</blockquote>
+<ul>
+<li>我们将大型 C++ 诊断系统（~100K 行 C++）翻译为 Rust 实现（~20 个 Rust crate，~90K 行）</li>
+<li>本节展示<strong>实际使用的模式</strong>——不是玩具示例，而是真实的生产代码</li>
+<li>五个关键转换：</li>
+</ul>
+<div class="table-wrapper"><table><thead><tr><th><strong>#</strong></th><th><strong>C++ 模式</strong></th><th><strong>Rust 模式</strong></th><th><strong>影响</strong></th></tr></thead><tbody>
+<tr><td>1</td><td>类层次结构 + <code>dynamic_cast</code></td><td>Enum 分发 + <code>match</code></td><td>~400 → 0 个 dynamic_cast</td></tr>
+<tr><td>2</td><td><code>shared_ptr</code> / <code>enable_shared_from_this</code> 树</td><td>Arena + 索引链接</td><td>无引用循环</td></tr>
+<tr><td>3</td><td>每个模块中的 <code>Framework*</code> 原始指针</td><td>带生命周期借用的 <code>DiagContext&lt;'a&gt;</code></td><td>编译时有效性</td></tr>
+<tr><td>4</td><td>上帝对象</td><td>可组合的状态结构</td><td>可测试、模块化</td></tr>
+<tr><td>5</td><td>到处是 <code>vector&lt;unique_ptr&lt;Base&gt;&gt;</code></td><td><strong>仅</strong>在需要时使用 trait 对象（~25 次使用）</td><td>默认静态分发</td></tr>
+</tbody></table>
+</div>
+<h3 id="前后指标对比"><a class="header" href="#前后指标对比">前后指标对比</a></h3>
+<div class="table-wrapper"><table><thead><tr><th><strong>指标</strong></th><th><strong>C++（原始）</strong></th><th><strong>Rust（重写）</strong></th></tr></thead><tbody>
+<tr><td><code>dynamic_cast</code> / 类型向下转换</td><td>~400</td><td>0</td></tr>
+<tr><td><code>virtual</code> / <code>override</code> 方法</td><td>~900</td><td>~25 (<code>Box&lt;dyn Trait&gt;</code>)</td></tr>
+<tr><td>原始 <code>new</code> 分配</td><td>~200</td><td>0（全部拥有类型）</td></tr>
+<tr><td><code>shared_ptr</code> / 引用计数</td><td>~10（拓扑库）</td><td>0（仅在 FFI 边界使用 <code>Arc</code>）</td></tr>
+<tr><td><code>enum class</code> 定义</td><td>~60</td><td>~190 <code>pub enum</code></td></tr>
+<tr><td>模式匹配表达式</td><td>N/A</td><td>~750 <code>match</code></td></tr>
+<tr><td>上帝对象（&gt;5K 行）</td><td>2</td><td>0</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h1 id="案例研究-1继承层次结构--enum-分发"><a class="header" href="#案例研究-1继承层次结构--enum-分发">案例研究 1：继承层次结构 → Enum 分发</a></h1>
+<h2 id="c-模式事件类层次结构"><a class="header" href="#c-模式事件类层次结构">C++ 模式：事件类层次结构</a></h2>
+<pre><code class="language-cpp">// C++ 原始：每个 GPU 事件类型都是继承自 GpuEventBase 的类
+class GpuEventBase {
+public:
+    virtual ~GpuEventBase() = default;
+    virtual void Process(DiagFramework* fw) = 0;
+    uint16_t m_recordId;
+    uint8_t  m_sensorType;
+    // ... 公共字段
+};
+
+class GpuPcieDegradeEvent : public GpuEventBase {
+public:
+    void Process(DiagFramework* fw) override;
+    uint8_t m_linkSpeed;
+    uint8_t m_linkWidth;
+};
+
+class GpuPcieFatalEvent : public GpuEventBase { /* ... */ };
+class GpuBootEvent : public GpuEventBase { /* ... */ };
+// ... 10+ 个继承自 GpuEventBase 的事件类
+
+// 处理需要 dynamic_cast：
+void ProcessEvents(std::vector&lt;std::unique_ptr&lt;GpuEventBase&gt;&gt;&amp; events,
+                   DiagFramework* fw) {
+    for (auto&amp; event : events) {
+        if (auto* degrade = dynamic_cast&lt;GpuPcieDegradeEvent*&gt;(event.get())) {
+            // 处理降级...
+        } else if (auto* fatal = dynamic_cast&lt;GpuPcieFatalEvent*&gt;(event.get())) {
+            // 处理致命...
+        }
+        // ... 10 多个分支
+    }
+}
+</code></pre>
+<h2 id="rust-解决方案enum-分发"><a class="header" href="#rust-解决方案enum-分发">Rust 解决方案：Enum 分发</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 示例：types.rs——无继承，无 vtable，无 dynamic_cast
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub enum GpuEventKind {
+    PcieDegrade,
+    PcieFatal,
+    PcieUncorr,
+    Boot,
+    BaseboardState,
+    EccError,
+    OverTemp,
+    PowerRail,
+    ErotStatus,
+    Unknown,
+}
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 示例：manager.rs——单独的 typed Vec，无需向下转换
+pub struct GpuEventManager {
+    sku: SkuVariant,
+    degrade_events: Vec&lt;GpuPcieDegradeEvent&gt;,   // 具体类型，不是 Box&lt;dyn&gt;
+    fatal_events: Vec&lt;GpuPcieFatalEvent&gt;,
+    uncorr_events: Vec&lt;GpuPcieUncorrEvent&gt;,
+    boot_events: Vec&lt;GpuBootEvent&gt;,
+    baseboard_events: Vec&lt;GpuBaseboardEvent&gt;,
+    ecc_events: Vec&lt;GpuEccEvent&gt;,
+    // ... 每个事件类型都有自己的 Vec
+}
+
+// 访问器返回 typed 切片——零歧义
+impl GpuEventManager {
+    pub fn degrade_events(&amp;self) -&gt; &amp;[GpuPcieDegradeEvent] {
+        &amp;self.degrade_events
+    }
+    pub fn fatal_events(&amp;self) -&gt; &amp;[GpuPcieFatalEvent] {
+        &amp;self.fatal_events
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="为什么不使用-vecboxdyn-gpuevent"><a class="header" href="#为什么不使用-vecboxdyn-gpuevent">为什么不使用 <code>Vec&lt;Box&lt;dyn GpuEvent&gt;&gt;</code>？</a></h3>
+<ul>
+<li><strong>错误的方法</strong>（字面翻译）：将所有事件放在一个异构集合中，然后向下转换——这是 C++ 使用 <code>vector&lt;unique_ptr&lt;Base&gt;&gt;</code> 的做法</li>
+<li><strong>正确的方法</strong>：单独的 typed Vec 消除<em>所有</em>向下转换。每个消费者请求它确切需要的事件类型</li>
+<li><strong>性能</strong>：单独的 Vec 提供更好的缓存局部性（所有降级事件在内存中连续）</li>
+</ul>
+<hr />
+<h1 id="案例研究-2shared_ptr-树--arena索引模式"><a class="header" href="#案例研究-2shared_ptr-树--arena索引模式">案例研究 2：shared_ptr 树 → Arena/索引模式</a></h1>
+<h2 id="c-模式引用计数树"><a class="header" href="#c-模式引用计数树">C++ 模式：引用计数树</a></h2>
+<pre><code class="language-cpp">// C++ 拓扑库：PcieDevice 使用 enable_shared_from_this
+// 因为父节点和子节点都需要相互引用
+class PcieDevice : public std::enable_shared_from_this&lt;PcieDevice&gt; {
+public:
+    std::shared_ptr&lt;PcieDevice&gt; m_upstream;
+    std::vector&lt;std::shared_ptr&lt;PcieDevice&gt;&gt; m_downstream;
+    // ... 设备数据
+
+    void AddChild(std::shared_ptr&lt;PcieDevice&gt; child) {
+        child-&gt;m_upstream = shared_from_this();  // 父↔子循环！
+        m_downstream.push_back(child);
+    }
+};
+// 问题：父→子和子→父创建引用循环
+// 需要 weak_ptr 打破循环，但容易忘记
+</code></pre>
+<h2 id="rust-解决方案带索引链接的-arena"><a class="header" href="#rust-解决方案带索引链接的-arena">Rust 解决方案：带索引链接的 Arena</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 示例：components.rs——扁平 Vec 拥有所有设备
+pub struct PcieDevice {
+    pub base: PcieDeviceBase,
+    pub kind: PcieDeviceKind,
+
+    // 通过索引的树链接——无引用计数，无循环
+    pub upstream_idx: Option&lt;usize&gt;,      // 指向 arena Vec 的索引
+    pub downstream_idxs: Vec&lt;usize&gt;,      // 指向 arena Vec 的索引
+}
+
+// "arena" 简单地是由树拥有的 Vec&lt;PcieDevice&gt;：
+pub struct DeviceTree {
+    devices: Vec&lt;PcieDevice&gt;,  // 扁平所有权——一个 Vec 拥有所有内容
+}
+
+impl DeviceTree {
+    pub fn parent(&amp;self, device_idx: usize) -&gt; Option&lt;&amp;PcieDevice&gt; {
+        self.devices[device_idx].upstream_idx
+            .map(|idx| &amp;self.devices[idx])
+    }
+
+    pub fn children(&amp;self, device_idx: usize) -&gt; Vec&lt;&amp;PcieDevice&gt; {
+        self.devices[device_idx].downstream_idxs
+            .iter()
+            .map(|&amp;idx| &amp;self.devices[idx])
+            .collect()
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="关键见解"><a class="header" href="#关键见解">关键见解</a></h3>
+<ul>
+<li><strong>无 <code>shared_ptr</code>，无 <code>weak_ptr</code>，无 <code>enable_shared_from_this</code></strong></li>
+<li><strong>不可能有引用循环</strong>——索引只是 <code>usize</code> 值</li>
+<li><strong>更好的缓存性能</strong>——所有设备在连续内存中</li>
+<li><strong>更简单的推理</strong>——一个所有者（Vec），多个查看者（索引）</li>
+</ul>
+<pre class="mermaid">graph LR
+    subgraph &quot;C++ shared_ptr 树&quot;
+        A1[&quot;shared_ptr&lt;Device&gt;&quot;] --&gt;|&quot;shared_ptr&quot;| B1[&quot;shared_ptr&lt;Device&gt;&quot;]
+        B1 --&gt;|&quot;shared_ptr (父)&quot;| A1
+        A1 --&gt;|&quot;shared_ptr&quot;| C1[&quot;shared_ptr&lt;Device&gt;&quot;]
+        C1 --&gt;|&quot;shared_ptr (父)&quot;| A1
+        style A1 fill:#ff6b6b,color:#000
+        style B1 fill:#ffa07a,color:#000
+        style C1 fill:#ffa07a,color:#000
+    end
+
+    subgraph &quot;Rust Arena + 索引&quot;
+        V[&quot;Vec&lt;PcieDevice&gt;&quot;]
+        V --&gt; D0[&quot;[0] 根&lt;br/&gt;upstream: None&lt;br/&gt;down: [1,2]&quot;]
+        V --&gt; D1[&quot;[1] 子&lt;br/&gt;upstream: Some(0)&lt;br/&gt;down: []&quot;]
+        V --&gt; D2[&quot;[2] 子&lt;br/&gt;upstream: Some(0)&lt;br/&gt;down: []&quot;]
+        style V fill:#51cf66,color:#000
+        style D0 fill:#91e5a3,color:#000
+        style D1 fill:#91e5a3,color:#000
+        style D2 fill:#91e5a3,color:#000
+    end
+</pre>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch15-1-embedded-deep-dive.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch16-1-case-study-lifetime-borrowing.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch15-1-embedded-deep-dive.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch16-1-case-study-lifetime-borrowing.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

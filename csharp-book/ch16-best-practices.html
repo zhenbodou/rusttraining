@@ -1,0 +1,538 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>16. 最佳实践 - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="c-开发者的最佳实践"><a class="header" href="#c-开发者的最佳实践">C# 开发者的最佳实践</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> 五个关键思维转变（GC→所有权、异常→Results、继承→组合），
+惯用项目组织、错误处理策略、测试模式，以及 C# 开发者在 Rust 中犯的最常见错误。</p>
+<p><strong>难度：</strong> 🟡 中级</p>
+</blockquote>
+<h3 id="1-思维转变"><a class="header" href="#1-思维转变">1. <strong>思维转变</strong></a></h3>
+<ul>
+<li><strong>从 GC 到所有权</strong>：思考谁拥有数据以及何时释放</li>
+<li><strong>从异常到 Results</strong>：使错误处理显式且可见</li>
+<li><strong>从继承到组合</strong>：使用 traits 组合行为</li>
+<li><strong>从 Null 到 Option</strong>：在类型系统中使值缺失显式</li>
+</ul>
+<h3 id="2-代码组织"><a class="header" href="#2-代码组织">2. <strong>代码组织</strong></a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 像 C# 解决方案一样构建项目
+src/
+├── main.rs          // Program.cs 等价物
+├── lib.rs           // 库入口点
+├── models/          // 类似 C# 中的 Models/ 文件夹
+│   ├── mod.rs
+│   ├── user.rs
+│   └── product.rs
+├── services/        // 类似 Services/ 文件夹
+│   ├── mod.rs
+│   ├── user_service.rs
+│   └── product_service.rs
+├── controllers/     // 类似 Controllers/（用于 Web 应用）
+├── repositories/    // 类似 Repositories/
+└── utils/          // 类似 Utilities/
+<span class="boring">}</span></code></pre></pre>
+<h3 id="3-错误处理策略"><a class="header" href="#3-错误处理策略">3. <strong>错误处理策略</strong></a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 为你的应用程序创建通用 Result 类型
+pub type AppResult&lt;T&gt; = Result&lt;T, AppError&gt;;
+
+#[derive(Error, Debug)]
+pub enum AppError {
+    #[error("Database error: {0}")]
+    Database(#[from] sqlx::Error),
+
+    #[error("HTTP error: {0}")]
+    Http(#[from] reqwest::Error),
+
+    #[error("Validation error: {message}")]
+    Validation { message: String },
+
+    #[error("Business logic error: {message}")]
+    Business { message: String },
+}
+
+// 在整个应用程序中使用
+pub async fn create_user(data: CreateUserRequest) -&gt; AppResult&lt;User&gt; {
+    validate_user_data(&amp;data)?;  // 返回 AppError::Validation
+    let user = repository.create_user(data).await?;  // 返回 AppError::Database
+    Ok(user)
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="4-测试模式"><a class="header" href="#4-测试模式">4. <strong>测试模式</strong></a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 像 C# 单元测试一样构建测试
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rstest::*;  // 用于参数化测试，类似 C# [Theory]
+
+    #[test]
+    fn test_basic_functionality() {
+        // Arrange
+        let input = "test data";
+
+        // Act
+        let result = process_data(input);
+
+        // Assert
+        assert_eq!(result, "expected output");
+    }
+
+    #[rstest]
+    #[case(1, 2, 3)]
+    #[case(5, 5, 10)]
+    #[case(0, 0, 0)]
+    fn test_addition(#[case] a: i32, #[case] b: i32, #[case] expected: i32) {
+        assert_eq!(add(a, b), expected);
+    }
+
+    #[tokio::test]  // 用于异步测试
+    async fn test_async_functionality() {
+        let result = async_function().await;
+        assert!(result.is_ok());
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="5-要避免的常见错误"><a class="header" href="#5-要避免的常见错误">5. <strong>要避免的常见错误</strong></a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// [错误] 不要尝试实现继承
+// 而不是：
+// struct Manager : Employee  // 这在 Rust 中不存在
+
+// [好] 使用带 traits 的组合
+trait Employee {
+    fn get_salary(&amp;self) -&gt; u32;
+}
+
+trait Manager: Employee {
+    fn get_team_size(&amp;self) -&gt; usize;
+}
+
+// [错误] 不要到处使用 unwrap()（类似忽略异常）
+let value = might_fail().unwrap();  // 可能 panic！
+
+// [好] 正确处理错误
+let value = match might_fail() {
+    Ok(v) =&gt; v,
+    Err(e) =&gt; {
+        log::error!("Operation failed: {}", e);
+        return Err(e.into());
+    }
+};
+
+// [错误] 不要克隆一切（像不必要地复制对象）
+let data = expensive_data.clone();  // 昂贵！
+
+// [好] 可能时使用借用
+let data = &amp;expensive_data;  // 只是引用
+
+// [错误] 不要到处使用 RefCell（像使一切可变）
+struct Data {
+    value: RefCell&lt;i32&gt;,  // 内部可变性——谨慎使用
+}
+
+// [好] 更喜欢 owned 或 borrowed 数据
+struct Data {
+    value: i32,  // 简单清晰
+}
+<span class="boring">}</span></code></pre></pre>
+<p>本指南为 C# 开发者提供了全面了解他们现有知识如何转化为 Rust，突出相似性和方法上的根本差异。关键是理解 Rust 的约束（如所有权）旨在防止 C# 中可能的整类错误，以初始复杂性为代价。</p>
+<hr />
+<h3 id="6-避免过度-clone-"><a class="header" href="#6-避免过度-clone-">6. <strong>避免过度 <code>clone()</code></strong> 🟡</a></h3>
+<p>C# 开发者本能地克隆数据，因为 GC 处理成本。在 Rust 中，每个 <code>.clone()</code> 是显式分配。大多数可以用借用消除。</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// [错误] C# 习惯：克隆字符串传递
+fn greet(name: String) {
+    println!("Hello, {name}");
+}
+
+let user_name = String::from("Alice");
+greet(user_name.clone());  // 不必要的分配
+greet(user_name.clone());  // 再次
+
+// [好] 改用借用——零分配
+fn greet(name: &amp;str) {
+    println!("Hello, {name}");
+}
+
+let user_name = String::from("Alice");
+greet(&amp;user_name);  // 借用
+greet(&amp;user_name);  // 再次借用——无成本
+<span class="boring">}</span></code></pre></pre>
+<p><strong>何时 clone 合适：</strong></p>
+<ul>
+<li>将数据移动到线程或 <code>'static</code> 闭包（<code>Arc::clone</code> 便宜——它增加计数器）</li>
+<li>缓存：你真正需要独立副本</li>
+<li>原型设计：先让它工作，然后稍后移除 clone</li>
+</ul>
+<p><strong>决策检查清单：</strong></p>
+<ol>
+<li>你能传递 <code>&amp;T</code> 或 <code>&amp;str</code> 代替吗？→ 这样做</li>
+<li>被调用者需要所有权吗？→ 通过移动传递，不是 clone</li>
+<li>它跨线程共享吗？→ 使用 <code>Arc&lt;T&gt;</code>（clone 只是引用计数增加）</li>
+<li>以上都不是？→ <code>clone()</code> 是合理的</li>
+</ol>
+<hr />
+<h3 id="7-避免在生产代码中使用-unwrap-"><a class="header" href="#7-避免在生产代码中使用-unwrap-">7. <strong>避免在生产代码中使用 <code>unwrap()</code></strong> 🟡</a></h3>
+<p>忽略异常的 C# 开发者在 Rust 中到处写 <code>.unwrap()</code>。两者同样危险。</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// [错误] "我稍后修复这个"陷阱
+let config = std::fs::read_to_string("config.toml").unwrap();
+let port: u16 = config_value.parse().unwrap();
+let conn = db_pool.get().await.unwrap();
+
+// [好] 用 ? 传播应用程序代码
+let config = std::fs::read_to_string("config.toml")?;
+let port: u16 = config_value.parse()?;
+let conn = db_pool.get().await?;
+
+// [好] 仅在失败确实是 bug 时使用 expect()
+let home = std::env::var("HOME")
+    .expect("HOME environment variable must be set");  // 记录不变量
+<span class="boring">}</span></code></pre></pre>
+<p><strong>经验法则：</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>方法</th><th>何时使用</th></tr></thead><tbody>
+<tr><td><code>?</code></td><td>应用程序/库代码——传播给调用者</td></tr>
+<tr><td><code>expect("reason")</code></td><td>启动断言，<em>必须</em> 成立的不变量</td></tr>
+<tr><td><code>unwrap()</code></td><td>仅测试，或在 <code>is_some()</code>/<code>is_ok()</code> 检查后</td></tr>
+<tr><td><code>unwrap_or(default)</code></td><td>当你有 sensible 回退时</td></tr>
+<tr><td>`unwrap_or_else(</td><td></td></tr>
+</tbody></table>
+</div>
+<hr />
+<h3 id="8-与借用检查器斗争以及如何停止-"><a class="header" href="#8-与借用检查器斗争以及如何停止-">8. <strong>与借用检查器斗争（以及如何停止）</strong> 🟡</a></h3>
+<p>每个 C# 开发者都遇到借用检查器拒绝看似有效代码的阶段。修复通常是结构变化，不是变通方法。</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// [错误] 尝试迭代时变异（C# foreach + 修改模式）
+let mut items = vec![1, 2, 3, 4, 5];
+for item in &amp;items {
+    if *item &gt; 3 {
+        items.push(*item * 2);  // 错误：无法可变借用 items
+    }
+}
+
+// [好] 先收集，然后变异
+let extras: Vec&lt;i32&gt; = items.iter()
+    .filter(|&amp;&amp;x| x &gt; 3)
+    .map(|&amp;x| x * 2)
+    .collect();
+items.extend(extras);
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// [错误] 返回对局部的引用（C# 通过 GC 自由返回引用）
+fn get_greeting() -&gt; &amp;str {
+    let s = String::from("hello");
+    &amp;s  // 错误：s 在函数结束时被丢弃
+}
+
+// [好] 返回 owned 数据
+fn get_greeting() -&gt; String {
+    String::from("hello")  // 调用者拥有它
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>解决借用检查器冲突的常见模式：</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>C# 习惯</th><th>Rust 解决方案</th></tr></thead><tbody>
+<tr><td>在结构体中存储引用</td><td>使用 owned 数据，或添加生命周期参数</td></tr>
+<tr><td>自由变异共享状态</td><td>使用 <code>Arc&lt;Mutex&lt;T&gt;&gt;</code> 或重构以避免共享</td></tr>
+<tr><td>返回对局部的引用</td><td>返回 owned 值</td></tr>
+<tr><td>迭代时修改集合</td><td>收集更改，然后应用</td></tr>
+<tr><td>多个可变引用</td><td>将结构体拆分为独立部分</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h3 id="9-折叠赋值金字塔-"><a class="header" href="#9-折叠赋值金字塔-">9. <strong>折叠赋值金字塔</strong> 🟢</a></h3>
+<p>C# 开发者编写 <code>if (x != null) { if (x.Value &gt; 0) { ... } }</code> 链。Rust 的 <code>match</code>、<code>if let</code> 和 <code>?</code> 扁平化这些。</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// [错误] 来自 C# 的嵌套空检查风格
+fn process(input: Option&lt;String&gt;) -&gt; Option&lt;usize&gt; {
+    match input {
+        Some(s) =&gt; {
+            if !s.is_empty() {
+                match s.parse::&lt;usize&gt;() {
+                    Ok(n) =&gt; {
+                        if n &gt; 0 {
+                            Some(n * 2)
+                        } else {
+                            None
+                        }
+                    }
+                    Err(_) =&gt; None,
+                }
+            } else {
+                None
+            }
+        }
+        None =&gt; None,
+    }
+}
+
+// [好] 用组合器扁平化
+fn process(input: Option&lt;String&gt;) -&gt; Option&lt;usize&gt; {
+    input
+        .filter(|s| !s.is_empty())
+        .and_then(|s| s.parse::&lt;usize&gt;().ok())
+        .filter(|&amp;n| n &gt; 0)
+        .map(|n| n * 2)
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>每个 C# 开发者应该知道的关键组合器：</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>组合器</th><th>它做什么</th><th>C# 等价物</th></tr></thead><tbody>
+<tr><td><code>map</code></td><td>转换内部值</td><td><code>Select</code> / 空条件 <code>?.</code></td></tr>
+<tr><td><code>and_then</code></td><td>链接返回 Option/Result 的操作</td><td><code>SelectMany</code> / <code>?.Method()</code></td></tr>
+<tr><td><code>filter</code></td><td>仅当谓词通过时保留值</td><td><code>Where</code></td></tr>
+<tr><td><code>unwrap_or</code></td><td>提供默认值</td><td><code>?? defaultValue</code></td></tr>
+<tr><td><code>ok()</code></td><td>将 <code>Result</code> 转换为 <code>Option</code>（丢弃错误）</td><td>—</td></tr>
+<tr><td><code>transpose</code></td><td>翻转 <code>Option&lt;Result&gt;</code> 到 <code>Result&lt;Option&gt;</code></td><td>—</td></tr>
+</tbody></table>
+</div>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch15-2-incremental-adoption-strategy.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch16-1-performance-comparison-and-migration.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch15-2-incremental-adoption-strategy.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch16-1-performance-comparison-and-migration.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

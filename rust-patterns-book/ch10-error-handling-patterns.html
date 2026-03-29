@@ -1,0 +1,483 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>10. 错误处理模式 - Rust Patterns &amp; Engineering How-Tos</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust Patterns &amp; Engineering How-Tos</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="9-错误处理模式-"><a class="header" href="#9-错误处理模式-">9. 错误处理模式 🟢</a></h1>
+<blockquote>
+<p><strong>你将学到：</strong></p>
+<ul>
+<li>何时使用 <code>thiserror</code>（库）vs <code>anyhow</code>（应用）</li>
+<li>带 <code>#[from]</code> 和 <code>.context()</code> 包装器的错误转换链</li>
+<li><code>?</code> 操作符如何脱糖以及在 <code>main()</code> 中工作</li>
+<li>何时 panic vs 返回错误，以及 <code>catch_unwind</code> 用于 FFI 边界</li>
+</ul>
+</blockquote>
+<h2 id="thiserror-vs-anyhow--库-vs-应用"><a class="header" href="#thiserror-vs-anyhow--库-vs-应用">thiserror vs anyhow —— 库 vs 应用</a></h2>
+<p>Rust 错误处理以 <code>Result&lt;T, E&gt;</code> 类型为中心。两个 crate 主导：</p>
+<pre><code class="language-rust ignore">// --- thiserror：用于库 ---
+// 通过 derive 宏生成 Display、Error 和 From impl
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum DatabaseError {
+    #[error("connection failed: {0}")]
+    ConnectionFailed(String),
+
+    #[error("query error: {source}")]
+    QueryError {
+        #[source]
+        source: sqlx::Error,
+    },
+
+    #[error("record not found: table={table} id={id}")]
+    NotFound { table: String, id: u64 },
+
+    #[error(transparent)] // 委托 Display 给内部错误
+    Io(#[from] std::io::Error), // 自动生成 From&lt;io::Error&gt;
+}
+
+// --- anyhow：用于应用 ---
+// 动态错误类型——适合顶层代码，你只想传播错误
+use anyhow::{Context, Result, bail, ensure};
+
+fn read_config(path: &amp;str) -&gt; Result&lt;Config&gt; {
+    let content = std::fs::read_to_string(path)
+        .with_context(|| format!("failed to read config from {path}"))?;
+
+    let config: Config = serde_json::from_str(&amp;content)
+        .context("failed to parse config JSON")?;
+
+    ensure!(config.port &gt; 0, "port must be positive, got {}", config.port);
+
+    Ok(config)
+}
+
+fn main() -&gt; Result&lt;()&gt; {
+    let config = read_config("server.toml")?;
+
+    if config.name.is_empty() {
+        bail!("server name cannot be empty"); // 立即返回 Err
+    }
+
+    Ok(())
+}</code></pre>
+<p><strong>何时使用哪种</strong>：</p>
+<div class="table-wrapper"><table><thead><tr><th></th><th><code>thiserror</code></th><th><code>anyhow</code></th></tr></thead><tbody>
+<tr><td><strong>使用于</strong></td><td>库、共享 crate</td><td>应用、二进制文件</td></tr>
+<tr><td><strong>错误类型</strong></td><td>具体 enum——调用者可以 match</td><td><code>anyhow::Error</code> —— 不透明</td></tr>
+<tr><td><strong>工作量</strong></td><td>定义你的错误 enum</td><td>只用 <code>Result&lt;T&gt;</code></td></tr>
+<tr><td><strong>向下转型</strong></td><td>不需要——模式匹配</td><td><code>error.downcast_ref::&lt;MyError&gt;()</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="错误转换链from"><a class="header" href="#错误转换链from">错误转换链（#[from]）</a></h3>
+<pre><code class="language-rust ignore">use thiserror::Error;
+
+#[derive(Error, Debug)]
+enum AppError {
+    #[error("I/O error: {0}")]
+    Io(#[from] std::io::Error),
+
+    #[error("JSON error: {0}")]
+    Json(#[from] serde_json::Error),
+
+    #[error("HTTP error: {0}")]
+    Http(#[from] reqwest::Error),
+}
+
+// 现在？自动转换：
+fn fetch_and_parse(url: &amp;str) -&gt; Result&lt;Config, AppError&gt; {
+    let body = reqwest::blocking::get(url)?.text()?;  // reqwest::Error → AppError::Http
+    let config: Config = serde_json::from_str(&amp;body)?; // serde_json::Error → AppError::Json
+    Ok(config)
+}</code></pre>
+<h3 id="context-和错误包装"><a class="header" href="#context-和错误包装">Context 和错误包装</a></h3>
+<p>为错误添加人类可读的 context 而不丢失原始错误：</p>
+<pre><code class="language-rust ignore">use anyhow::{Context, Result};
+
+fn process_file(path: &amp;str) -&gt; Result&lt;Data&gt; {
+    let content = std::fs::read_to_string(path)
+        .with_context(|| format!("failed to read {path}"))?;
+
+    let data = parse_content(&amp;content)
+        .with_context(|| format!("failed to parse {path}"))?;
+
+    validate(&amp;data)
+        .context("validation failed")?;
+
+    Ok(data)
+}
+
+// 错误输出：
+// Error: validation failed
+//
+// Caused by:
+//    0: failed to parse config.json
+//    1: expected ',' at line 5 column 12</code></pre>
+<h3 id="-操作符深入"><a class="header" href="#-操作符深入"><code>?</code> 操作符深入</a></h3>
+<p><code>?</code> 是 <code>match</code> + <code>From</code> 转换 + 提前返回的语法糖：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 这个：
+let value = operation()?;
+
+// 脱糖为：
+let value = match operation() {
+    Ok(v) =&gt; v,
+    Err(e) =&gt; return Err(From::from(e)),
+    //                  ^^^^^^^^^^^^^^
+    //                  通过 From trait 自动转换
+};
+<span class="boring">}</span></code></pre></pre>
+<p><strong><code>?</code> 也适用于 <code>Option</code></strong>（在返回 <code>Option</code> 的函数中）：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn find_user_email(users: &amp;[User], name: &amp;str) -&gt; Option&lt;String&gt; {
+    let user = users.iter().find(|u| u.name == name)?; // 如果未找到返回 None
+    let email = user.email.as_ref()?; // 如果 email 是 None 返回 None
+    Some(email.to_uppercase())
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="paniccatch_unwind-和何时中止"><a class="header" href="#paniccatch_unwind-和何时中止">Panic、catch_unwind 和何时中止</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Panics：用于 BUGS，不是预期错误
+fn get_element(data: &amp;[i32], index: usize) -&gt; &amp;i32 {
+    // 如果这个 panic，是编程错误（bug）。
+    // 不要"处理"它——修复调用者。
+    &amp;data[index]
+}
+
+// catch_unwind：用于边界（FFI、线程池）
+use std::panic;
+
+let result = panic::catch_unwind(|| {
+    // 安全运行可能 panic 的代码
+    risky_operation()
+});
+
+match result {
+    Ok(value) =&gt; println!("Success: {value:?}"),
+    Err(_) =&gt; eprintln!("Operation panicked — continuing safely"),
+}
+
+// 何时使用哪种：
+// - Result&lt;T, E&gt; → 预期失败（文件未找到、网络超时）
+// - panic!()     → 编程 bug（索引越界、不变量违反）
+// - process::abort() → 不可恢复状态（安全违规、数据损坏）
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>C++ 比较</strong>：<code>Result&lt;T, E&gt;</code> 替换异常的预期错误。<code>panic!()</code> 像 <code>assert()</code> 或 <code>std::terminate()</code> —— 它用于 bug，不是控制流。Rust 的 <code>?</code> 操作符使错误传播像异常一样人性化而无可预测的控制流。</p>
+</blockquote>
+<blockquote>
+<p><strong>要点——错误处理</strong></p>
+<ul>
+<li>库：<code>thiserror</code> 用于结构化错误 enum；应用：<code>anyhow</code> 用于人性化传播</li>
+<li><code>#[from]</code> 自动生成 <code>From</code> impl；<code>.context()</code> 添加人类可读包装器</li>
+<li><code>?</code> 脱糖为 <code>From::from()</code> + 提前返回；在返回 <code>Result</code> 的 <code>main()</code> 中工作</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>另见：</strong> <a href="ch14-crate-architecture-and-api-design.html">第 14 章 — API 设计</a> 了解"解析，非验证"模式。<a href="ch10-serialization-zero-copy-and-binary-data.html">第 10 章 — 序列化</a> 了解 serde 错误处理。</p>
+</blockquote>
+<hr />
+<h3 id="练习带-thiserror-的错误层次结构-约-30-分钟"><a class="header" href="#练习带-thiserror-的错误层次结构-约-30-分钟">练习：带 thiserror 的错误层次结构 ★★（约 30 分钟）</a></h3>
+<p>为文件处理应用设计错误类型层次结构，可能在 I/O、解析（JSON 和 CSV）和验证期间失败。使用 <code>thiserror</code> 并演示 <code>?</code> 传播。</p>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><code class="language-rust ignore">use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum AppError {
+    #[error("I/O error: {0}")]
+    Io(#[from] std::io::Error),
+
+    #[error("JSON parse error: {0}")]
+    Json(#[from] serde_json::Error),
+
+    #[error("CSV error at line {line}: {message}")]
+    Csv { line: usize, message: String },
+
+    #[error("validation error: {field} — {reason}")]
+    Validation { field: String, reason: String },
+}
+
+fn read_file(path: &amp;str) -&gt; Result&lt;String, AppError&gt; {
+    Ok(std::fs::read_to_string(path)?) // io::Error → AppError::Io 通过 #[from]
+}
+
+fn parse_json(content: &amp;str) -&gt; Result&lt;serde_json::Value, AppError&gt; {
+    Ok(serde_json::from_str(content)?) // serde_json::Error → AppError::Json
+}
+
+fn validate_name(value: &amp;serde_json::Value) -&gt; Result&lt;String, AppError&gt; {
+    let name = value.get("name")
+        .and_then(|v| v.as_str())
+        .ok_or_else(|| AppError::Validation {
+            field: "name".into(),
+            reason: "must be a non-null string".into(),
+        })?;
+
+    if name.is_empty() {
+        return Err(AppError::Validation {
+            field: "name".into(),
+            reason: "must not be empty".into(),
+        });
+    }
+
+    Ok(name.to_string())
+}
+
+fn process_file(path: &amp;str) -&gt; Result&lt;String, AppError&gt; {
+    let content = read_file(path)?;
+    let json = parse_json(&amp;content)?;
+    let name = validate_name(&amp;json)?;
+    Ok(name)
+}
+
+fn main() {
+    match process_file("config.json") {
+        Ok(name) =&gt; println!("Name: {name}"),
+        Err(e) =&gt; eprintln!("Error: {e}"),
+    }
+}</code></pre>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch09-smart-pointers-and-interior-mutability.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch11-serialization-zero-copy-and-binary-data.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch09-smart-pointers-and-interior-mutability.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch11-serialization-zero-copy-and-binary-data.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

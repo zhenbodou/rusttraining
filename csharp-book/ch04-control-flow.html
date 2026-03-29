@@ -1,0 +1,560 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>4. 控制流 - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="函数-vs-方法"><a class="header" href="#函数-vs-方法">函数 vs 方法</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> Rust 与 C# 中的函数和方法，表达式和语句之间的关键区别，
+<code>if</code>/<code>match</code>/<code>loop</code>/<code>while</code>/<code>for</code> 语法，以及 Rust 的
+表达式导向设计如何消除对三元运算符的需求。</p>
+<p><strong>难度：</strong> 🟢 初学者</p>
+</blockquote>
+<h3 id="c-函数声明"><a class="header" href="#c-函数声明">C# 函数声明</a></h3>
+<pre><code class="language-csharp">// C# - 类中的方法
+public class Calculator
+{
+    // 实例方法
+    public int Add(int a, int b)
+    {
+        return a + b;
+    }
+
+    // 静态方法
+    public static int Multiply(int a, int b)
+    {
+        return a * b;
+    }
+
+    // 带 ref 参数的方法
+    public void Increment(ref int value)
+    {
+        value++;
+    }
+}
+</code></pre>
+<h3 id="rust-函数声明"><a class="header" href="#rust-函数声明">Rust 函数声明</a></h3>
+<pre><pre class="playground"><code class="language-rust">// Rust - 独立函数
+fn add(a: i32, b: i32) -&gt; i32 {
+    a + b  // 最终表达式不需要 'return'
+}
+
+fn multiply(a: i32, b: i32) -&gt; i32 {
+    return a * b;  // 显式返回也可以
+}
+
+// 带可变引用的函数
+fn increment(value: &amp;mut i32) {
+    *value += 1;
+}
+
+fn main() {
+    let result = add(5, 3);
+    println!("5 + 3 = {}", result);
+
+    let mut x = 10;
+    increment(&amp;mut x);
+    println!("After increment: {}", x);
+}</code></pre></pre>
+<h3 id="表达式-vs-语句重要"><a class="header" href="#表达式-vs-语句重要">表达式 vs 语句（重要！）</a></h3>
+<pre class="mermaid">graph LR
+    subgraph &quot;C# —— 语句&quot;
+        CS1[&quot;if (cond)&quot;] --&gt; CS2[&quot;return 42;&quot;]
+        CS1 --&gt; CS3[&quot;return 0;&quot;]
+        CS2 --&gt; CS4[&quot;值通过 return 退出&quot;]
+        CS3 --&gt; CS4
+    end
+    subgraph &quot;Rust —— 表达式&quot;
+        RS1[&quot;if cond&quot;] --&gt; RS2[&quot;42  （无分号）&quot;]
+        RS1 --&gt; RS3[&quot;0  （无分号）&quot;]
+        RS2 --&gt; RS4[&quot;块就是值&quot;]
+        RS3 --&gt; RS4
+    end
+
+    style CS4 fill:#bbdefb,color:#000
+    style RS4 fill:#c8e6c9,color:#000
+</pre>
+<pre><code class="language-csharp">// C# - 语句 vs 表达式
+public int GetValue()
+{
+    if (condition)
+    {
+        return 42;  // 语句
+    }
+    return 0;       // 语句
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust - 一切都可以是表达式
+fn get_value(condition: bool) -&gt; i32 {
+    if condition {
+        42  // 表达式（无分号）
+    } else {
+        0   // 表达式（无分号）
+    }
+    // if-else 块本身是一个返回值的表达式
+}
+
+// 或更简单
+fn get_value_ternary(condition: bool) -&gt; i32 {
+    if condition { 42 } else { 0 }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="函数参数和返回类型"><a class="header" href="#函数参数和返回类型">函数参数和返回类型</a></h3>
+<pre><pre class="playground"><code class="language-rust">// 无参数，无返回值（返回单元类型 ()）
+fn say_hello() {
+    println!("Hello!");
+}
+
+// 多个参数
+fn greet(name: &amp;str, age: u32) {
+    println!("{} is {} years old", name, age);
+}
+
+// 使用元组的多个返回值
+fn divide_and_remainder(dividend: i32, divisor: i32) -&gt; (i32, i32) {
+    (dividend / divisor, dividend % divisor)
+}
+
+fn main() {
+    let (quotient, remainder) = divide_and_remainder(10, 3);
+    println!("10 ÷ 3 = {} remainder {}", quotient, remainder);
+}</code></pre></pre>
+<hr />
+<h2 id="控制流基础"><a class="header" href="#控制流基础">控制流基础</a></h2>
+<h3 id="条件语句"><a class="header" href="#条件语句">条件语句</a></h3>
+<pre><code class="language-csharp">// C# if 语句
+int x = 5;
+if (x &gt; 10)
+{
+    Console.WriteLine("Big number");
+}
+else if (x &gt; 5)
+{
+    Console.WriteLine("Medium number");
+}
+else
+{
+    Console.WriteLine("Small number");
+}
+
+// C# 三元运算符
+string message = x &gt; 10 ? "Big" : "Small";
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust if 表达式
+let x = 5;
+if x &gt; 10 {
+    println!("Big number");
+} else if x &gt; 5 {
+    println!("Medium number");
+} else {
+    println!("Small number");
+}
+
+// Rust if 作为表达式（类似三元）
+let message = if x &gt; 10 { "Big" } else { "Small" };
+
+// 多个条件
+let message = if x &gt; 10 {
+    "Big"
+} else if x &gt; 5 {
+    "Medium"
+} else {
+    "Small"
+};
+<span class="boring">}</span></code></pre></pre>
+<h3 id="循环"><a class="header" href="#循环">循环</a></h3>
+<pre><code class="language-csharp">// C# 循环
+// for 循环
+for (int i = 0; i &lt; 5; i++)
+{
+    Console.WriteLine(i);
+}
+
+// foreach 循环
+var numbers = new[] { 1, 2, 3, 4, 5 };
+foreach (var num in numbers)
+{
+    Console.WriteLine(num);
+}
+
+// while 循环
+int count = 0;
+while (count &lt; 3)
+{
+    Console.WriteLine(count);
+    count++;
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust 循环
+// 基于范围的 for 循环
+for i in 0..5 {  // 0 到 4（不包含结束）
+    println!("{}", i);
+}
+
+// 迭代集合
+let numbers = vec![1, 2, 3, 4, 5];
+for num in numbers {  // 获取所有权
+    println!("{}", num);
+}
+
+// 迭代引用（更常见）
+let numbers = vec![1, 2, 3, 4, 5];
+for num in &amp;numbers {  // 借用元素
+    println!("{}", num);
+}
+
+// while 循环
+let mut count = 0;
+while count &lt; 3 {
+    println!("{}", count);
+    count += 1;
+}
+
+// 带 break 的无限循环
+let mut counter = 0;
+loop {
+    if counter &gt;= 3 {
+        break;
+    }
+    println!("{}", counter);
+    counter += 1;
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="循环控制"><a class="header" href="#循环控制">循环控制</a></h3>
+<pre><code class="language-csharp">// C# 循环控制
+for (int i = 0; i &lt; 10; i++)
+{
+    if (i == 3) continue;
+    if (i == 7) break;
+    Console.WriteLine(i);
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust 循环控制
+for i in 0..10 {
+    if i == 3 { continue; }
+    if i == 7 { break; }
+    println!("{}", i);
+}
+
+// 循环标签（用于嵌套循环）
+'outer: for i in 0..3 {
+    'inner: for j in 0..3 {
+        if i == 1 &amp;&amp; j == 1 {
+            break 'outer;  // 跳出外层循环
+        }
+        println!("i: {}, j: {}", i, j);
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：温度转换器</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：将此 C# 程序转换为惯用的 Rust。使用表达式、模式匹配和适当的错误处理。</p>
+<pre><code class="language-csharp">// C# —— 将此转换为 Rust
+public static double Convert(double value, string from, string to)
+{
+    double celsius = from switch
+    {
+        "F" =&gt; (value - 32.0) * 5.0 / 9.0,
+        "K" =&gt; value - 273.15,
+        "C" =&gt; value,
+        _ =&gt; throw new ArgumentException($"Unknown unit: {from}")
+    };
+    return to switch
+    {
+        "F" =&gt; celsius * 9.0 / 5.0 + 32.0,
+        "K" =&gt; celsius + 273.15,
+        "C" =&gt; celsius,
+        _ =&gt; throw new ArgumentException($"Unknown unit: {to}")
+    };
+}
+</code></pre>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><pre class="playground"><code class="language-rust">#[derive(Debug, Clone, Copy)]
+enum TempUnit { Celsius, Fahrenheit, Kelvin }
+
+fn parse_unit(s: &amp;str) -&gt; Result&lt;TempUnit, String&gt; {
+    match s {
+        "C" =&gt; Ok(TempUnit::Celsius),
+        "F" =&gt; Ok(TempUnit::Fahrenheit),
+        "K" =&gt; Ok(TempUnit::Kelvin),
+        _   =&gt; Err(format!("Unknown unit: {s}")),
+    }
+}
+
+fn convert(value: f64, from: TempUnit, to: TempUnit) -&gt; f64 {
+    let celsius = match from {
+        TempUnit::Fahrenheit =&gt; (value - 32.0) * 5.0 / 9.0,
+        TempUnit::Kelvin     =&gt; value - 273.15,
+        TempUnit::Celsius    =&gt; value,
+    };
+    match to {
+        TempUnit::Fahrenheit =&gt; celsius * 9.0 / 5.0 + 32.0,
+        TempUnit::Kelvin     =&gt; celsius + 273.15,
+        TempUnit::Celsius    =&gt; celsius,
+    }
+}
+
+fn main() -&gt; Result&lt;(), String&gt; {
+    let from = parse_unit("F")?;
+    let to   = parse_unit("C")?;
+    println!("212°F = {:.1}°C", convert(212.0, from, to));
+    Ok(())
+}</code></pre></pre>
+<p><strong>关键要点</strong>：</p>
+<ul>
+<li>枚举替代魔术字符串——穷尽匹配在编译时捕获缺失的单位</li>
+<li><code>Result&lt;T, E&gt;</code> 替代异常——调用者在签名中看到可能的失败</li>
+<li><code>match</code> 是返回值的表达式——不需要 <code>return</code> 语句</li>
+</ul>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch03-1-true-immutability-vs-record-illusions.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch05-data-structures-and-collections.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch03-1-true-immutability-vs-record-illusions.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch05-data-structures-and-collections.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

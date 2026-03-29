@@ -1,0 +1,579 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>5. 通道和消息传递 - Rust Patterns &amp; Engineering How-Tos</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust Patterns &amp; Engineering How-Tos</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="5-通道和消息传递-"><a class="header" href="#5-通道和消息传递-">5. 通道和消息传递 🟢</a></h1>
+<blockquote>
+<p><strong>你将学到：</strong></p>
+<ul>
+<li><code>std::sync::mpsc</code> 基础以及何时升级到 crossbeam-channel</li>
+<li>使用 <code>select!</code> 进行通道选择以处理多源消息</li>
+<li>有界 vs 无界通道和背压策略</li>
+<li>用于封装并发状态的 actor 模式</li>
+</ul>
+</blockquote>
+<h2 id="stdsyncmpsc--标准通道"><a class="header" href="#stdsyncmpsc--标准通道">std::sync::mpsc —— 标准通道</a></h2>
+<p>Rust 标准库提供多生产者、单消费者通道：</p>
+<pre><pre class="playground"><code class="language-rust">use std::sync::mpsc;
+use std::thread;
+use std::time::Duration;
+
+fn main() {
+    // 创建通道：tx（发送者）和 rx（接收者）
+    let (tx, rx) = mpsc::channel();
+
+    // 生成一个生产者线程
+    let tx1 = tx.clone(); // 克隆用于多个生产者
+    thread::spawn(move || {
+        for i in 0..5 {
+            tx1.send(format!("producer-1: msg {i}")).unwrap();
+            thread::sleep(Duration::from_millis(100));
+        }
+    });
+
+    // 第二个生产者
+    thread::spawn(move || {
+        for i in 0..5 {
+            tx.send(format!("producer-2: msg {i}")).unwrap();
+            thread::sleep(Duration::from_millis(150));
+        }
+    });
+
+    // 消费者：接收所有消息
+    for msg in rx {
+        // 当所有发送者 drop 时 rx 迭代器结束
+        println!("Received: {msg}");
+    }
+    println!("All producers done.");
+}</code></pre></pre>
+<blockquote>
+<p><strong>注意：</strong> 为简洁起见在 <code>.send()</code> 上使用 <code>.unwrap()</code>。如果接收者已 drop 则会 panic。生产代码应优雅地处理 <code>SendError</code>。</p>
+</blockquote>
+<p><strong>关键属性</strong>：</p>
+<ul>
+<li>默认<strong>无界</strong>（如果消费者慢可能填满内存）</li>
+<li><code>mpsc::sync_channel(N)</code> 创建带背压的<strong>有界</strong>通道</li>
+<li><code>rx.recv()</code> 阻塞当前线程直到消息到达</li>
+<li><code>rx.try_recv()</code> 如果没有准备好立即返回 <code>Err(TryRecvError::Empty)</code></li>
+<li>当所有 <code>Sender</code> drop 时通道关闭</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 带背压的有界通道：
+let (tx, rx) = mpsc::sync_channel(10); // 10 个消息的缓冲区
+
+thread::spawn(move || {
+    for i in 0..1000 {
+        tx.send(i).unwrap(); // 如果缓冲区满则阻塞——自然背压
+    }
+});
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>注意：</strong> 为简洁起见使用 <code>.unwrap()</code>。在生产中，处理 <code>SendError</code>（接收者 drop）而非 panic。</p>
+</blockquote>
+<h3 id="crossbeam-channel--生产主力"><a class="header" href="#crossbeam-channel--生产主力">crossbeam-channel —— 生产主力</a></h3>
+<p><code>crossbeam-channel</code> 是生产通道使用的事实标准。它比 <code>std::sync::mpsc</code> 更快并支持多消费者（<code>mpmc</code>）：</p>
+<pre><code class="language-rust ignore">// Cargo.toml:
+//   [dependencies]
+//   crossbeam-channel = "0.5"
+use crossbeam_channel::{bounded, unbounded, select, Sender, Receiver};
+use std::thread;
+use std::time::Duration;
+
+fn main() {
+    // 有界 MPMC 通道
+    let (tx, rx) = bounded::&lt;String&gt;(100);
+
+    // 多个生产者
+    for id in 0..4 {
+        let tx = tx.clone();
+        thread::spawn(move || {
+            for i in 0..10 {
+                tx.send(format!("worker-{id}: item-{i}")).unwrap();
+            }
+        });
+    }
+    drop(tx); // drop 原始发送者以便通道可以关闭
+
+    // 多个消费者（std::sync::mpsc 不可能！）
+    let rx2 = rx.clone();
+    let consumer1 = thread::spawn(move || {
+        while let Ok(msg) = rx.recv() {
+            println!("[consumer-1] {msg}");
+        }
+    });
+    let consumer2 = thread::spawn(move || {
+        while let Ok(msg) = rx2.recv() {
+            println!("[consumer-2] {msg}");
+        }
+    });
+
+    consumer1.join().unwrap();
+    consumer2.join().unwrap();
+}</code></pre>
+<h3 id="通道选择select"><a class="header" href="#通道选择select">通道选择（select!）</a></h3>
+<p>同时监听多个通道——像 Go 中的 <code>select</code>：</p>
+<pre><code class="language-rust ignore">use crossbeam_channel::{bounded, tick, after, select};
+use std::time::Duration;
+
+fn main() {
+    let (work_tx, work_rx) = bounded::&lt;String&gt;(10);
+    let ticker = tick(Duration::from_secs(1));        // 周期性 tick
+    let deadline = after(Duration::from_secs(10));     // 一次性超时
+
+    // 生产者
+    let tx = work_tx.clone();
+    std::thread::spawn(move || {
+        for i in 0..100 {
+            tx.send(format!("job-{i}")).unwrap();
+            std::thread::sleep(Duration::from_millis(500));
+        }
+    });
+    drop(work_tx);
+
+    loop {
+        select! {
+            recv(work_rx) -&gt; msg =&gt; {
+                match msg {
+                    Ok(job) =&gt; println!("Processing: {job}"),
+                    Err(_) =&gt; {
+                        println!("Work channel closed");
+                        break;
+                    }
+                }
+            },
+            recv(ticker) -&gt; _ =&gt; {
+                println!("Tick — heartbeat");
+            },
+            recv(deadline) -&gt; _ =&gt; {
+                println!("Deadline reached — shutting down");
+                break;
+            },
+        }
+    }
+}</code></pre>
+<blockquote>
+<p><strong>Go 比较</strong>：这完全像 Go 的 <code>select</code> 语句在通道上。
+crossbeam 的 <code>select!</code> 宏随机化顺序以防止饥饿，就像 Go 一样。</p>
+</blockquote>
+<h3 id="有界-vs-无界和背压"><a class="header" href="#有界-vs-无界和背压">有界 vs 无界和背压</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>类型</th><th>满时的行为</th><th>内存</th><th>用例</th></tr></thead><tbody>
+<tr><td><strong>无界</strong></td><td>从不阻塞（增长堆）</td><td>无界 ⚠️</td><td>罕见——仅当生产者比消费者慢时</td></tr>
+<tr><td><strong>有界</strong></td><td><code>send()</code> 阻塞直到有空闲</td><td>固定</td><td>生产默认——防止 OOM</td></tr>
+<tr><td><strong>Rendezvous</strong>（bounded(0)）</td><td><code>send()</code> 阻塞直到接收者准备好</td><td>无</td><td>同步/交接</td></tr>
+</tbody></table>
+</div>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rendezvous 通道——零容量，直接交接
+let (tx, rx) = crossbeam_channel::bounded(0);
+// tx.send(x) 阻塞直到 rx.recv() 被调用，反之亦然。
+// 这精确同步两个线程。
+<span class="boring">}</span></code></pre></pre>
+<p><strong>规则</strong>：在生产中总是使用有界通道，除非你能证明生产者永远不会超过消费者。</p>
+<h3 id="带通道的-actor-模式"><a class="header" href="#带通道的-actor-模式">带通道的 Actor 模式</a></h3>
+<p>actor 模式使用通道序列化对可变状态的访问——无需互斥锁：</p>
+<pre><pre class="playground"><code class="language-rust">use std::sync::mpsc;
+use std::thread;
+
+// Actor 可以接收的消息
+enum CounterMsg {
+    Increment,
+    Decrement,
+    Get(mpsc::Sender&lt;i64&gt;), // 回复通道
+}
+
+struct CounterActor {
+    count: i64,
+    rx: mpsc::Receiver&lt;CounterMsg&gt;,
+}
+
+impl CounterActor {
+    fn new(rx: mpsc::Receiver&lt;CounterMsg&gt;) -&gt; Self {
+        CounterActor { count: 0, rx }
+    }
+
+    fn run(mut self) {
+        while let Ok(msg) = self.rx.recv() {
+            match msg {
+                CounterMsg::Increment =&gt; self.count += 1,
+                CounterMsg::Decrement =&gt; self.count -= 1,
+                CounterMsg::Get(reply) =&gt; {
+                    let _ = reply.send(self.count);
+                }
+            }
+        }
+    }
+}
+
+// Actor 手柄——克隆便宜，Send + Sync
+#[derive(Clone)]
+struct Counter {
+    tx: mpsc::Sender&lt;CounterMsg&gt;,
+}
+
+impl Counter {
+    fn spawn() -&gt; Self {
+        let (tx, rx) = mpsc::channel();
+        thread::spawn(move || CounterActor::new(rx).run());
+        Counter { tx }
+    }
+
+    fn increment(&amp;self) { let _ = self.tx.send(CounterMsg::Increment); }
+    fn decrement(&amp;self) { let _ = self.tx.send(CounterMsg::Decrement); }
+
+    fn get(&amp;self) -&gt; i64 {
+        let (reply_tx, reply_rx) = mpsc::channel();
+        self.tx.send(CounterMsg::Get(reply_tx)).unwrap();
+        reply_rx.recv().unwrap()
+    }
+}
+
+fn main() {
+    let counter = Counter::spawn();
+
+    // 多个线程可以安全使用计数器——无需互斥锁！
+    let handles: Vec&lt;_&gt; = (0..10).map(|_| {
+        let counter = counter.clone();
+        thread::spawn(move || {
+            for _ in 0..1000 {
+                counter.increment();
+            }
+        })
+    }).collect();
+
+    for h in handles { h.join().unwrap(); }
+    println!("Final count: {}", counter.get()); // 10000
+}</code></pre></pre>
+<blockquote>
+<p><strong>何时使用 actor vs 互斥锁</strong>：当状态有复杂不变量、操作花费很长时间，或你想序列化访问而不考虑锁顺序时，actor 很好。互斥锁对短临界区更简单。</p>
+</blockquote>
+<blockquote>
+<p><strong>要点——通道</strong></p>
+<ul>
+<li><code>crossbeam-channel</code> 是生产主力——比 <code>std::sync::mpsc</code> 更快、功能更丰富</li>
+<li><code>select!</code> 用声明式通道选择替换复杂的多源轮询</li>
+<li>有界通道提供自然背压；无界通道有 OOM 风险</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>另见：</strong> <a href="ch06-concurrency-vs-parallelism-vs-threads.html">第 6 章 — 并发</a> 了解线程、Mutex 和共享状态。<a href="ch15-asyncawait-essentials.html">第 15 章 — Async</a> 了解 async 通道（<code>tokio::sync::mpsc</code>）。</p>
+</blockquote>
+<hr />
+<h3 id="练习基于通道的-worker-池-约-45-分钟"><a class="header" href="#练习基于通道的-worker-池-约-45-分钟">练习：基于通道的 worker 池 ★★★（约 45 分钟）</a></h3>
+<p>使用通道构建 worker 池：</p>
+<ul>
+<li>调度器通过通道发送 <code>Job</code> 结构体</li>
+<li>N 个 worker 消费作业并发送结果回来</li>
+<li>使用 <code>std::sync::mpsc</code> 带 <code>Arc&lt;Mutex&lt;Receiver&gt;&gt;</code> 进行工作窃取</li>
+</ul>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><pre class="playground"><code class="language-rust">use std::sync::mpsc;
+use std::thread;
+
+struct Job {
+    id: u64,
+    data: String,
+}
+
+struct JobResult {
+    job_id: u64,
+    output: String,
+    worker_id: usize,
+}
+
+fn worker_pool(jobs: Vec&lt;Job&gt;, num_workers: usize) -&gt; Vec&lt;JobResult&gt; {
+    let (job_tx, job_rx) = mpsc::channel::&lt;Job&gt;();
+    let (result_tx, result_rx) = mpsc::channel::&lt;JobResult&gt;();
+
+    let job_rx = std::sync::Arc::new(std::sync::Mutex::new(job_rx));
+
+    let mut handles = Vec::new();
+    for worker_id in 0..num_workers {
+        let job_rx = job_rx.clone();
+        let result_tx = result_tx.clone();
+        handles.push(thread::spawn(move || {
+            loop {
+                let job = {
+                    let rx = job_rx.lock().unwrap();
+                    rx.recv()
+                };
+                match job {
+                    Ok(job) =&gt; {
+                        let output = format!("processed '{}' by worker {worker_id}", job.data);
+                        result_tx.send(JobResult {
+                            job_id: job.id, output, worker_id,
+                        }).unwrap();
+                    }
+                    Err(_) =&gt; break,
+                }
+            }
+        }));
+    }
+    drop(result_tx);
+
+    let num_jobs = jobs.len();
+    for job in jobs {
+        job_tx.send(job).unwrap();
+    }
+    drop(job_tx);
+
+    let results: Vec&lt;_&gt; = result_rx.into_iter().collect();
+    assert_eq!(results.len(), num_jobs);
+
+    for h in handles { h.join().unwrap(); }
+    results
+}
+
+fn main() {
+    let jobs: Vec&lt;Job&gt; = (0..20).map(|i| Job {
+        id: i, data: format!("task-{i}"),
+    }).collect();
+
+    let results = worker_pool(jobs, 4);
+    for r in &amp;results {
+        println!("[worker {}] job {}: {}", r.worker_id, r.job_id, r.output);
+    }
+}</code></pre></pre>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch04-phantomdata-types-that-carry-no-data.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch06-concurrency-vs-parallelism-vs-threads.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch04-phantomdata-types-that-carry-no-data.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch06-concurrency-vs-parallelism-vs-threads.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

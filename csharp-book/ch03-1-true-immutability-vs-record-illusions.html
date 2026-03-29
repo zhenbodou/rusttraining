@@ -1,0 +1,429 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>真正的不可变性与 Record 的假象 - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="真正的不可变性与-record-幻觉"><a class="header" href="#真正的不可变性与-record-幻觉">真正的不可变性与 Record 幻觉</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> 为什么 C# <code>record</code> 类型不是真正不可变的（可变字段、反射绕过），
+Rust 如何在编译时强制执行真正的不可变性，以及何时使用内部可变性模式。</p>
+<p><strong>难度：</strong> 🟡 中级</p>
+</blockquote>
+<h3 id="c-records--不可变性剧场"><a class="header" href="#c-records--不可变性剧场">C# Records —— 不可变性剧场</a></h3>
+<pre><code class="language-csharp">// C# records 看起来不可变但有逃生舱口
+public record Person(string Name, int Age, List&lt;string&gt; Hobbies);
+
+var person = new Person("John", 30, new List&lt;string&gt; { "reading" });
+
+// 这些看起来都像是创建了新实例：
+var older = person with { Age = 31 };  // 新 record
+var renamed = person with { Name = "Jonathan" };  // 新 record
+
+// 但引用类型仍然是可变的！
+person.Hobbies.Add("gaming");  // 变异了原始数据！
+Console.WriteLine(older.Hobbies.Count);  // 2 - older person 被影响了！
+Console.WriteLine(renamed.Hobbies.Count); // 2 - renamed person 也被影响了！
+
+// Init-only 属性仍然可以通过反射设置
+typeof(Person).GetProperty("Age")?.SetValue(person, 25);
+
+// 集合表达式有帮助但不能解决根本问题
+public record BetterPerson(string Name, int Age, IReadOnlyList&lt;string&gt; Hobbies);
+
+var betterPerson = new BetterPerson("Jane", 25, new List&lt;string&gt; { "painting" });
+// 仍然可以通过转换变异：
+((List&lt;string&gt;)betterPerson.Hobbies).Add("hacking the system");
+
+// 甚至"不可变"集合也不是真正不可变的
+using System.Collections.Immutable;
+public record SafePerson(string Name, int Age, ImmutableList&lt;string&gt; Hobbies);
+// 这更好，但需要纪律且有性能开销
+</code></pre>
+<h3 id="rust--默认真正的不可变性"><a class="header" href="#rust--默认真正的不可变性">Rust —— 默认真正的不可变性</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug, Clone)]
+struct Person {
+    name: String,
+    age: u32,
+    hobbies: Vec&lt;String&gt;,
+}
+
+let person = Person {
+    name: "John".to_string(),
+    age: 30,
+    hobbies: vec!["reading".to_string()],
+};
+
+// 这根本不会编译：
+// person.age = 31;  // 错误：不能赋值给不可变字段
+// person.hobbies.push("gaming".to_string());  // 错误：无法可变借用
+
+// 要修改，你必须显式选择加入 'mut'：
+let mut older_person = person.clone();
+older_person.age = 31;  // 现在很明显这是变异
+
+// 或使用函数式更新模式：
+let renamed = Person {
+    name: "Jonathan".to_string(),
+    ..person  // 从 person 复制其他字段（移动语义适用）
+};
+
+// 原始数据保证不变（直到被移动）：
+println!("{:?}", person.hobbies);  // 总是 ["reading"] - 不可变
+
+// 使用高效的不可变数据结构进行结构共享
+use std::rc::Rc;
+
+#[derive(Debug, Clone)]
+struct EfficientPerson {
+    name: String,
+    age: u32,
+    hobbies: Rc&lt;Vec&lt;String&gt;&gt;,  // 共享、不可变引用
+}
+
+// 创建新版本高效地共享数据
+let person1 = EfficientPerson {
+    name: "Alice".to_string(),
+    age: 30,
+    hobbies: Rc::new(vec!["reading".to_string(), "cycling".to_string()]),
+};
+
+let person2 = EfficientPerson {
+    name: "Bob".to_string(),
+    age: 25,
+    hobbies: Rc::clone(&amp;person1.hobbies),  // 共享引用，无深拷贝
+};
+<span class="boring">}</span></code></pre></pre>
+<pre class="mermaid">graph TD
+    subgraph &quot;C# Records - 浅层不可变性&quot;
+        CS_RECORD[&quot;record Person(...)&quot;]
+        CS_WITH[&quot;with 表达式&quot;]
+        CS_SHALLOW[&quot;⚠️ 仅顶层不可变&quot;]
+        CS_REF_MUT[&quot;❌ 引用类型仍然可变&quot;]
+        CS_REFLECTION[&quot;❌ 反射可以绕过&quot;]
+        CS_RUNTIME[&quot;❌ 运行时意外&quot;]
+        CS_DISCIPLINE[&quot;😓 需要团队纪律&quot;]
+
+        CS_RECORD --&gt; CS_WITH
+        CS_WITH --&gt; CS_SHALLOW
+        CS_SHALLOW --&gt; CS_REF_MUT
+        CS_RECORD --&gt; CS_REFLECTION
+        CS_REF_MUT --&gt; CS_RUNTIME
+        CS_RUNTIME --&gt; CS_DISCIPLINE
+    end
+
+    subgraph &quot;Rust - 真正的不可变性&quot;
+        RUST_STRUCT[&quot;struct Person { ... }&quot;]
+        RUST_DEFAULT[&quot;✅ 默认不可变&quot;]
+        RUST_COMPILE[&quot;✅ 编译时强制执行&quot;]
+        RUST_MUT[&quot;🔒 需要显式 'mut'&quot;]
+        RUST_MOVE[&quot;🔄 移动语义&quot;]
+        RUST_ZERO[&quot;⚡ 零运行时开销&quot;]
+        RUST_SAFE[&quot;🛡️ 内存安全&quot;]
+
+        RUST_STRUCT --&gt; RUST_DEFAULT
+        RUST_DEFAULT --&gt; RUST_COMPILE
+        RUST_COMPILE --&gt; RUST_MUT
+        RUST_MUT --&gt; RUST_MOVE
+        RUST_MOVE --&gt; RUST_ZERO
+        RUST_ZERO --&gt; RUST_SAFE
+    end
+
+    style CS_REF_MUT fill:#ffcdd2,color:#000
+    style CS_REFLECTION fill:#ffcdd2,color:#000
+    style CS_RUNTIME fill:#ffcdd2,color:#000
+    style RUST_COMPILE fill:#c8e6c9,color:#000
+    style RUST_ZERO fill:#c8e6c9,color:#000
+    style RUST_SAFE fill:#c8e6c9,color:#000
+</pre>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：证明不可变性</strong>（点击展开）</summary>
+<p>一位 C# 同事声称他们的 <code>record</code> 是不可变的。将这段 C# 代码翻译成 Rust 并解释为什么 Rust 版本是真正不可变的：</p>
+<pre><code class="language-csharp">public record Config(string Host, int Port, List&lt;string&gt; AllowedOrigins);
+
+var config = new Config("localhost", 8080, new List&lt;string&gt; { "example.com" });
+// "不可变" record... 但是：
+config.AllowedOrigins.Add("evil.com"); // 编译！List 是可变的。
+</code></pre>
+<ol>
+<li>创建一个真正<strong>不可变</strong>的等价 Rust 结构体</li>
+<li>展示尝试变异 <code>allowed_origins</code> 是<strong>编译错误</strong></li>
+<li>编写一个函数创建修改后的副本（新主机）而不变异</li>
+</ol>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><pre class="playground"><code class="language-rust">#[derive(Debug, Clone)]
+struct Config {
+    host: String,
+    port: u16,
+    allowed_origins: Vec&lt;String&gt;,
+}
+
+impl Config {
+    fn with_host(&amp;self, host: impl Into&lt;String&gt;) -&gt; Self {
+        Config {
+            host: host.into(),
+            ..self.clone()
+        }
+    }
+}
+
+fn main() {
+    let config = Config {
+        host: "localhost".into(),
+        port: 8080,
+        allowed_origins: vec!["example.com".into()],
+    };
+
+    // config.allowed_origins.push("evil.com".into());
+    // ❌ 错误：无法可变借用 `config.allowed_origins`
+
+    let production = config.with_host("prod.example.com");
+    println!("Dev: {:?}", config);       // 原始数据不变
+    println!("Prod: {:?}", production);  // 新副本有不同的主机
+}</code></pre></pre>
+<p><strong>关键见解</strong>：在 Rust 中，<code>let config = ...</code>（没有 <code>mut</code>）使<em>整个值树</em>不可变——包括嵌套的 <code>Vec</code>。C# records 仅使<em>引用</em>不可变，而不是内容。</p>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch03-built-in-types-and-variables.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch04-control-flow.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch03-built-in-types-and-variables.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch04-control-flow.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

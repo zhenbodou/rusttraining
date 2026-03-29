@@ -1,0 +1,550 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>2. 入门 - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="安装与设置"><a class="header" href="#安装与设置">安装与设置</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> 如何安装 Rust 并设置 IDE，Cargo 构建系统与 MSBuild/NuGet 的对比，
+你的第一个 Rust 程序与 C# 的对比，以及如何读取命令行输入。</p>
+<p><strong>难度：</strong> 🟢 初学者</p>
+</blockquote>
+<h3 id="安装-rust"><a class="header" href="#安装-rust">安装 Rust</a></h3>
+<pre><code class="language-bash"># 安装 Rust（适用于 Windows、macOS、Linux）
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# 在 Windows 上，你也可以从以下网址下载：https://rustup.rs/
+</code></pre>
+<h3 id="rust-工具-vs-c-工具"><a class="header" href="#rust-工具-vs-c-工具">Rust 工具 vs C# 工具</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>C# 工具</th><th>Rust 等价物</th><th>用途</th></tr></thead><tbody>
+<tr><td><code>dotnet new</code></td><td><code>cargo new</code></td><td>创建新项目</td></tr>
+<tr><td><code>dotnet build</code></td><td><code>cargo build</code></td><td>编译项目</td></tr>
+<tr><td><code>dotnet run</code></td><td><code>cargo run</code></td><td>运行项目</td></tr>
+<tr><td><code>dotnet test</code></td><td><code>cargo test</code></td><td>运行测试</td></tr>
+<tr><td>NuGet</td><td>Crates.io</td><td>包仓库</td></tr>
+<tr><td>MSBuild</td><td>Cargo</td><td>构建系统</td></tr>
+<tr><td>Visual Studio</td><td>VS Code + rust-analyzer</td><td>IDE</td></tr>
+</tbody></table>
+</div>
+<h3 id="ide-设置"><a class="header" href="#ide-设置">IDE 设置</a></h3>
+<ol>
+<li>
+<p><strong>VS Code</strong>（推荐初学者使用）</p>
+<ul>
+<li>安装 "rust-analyzer" 扩展</li>
+<li>安装 "CodeLLDB" 用于调试</li>
+</ul>
+</li>
+<li>
+<p><strong>Visual Studio</strong>（Windows）</p>
+<ul>
+<li>安装 Rust 支持扩展</li>
+</ul>
+</li>
+<li>
+<p><strong>JetBrains RustRover</strong>（完整 IDE）</p>
+<ul>
+<li>类似于 C# 的 Rider</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="你的第一个-rust-程序"><a class="header" href="#你的第一个-rust-程序">你的第一个 Rust 程序</a></h2>
+<h3 id="c-hello-world"><a class="header" href="#c-hello-world">C# Hello World</a></h3>
+<pre><code class="language-csharp">// Program.cs
+using System;
+
+namespace HelloWorld
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Hello, World!");
+        }
+    }
+}
+</code></pre>
+<h3 id="rust-hello-world"><a class="header" href="#rust-hello-world">Rust Hello World</a></h3>
+<pre><pre class="playground"><code class="language-rust">// main.rs
+fn main() {
+    println!("Hello, World!");
+}</code></pre></pre>
+<h3 id="c-开发者的关键区别"><a class="header" href="#c-开发者的关键区别">C# 开发者的关键区别</a></h3>
+<ol>
+<li><strong>不需要类</strong> —— 函数可以存在于顶层</li>
+<li><strong>没有命名空间</strong> —— 使用模块系统代替</li>
+<li><strong><code>println!</code> 是宏</strong> —— 注意 <code>!</code></li>
+<li><strong>println! 后没有分号</strong> —— 表达式 vs 语句</li>
+<li><strong>没有显式返回类型</strong> —— <code>main</code> 返回 <code>()</code>（单元类型）</li>
+</ol>
+<h3 id="创建你的第一个项目"><a class="header" href="#创建你的第一个项目">创建你的第一个项目</a></h3>
+<pre><code class="language-bash"># 创建新项目（类似 'dotnet new console'）
+cargo new hello_rust
+cd hello_rust
+
+# 创建的项目结构：
+# hello_rust/
+# ├── Cargo.toml      (类似 .csproj 文件)
+# └── src/
+#     └── main.rs     (类似 Program.cs)
+
+# 运行项目（类似 'dotnet run'）
+cargo run
+</code></pre>
+<hr />
+<h2 id="cargo-vs-nugetmsbuild"><a class="header" href="#cargo-vs-nugetmsbuild">Cargo vs NuGet/MSBuild</a></h2>
+<h3 id="项目配置"><a class="header" href="#项目配置">项目配置</a></h3>
+<p><strong>C# (.csproj)</strong></p>
+<pre><code class="language-xml">&lt;Project Sdk="Microsoft.NET.Sdk"&gt;
+  &lt;PropertyGroup&gt;
+    &lt;OutputType&gt;Exe&lt;/OutputType&gt;
+    &lt;TargetFramework&gt;net8.0&lt;/TargetFramework&gt;
+  &lt;/PropertyGroup&gt;
+
+  &lt;PackageReference Include="Newtonsoft.Json" Version="13.0.3" /&gt;
+  &lt;PackageReference Include="Serilog" Version="3.0.1" /&gt;
+&lt;/Project&gt;
+</code></pre>
+<p><strong>Rust (Cargo.toml)</strong></p>
+<pre><code class="language-toml">[package]
+name = "hello_rust"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde_json = "1.0"    # 类似 Newtonsoft.Json
+log = "0.4"           # 类似 Serilog
+</code></pre>
+<h3 id="常见-cargo-命令"><a class="header" href="#常见-cargo-命令">常见 Cargo 命令</a></h3>
+<pre><code class="language-bash"># 创建新项目
+cargo new my_project
+cargo new my_project --lib  # 创建库项目
+
+# 构建和运行
+cargo build          # 类似 'dotnet build'
+cargo run            # 类似 'dotnet run'
+cargo test           # 类似 'dotnet test'
+
+# 包管理
+cargo add serde      # 添加依赖（类似 'dotnet add package'）
+cargo update         # 更新依赖
+
+# Release 构建
+cargo build --release  # 优化构建
+cargo run --release    # 运行优化版本
+
+# 文档
+cargo doc --open     # 生成并打开文档
+</code></pre>
+<h3 id="工作区-vs-解决方案"><a class="header" href="#工作区-vs-解决方案">工作区 vs 解决方案</a></h3>
+<p><strong>C# 解决方案 (.sln)</strong></p>
+<pre><code class="language-text">MySolution/
+├── MySolution.sln
+├── WebApi/
+│   └── WebApi.csproj
+├── Business/
+│   └── Business.csproj
+└── Tests/
+    └── Tests.csproj
+</code></pre>
+<p><strong>Rust 工作区 (Cargo.toml)</strong></p>
+<pre><code class="language-toml">[workspace]
+members = [
+    "web_api",
+    "business",
+    "tests"
+]
+</code></pre>
+<hr />
+<h2 id="读取输入和-cli-参数"><a class="header" href="#读取输入和-cli-参数">读取输入和 CLI 参数</a></h2>
+<p>每个 C# 开发者都知道 <code>Console.ReadLine()</code>。以下是如何在 Rust 中处理用户输入、环境变量和命令行参数。</p>
+<h3 id="控制台输入"><a class="header" href="#控制台输入">控制台输入</a></h3>
+<pre><code class="language-csharp">// C# —— 读取用户输入
+Console.Write("Enter your name: ");
+string? name = Console.ReadLine();  // .NET 6+ 返回 string?
+Console.WriteLine($"Hello, {name}!");
+
+// 解析输入
+Console.Write("Enter a number: ");
+if (int.TryParse(Console.ReadLine(), out int number))
+{
+    Console.WriteLine($"You entered: {number}");
+}
+else
+{
+    Console.WriteLine("That's not a valid number.");
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust">use std::io::{self, Write};
+
+fn main() {
+    // 读取一行输入
+    print!("Enter your name: ");
+    io::stdout().flush().unwrap(); // 刷新，因为 print! 不会自动刷新
+
+    let mut name = String::new();
+    io::stdin().read_line(&amp;mut name).expect("Failed to read line");
+    let name = name.trim(); // 移除尾随换行符
+    println!("Hello, {name}!");
+
+    // 解析输入
+    print!("Enter a number: ");
+    io::stdout().flush().unwrap();
+
+    let mut input = String::new();
+    io::stdin().read_line(&amp;mut input).expect("Failed to read");
+    match input.trim().parse::&lt;i32&gt;() {
+        Ok(number) =&gt; println!("You entered: {number}"),
+        Err(_)     =&gt; println!("That's not a valid number."),
+    }
+}</code></pre></pre>
+<h3 id="命令行参数"><a class="header" href="#命令行参数">命令行参数</a></h3>
+<pre><code class="language-csharp">// C# —— 读取 CLI 参数
+static void Main(string[] args)
+{
+    if (args.Length &lt; 1)
+    {
+        Console.WriteLine("Usage: program &lt;filename&gt;");
+        return;
+    }
+    string filename = args[0];
+    Console.WriteLine($"Processing {filename}");
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust">use std::env;
+
+fn main() {
+    let args: Vec&lt;String&gt; = env::args().collect();
+    //  args[0] = 程序名（类似 C# 的程序集名称）
+    //  args[1..] = 实际参数
+
+    if args.len() &lt; 2 {
+        eprintln!("Usage: {} &lt;filename&gt;", args[0]); // eprintln! → stderr
+        std::process::exit(1);
+    }
+    let filename = &amp;args[1];
+    println!("Processing {filename}");
+}</code></pre></pre>
+<h3 id="环境变量"><a class="header" href="#环境变量">环境变量</a></h3>
+<pre><code class="language-csharp">// C#
+string dbUrl = Environment.GetEnvironmentVariable("DATABASE_URL") ?? "localhost";
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::env;
+
+let db_url = env::var("DATABASE_URL").unwrap_or_else(|_| "localhost".to_string());
+// env::var 返回 Result&lt;String, VarError&gt; —— 没有 null！
+<span class="boring">}</span></code></pre></pre>
+<h3 id="使用-clap-的生产级-cli-应用"><a class="header" href="#使用-clap-的生产级-cli-应用">使用 <code>clap</code> 的生产级 CLI 应用</a></h3>
+<p>对于超出简单参数解析的任何内容，请使用 <strong><code>clap</code></strong> crate——它是 Rust 中等价于 <code>System.CommandLine</code> 或 <code>CommandLineParser</code> 等库的工具。</p>
+<pre><code class="language-toml"># Cargo.toml
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+</code></pre>
+<pre><pre class="playground"><code class="language-rust">use clap::Parser;
+
+/// 一个简单的文件处理器——此文档注释成为帮助文本
+#[derive(Parser, Debug)]
+#[command(name = "processor", version, about)]
+struct Args {
+    /// 要处理的输入文件
+    #[arg(short, long)]
+    input: String,
+
+    /// 输出文件（默认为 stdout）
+    #[arg(short, long)]
+    output: Option&lt;String&gt;,
+
+    /// 启用详细日志
+    #[arg(short, long, default_value_t = false)]
+    verbose: bool,
+
+    /// 工作线程数
+    #[arg(short = 'j', long, default_value_t = 4)]
+    threads: usize,
+}
+
+fn main() {
+    let args = Args::parse(); // 自动解析、验证、生成 --help
+
+    if args.verbose {
+        println!("Input:   {}", args.input);
+        println!("Output:  {:?}", args.output);
+        println!("Threads: {}", args.threads);
+    }
+
+    // 使用 args.input、args.output 等
+}</code></pre></pre>
+<pre><code class="language-bash"># 自动生成的帮助：
+$ processor --help
+A simple file processor
+
+Usage: processor [OPTIONS] --input &lt;INPUT&gt;
+
+Options:
+  -i, --input &lt;INPUT&gt;      Input file to process
+  -o, --output &lt;OUTPUT&gt;    Output file (defaults to stdout)
+  -v, --verbose            Enable verbose logging
+  -j, --threads &lt;THREADS&gt;  Number of worker threads [default: 4]
+  -h, --help               Print help
+  -V, --version            Print version
+</code></pre>
+<pre><code class="language-csharp">// C# 中使用 System.CommandLine 的等价代码（更多样板代码）：
+var inputOption = new Option&lt;string&gt;("--input", "Input file") { IsRequired = true };
+var verboseOption = new Option&lt;bool&gt;("--verbose", "Enable verbose logging");
+var rootCommand = new RootCommand("A simple file processor");
+rootCommand.AddOption(inputOption);
+rootCommand.AddOption(verboseOption);
+rootCommand.SetHandler((input, verbose) =&gt; { /* ... */ }, inputOption, verboseOption);
+await rootCommand.InvokeAsync(args);
+// clap 的 derive 宏方法更简洁且类型安全
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>C#</th><th>Rust</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>Console.ReadLine()</code></td><td><code>io::stdin().read_line(&amp;mut buf)</code></td><td>必须提供缓冲区，返回 <code>Result</code></td></tr>
+<tr><td><code>int.TryParse(s, out n)</code></td><td><code>s.parse::&lt;i32&gt;()</code></td><td>返回 <code>Result&lt;i32, ParseIntError&gt;</code></td></tr>
+<tr><td><code>args[0]</code></td><td><code>env::args().nth(1)</code></td><td>Rust args[0] = 程序名</td></tr>
+<tr><td><code>Environment.GetEnvironmentVariable</code></td><td><code>env::var("KEY")</code></td><td>返回 <code>Result</code>，不是可空类型</td></tr>
+<tr><td><code>System.CommandLine</code></td><td><code>clap</code></td><td>基于 derive，自动生成帮助</td></tr>
+</tbody></table>
+</div>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch01-introduction-and-motivation.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch02-1-essential-keywords-reference.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch01-introduction-and-motivation.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch02-1-essential-keywords-reference.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

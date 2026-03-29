@@ -1,0 +1,789 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>15. 迁移模式与案例研究 - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="常见-c-模式在-rust-中"><a class="header" href="#常见-c-模式在-rust-中">常见 C# 模式在 Rust 中</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> 如何翻译 Repository 模式、Builder 模式、依赖注入、
+LINQ 链、Entity Framework 查询和配置模式从 C# 到惯用的 Rust。</p>
+<p><strong>难度：</strong> 🟡 中级</p>
+</blockquote>
+<pre class="mermaid">graph LR
+    subgraph &quot;C# 模式&quot;
+        I[&quot;interface IRepo&amp;lt;T&amp;gt;&quot;] --&gt; DI[&quot;DI 容器&quot;]
+        EX[&quot;try / catch&quot;] --&gt; LOG[&quot;ILogger&quot;]
+        LINQ[&quot;LINQ .Where().Select()&quot;] --&gt; LIST[&quot;List&amp;lt;T&amp;gt;&quot;]
+    end
+    subgraph &quot;Rust 等价物&quot;
+        TR[&quot;trait Repo&amp;lt;T&amp;gt;&quot;] --&gt; GEN[&quot;Generic&amp;lt;R: Repo&amp;gt;&quot;]
+        RES[&quot;Result&amp;lt;T, E&amp;gt; + ?&quot;] --&gt; THISERR[&quot;thiserror / anyhow&quot;]
+        ITER[&quot;.iter().filter().map()&quot;] --&gt; VEC[&quot;Vec&amp;lt;T&amp;gt;&quot;]
+    end
+    I --&gt;|&quot;变为&quot;| TR
+    EX --&gt;|&quot;变为&quot;| RES
+    LINQ --&gt;|&quot;变为&quot;| ITER
+
+    style TR fill:#c8e6c9,color:#000
+    style RES fill:#c8e6c9,color:#000
+    style ITER fill:#c8e6c9,color:#000
+</pre>
+<h3 id="repository-模式"><a class="header" href="#repository-模式">Repository 模式</a></h3>
+<pre><code class="language-csharp">// C# Repository 模式
+public interface IRepository&lt;T&gt; where T : IEntity
+{
+    Task&lt;T&gt; GetByIdAsync(int id);
+    Task&lt;IEnumerable&lt;T&gt;&gt; GetAllAsync();
+    Task&lt;T&gt; AddAsync(T entity);
+    Task UpdateAsync(T entity);
+    Task DeleteAsync(int id);
+}
+
+public class UserRepository : IRepository&lt;User&gt;
+{
+    private readonly DbContext _context;
+
+    public UserRepository(DbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task&lt;User&gt; GetByIdAsync(int id)
+    {
+        return await _context.Users.FindAsync(id);
+    }
+
+    // ... 其他实现
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust Repository 模式带 traits 和泛型
+use async_trait::async_trait;
+use std::fmt::Debug;
+
+#[async_trait]
+pub trait Repository&lt;T, E&gt;
+where
+    T: Clone + Debug + Send + Sync,
+    E: std::error::Error + Send + Sync,
+{
+    async fn get_by_id(&amp;self, id: u64) -&gt; Result&lt;Option&lt;T&gt;, E&gt;;
+    async fn get_all(&amp;self) -&gt; Result&lt;Vec&lt;T&gt;, E&gt;;
+    async fn add(&amp;self, entity: T) -&gt; Result&lt;T, E&gt;;
+    async fn update(&amp;self, entity: T) -&gt; Result&lt;T, E&gt;;
+    async fn delete(&amp;self, id: u64) -&gt; Result&lt;(), E&gt;;
+}
+
+#[derive(Debug, Clone)]
+pub struct User {
+    pub id: u64,
+    pub name: String,
+    pub email: String,
+}
+
+#[derive(Debug)]
+pub enum RepositoryError {
+    NotFound(u64),
+    DatabaseError(String),
+    ValidationError(String),
+}
+
+impl std::fmt::Display for RepositoryError {
+    fn fmt(&amp;self, f: &amp;mut std::fmt::Formatter&lt;'_&gt;) -&gt; std::fmt::Result {
+        match self {
+            RepositoryError::NotFound(id) =&gt; write!(f, "Entity with id {} not found", id),
+            RepositoryError::DatabaseError(msg) =&gt; write!(f, "Database error: {}", msg),
+            RepositoryError::ValidationError(msg) =&gt; write!(f, "Validation error: {}", msg),
+        }
+    }
+}
+
+impl std::error::Error for RepositoryError {}
+
+pub struct UserRepository {
+    // 数据库连接池等
+}
+
+#[async_trait]
+impl Repository&lt;User, RepositoryError&gt; for UserRepository {
+    async fn get_by_id(&amp;self, id: u64) -&gt; Result&lt;Option&lt;User&gt;, RepositoryError&gt; {
+        // 模拟数据库查找
+        if id == 0 {
+            return Ok(None);
+        }
+
+        Ok(Some(User {
+            id,
+            name: format!("User {}", id),
+            email: format!("user{}@example.com", id),
+        }))
+    }
+
+    async fn get_all(&amp;self) -&gt; Result&lt;Vec&lt;User&gt;, RepositoryError&gt; {
+        // 实现这里
+        Ok(vec![])
+    }
+
+    async fn add(&amp;self, entity: User) -&gt; Result&lt;User, RepositoryError&gt; {
+        // 验证和数据库插入
+        if entity.name.is_empty() {
+            return Err(RepositoryError::ValidationError("Name cannot be empty".to_string()));
+        }
+        Ok(entity)
+    }
+
+    async fn update(&amp;self, entity: User) -&gt; Result&lt;User, RepositoryError&gt; {
+        // 实现这里
+        Ok(entity)
+    }
+
+    async fn delete(&amp;self, id: u64) -&gt; Result&lt;(), RepositoryError&gt; {
+        // 实现这里
+        Ok(())
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="builder-模式"><a class="header" href="#builder-模式">Builder 模式</a></h3>
+<pre><code class="language-csharp">// C# Builder 模式（流式接口）
+public class HttpClientBuilder
+{
+    private TimeSpan? _timeout;
+    private string _baseAddress;
+    private Dictionary&lt;string, string&gt; _headers = new();
+
+    public HttpClientBuilder WithTimeout(TimeSpan timeout)
+    {
+        _timeout = timeout;
+        return this;
+    }
+
+    public HttpClientBuilder WithBaseAddress(string baseAddress)
+    {
+        _baseAddress = baseAddress;
+        return this;
+    }
+
+    public HttpClientBuilder WithHeader(string name, string value)
+    {
+        _headers[name] = value;
+        return this;
+    }
+
+    public HttpClient Build()
+    {
+        var client = new HttpClient();
+        if (_timeout.HasValue)
+            client.Timeout = _timeout.Value;
+        if (!string.IsNullOrEmpty(_baseAddress))
+            client.BaseAddress = new Uri(_baseAddress);
+        foreach (var header in _headers)
+            client.DefaultRequestHeaders.Add(header.Key, header.Value);
+        return client;
+    }
+}
+
+// 用法
+var client = new HttpClientBuilder()
+    .WithTimeout(TimeSpan.FromSeconds(30))
+    .WithBaseAddress("https://api.example.com")
+    .WithHeader("Accept", "application/json")
+    .Build();
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust Builder 模式（消耗构建器）
+use std::collections::HashMap;
+use std::time::Duration;
+
+#[derive(Debug)]
+pub struct HttpClient {
+    timeout: Duration,
+    base_address: String,
+    headers: HashMap&lt;String, String&gt;,
+}
+
+pub struct HttpClientBuilder {
+    timeout: Option&lt;Duration&gt;,
+    base_address: Option&lt;String&gt;,
+    headers: HashMap&lt;String, String&gt;,
+}
+
+impl HttpClientBuilder {
+    pub fn new() -&gt; Self {
+        HttpClientBuilder {
+            timeout: None,
+            base_address: None,
+            headers: HashMap::new(),
+        }
+    }
+
+    pub fn with_timeout(mut self, timeout: Duration) -&gt; Self {
+        self.timeout = Some(timeout);
+        self
+    }
+
+    pub fn with_base_address&lt;S: Into&lt;String&gt;&gt;(mut self, base_address: S) -&gt; Self {
+        self.base_address = Some(base_address.into());
+        self
+    }
+
+    pub fn with_header&lt;K: Into&lt;String&gt;, V: Into&lt;String&gt;&gt;(mut self, name: K, value: V) -&gt; Self {
+        self.headers.insert(name.into(), value.into());
+        self
+    }
+
+    pub fn build(self) -&gt; Result&lt;HttpClient, String&gt; {
+        let base_address = self.base_address.ok_or("Base address is required")?;
+
+        Ok(HttpClient {
+            timeout: self.timeout.unwrap_or(Duration::from_secs(30)),
+            base_address,
+            headers: self.headers,
+        })
+    }
+}
+
+// 用法
+let client = HttpClientBuilder::new()
+    .with_timeout(Duration::from_secs(30))
+    .with_base_address("https://api.example.com")
+    .with_header("Accept", "application/json")
+    .build()?;
+
+// 替代方案：对常见情况使用 Default trait
+impl Default for HttpClientBuilder {
+    fn default() -&gt; Self {
+        Self::new()
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="c-到-rust-概念映射"><a class="header" href="#c-到-rust-概念映射">C# 到 Rust 概念映射</a></h2>
+<h3 id="依赖注入--构造函数注入--traits"><a class="header" href="#依赖注入--构造函数注入--traits">依赖注入 → 构造函数注入 + Traits</a></h3>
+<pre><code class="language-csharp">// C# 带 DI 容器
+services.AddScoped&lt;IUserRepository, UserRepository&gt;();
+services.AddScoped&lt;IUserService, UserService&gt;();
+
+public class UserService
+{
+    private readonly IUserRepository _repository;
+
+    public UserService(IUserRepository repository)
+    {
+        _repository = repository;
+    }
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust：带 traits 的构造函数注入
+pub trait UserRepository {
+    async fn find_by_id(&amp;self, id: Uuid) -&gt; Result&lt;Option&lt;User&gt;, Error&gt;;
+    async fn save(&amp;self, user: &amp;User) -&gt; Result&lt;(), Error&gt;;
+}
+
+pub struct UserService&lt;R&gt;
+where
+    R: UserRepository,
+{
+    repository: R,
+}
+
+impl&lt;R&gt; UserService&lt;R&gt;
+where
+    R: UserRepository,
+{
+    pub fn new(repository: R) -&gt; Self {
+        Self { repository }
+    }
+
+    pub async fn get_user(&amp;self, id: Uuid) -&gt; Result&lt;Option&lt;User&gt;, Error&gt; {
+        self.repository.find_by_id(id).await
+    }
+}
+
+// 用法
+let repository = PostgresUserRepository::new(pool);
+let service = UserService::new(repository);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="linq--迭代器链"><a class="header" href="#linq--迭代器链">LINQ → 迭代器链</a></h3>
+<pre><code class="language-csharp">// C# LINQ
+var result = users
+    .Where(u =&gt; u.Age &gt; 18)
+    .Select(u =&gt; u.Name.ToUpper())
+    .OrderBy(name =&gt; name)
+    .Take(10)
+    .ToList();
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust：迭代器链（零成本！）
+let result: Vec&lt;String&gt; = users
+    .iter()
+    .filter(|u| u.age &gt; 18)
+    .map(|u| u.name.to_uppercase())
+    .collect::&lt;Vec&lt;_&gt;&gt;()
+    .into_iter()
+    .sorted()
+    .take(10)
+    .collect();
+
+// 或使用 itertools crate 进行更 LINQ 风格的操作
+use itertools::Itertools;
+
+let result: Vec&lt;String&gt; = users
+    .iter()
+    .filter(|u| u.age &gt; 18)
+    .map(|u| u.name.to_uppercase())
+    .sorted()
+    .take(10)
+    .collect();
+<span class="boring">}</span></code></pre></pre>
+<h3 id="entity-framework--sqlx--迁移"><a class="header" href="#entity-framework--sqlx--迁移">Entity Framework → SQLx + 迁移</a></h3>
+<pre><code class="language-csharp">// C# Entity Framework
+public class ApplicationDbContext : DbContext
+{
+    public DbSet&lt;User&gt; Users { get; set; }
+}
+
+var user = await context.Users
+    .Where(u =&gt; u.Email == email)
+    .FirstOrDefaultAsync();
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust：带编译时检查查询的 SQLx
+use sqlx::{PgPool, FromRow};
+
+#[derive(FromRow)]
+struct User {
+    id: Uuid,
+    email: String,
+    name: String,
+}
+
+// 编译时检查查询
+let user = sqlx::query_as!(
+    User,
+    "SELECT id, email, name FROM users WHERE email = $1",
+    email
+)
+.fetch_optional(&amp;pool)
+.await?;
+
+// 或使用动态查询
+let user = sqlx::query_as::&lt;_, User&gt;(
+    "SELECT id, email, name FROM users WHERE email = $1"
+)
+.bind(email)
+.fetch_optional(&amp;pool)
+.await?;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="配置--config-crates"><a class="header" href="#配置--config-crates">配置 → Config Crates</a></h3>
+<pre><code class="language-csharp">// C# 配置
+public class AppSettings
+{
+    public string DatabaseUrl { get; set; }
+    public int Port { get; set; }
+}
+
+var config = builder.Configuration.Get&lt;AppSettings&gt;();
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust：带 serde 的配置
+use config::{Config, ConfigError, Environment, File};
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize)]
+struct AppSettings {
+    database_url: String,
+    port: u16,
+}
+
+impl AppSettings {
+    pub fn new() -&gt; Result&lt;Self, ConfigError&gt; {
+        let s = Config::builder()
+            .add_source(File::with_name("config/default"))
+            .add_source(Environment::with_prefix("APP"))
+            .build()?;
+
+        s.try_deserialize()
+    }
+}
+
+// 用法
+let settings = AppSettings::new()?;
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="案例研究"><a class="header" href="#案例研究">案例研究</a></h2>
+<h3 id="案例研究-1cli-工具迁移csvtool"><a class="header" href="#案例研究-1cli-工具迁移csvtool">案例研究 1：CLI 工具迁移（csvtool）</a></h3>
+<p><strong>背景</strong>：团队维护一个 C# 控制台应用（<code>CsvProcessor</code>），读取大型 CSV 文件，应用转换，并写入输出。在 500 MB 文件时，内存使用峰值达到 4 GB，GC 暂停导致 30 秒停滞。</p>
+<p><strong>迁移方法</strong>：在 Rust 中用 2 周时间重写，一次一个模块。</p>
+<div class="table-wrapper"><table><thead><tr><th>步骤</th><th>改变内容</th><th>C# → Rust</th></tr></thead><tbody>
+<tr><td>1</td><td>CSV 解析</td><td><code>CsvHelper</code> → <code>csv</code> crate（流式 <code>Reader</code>）</td></tr>
+<tr><td>2</td><td>数据模型</td><td><code>class Record</code> → <code>struct Record</code>（栈分配，<code>#[derive(Deserialize)]</code>）</td></tr>
+<tr><td>3</td><td>转换</td><td>LINQ <code>.Select().Where()</code> → <code>.iter().map().filter()</code></td></tr>
+<tr><td>4</td><td>文件 I/O</td><td><code>StreamReader</code> → <code>BufReader&lt;File&gt;</code> 带 <code>?</code> 错误传播</td></tr>
+<tr><td>5</td><td>CLI 参数</td><td><code>System.CommandLine</code> → 带 derive 宏的 <code>clap</code></td></tr>
+<tr><td>6</td><td>并行处理</td><td><code>Parallel.ForEach</code> → <code>rayon</code> 的 <code>.par_iter()</code></td></tr>
+</tbody></table>
+</div>
+<p><strong>结果</strong>：</p>
+<ul>
+<li>内存：4 GB → 12 MB（流式而不是加载整个文件）</li>
+<li>速度：500 MB 文件 45 秒 → 3 秒</li>
+<li>二进制大小：单个 2 MB 可执行文件，无运行时依赖</li>
+</ul>
+<p><strong>关键教训</strong>：最大的胜利不是 Rust 本身——而是 Rust 的所有权模型<em>强制</em>流式设计。在 C# 中，很容易 <code>.ToList()</code> 将所有内容加载到内存中。在 Rust 中，借用检查器自然地转向基于 <code>Iterator</code> 的处理。</p>
+<h3 id="案例研究-2微服务替换auth-gateway"><a class="header" href="#案例研究-2微服务替换auth-gateway">案例研究 2：微服务替换（auth-gateway）</a></h3>
+<p><strong>背景</strong>：C# ASP.NET Core 身份验证网关处理 JWT 验证和 50+ 后端服务的速率限制。在 10K req/s 时，p99 延迟达到 200ms 带 GC 峰值。</p>
+<p><strong>迁移方法</strong>：使用 <code>axum</code> + <code>tower</code> 替换为 Rust 服务，保持 API 契约相同。</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 之前（C#）：services.AddAuthentication().AddJwtBearer(...)
+// 之后（Rust）：tower 中间件层
+
+use axum::{Router, middleware};
+use tower::ServiceBuilder;
+
+let app = Router::new()
+    .route("/api/*path", any(proxy_handler))
+    .layer(
+        ServiceBuilder::new()
+            .layer(middleware::from_fn(validate_jwt))
+            .layer(middleware::from_fn(rate_limit))
+    );
+<span class="boring">}</span></code></pre></pre>
+<div class="table-wrapper"><table><thead><tr><th>指标</th><th>C# (ASP.NET Core)</th><th>Rust (axum)</th></tr></thead><tbody>
+<tr><td>p50 延迟</td><td>5ms</td><td>0.8ms</td></tr>
+<tr><td>p99 延迟</td><td>200ms (GC 峰值)</td><td>4ms</td></tr>
+<tr><td>内存</td><td>300 MB</td><td>8 MB</td></tr>
+<tr><td>Docker 镜像</td><td>210 MB (.NET 运行时)</td><td>12 MB (静态二进制)</td></tr>
+<tr><td>冷启动</td><td>2.1s</td><td>0.05s</td></tr>
+</tbody></table>
+</div>
+<p><strong>关键教训</strong>：</p>
+<ol>
+<li><strong>保持相同的 API 契约</strong> —— 无需客户端更改。Rust 服务是即插即用替换。</li>
+<li><strong>从热路径开始</strong> —— JWT 验证是瓶颈。仅迁移那个中间件本可以捕获 80% 的胜利。</li>
+<li><strong>使用 <code>tower</code> 中间件</strong> —— 它镜像 ASP.NET Core 的中间件管道模式，所以 C# 开发者发现 Rust 架构熟悉。</li>
+<li><strong>p99 延迟改进</strong> 来自消除 GC 暂停，而不是更快的代码——Rust 的稳态吞吐量仅快 2 倍，但没有 GC 使尾部延迟可预测。</li>
+</ol>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：迁移 C# 服务</strong>（点击展开）</summary>
+<p>将此 C# 服务翻译为惯用的 Rust：</p>
+<pre><code class="language-csharp">public interface IUserService
+{
+    Task&lt;User?&gt; GetByIdAsync(int id);
+    Task&lt;List&lt;User&gt;&gt; SearchAsync(string query);
+}
+
+public class UserService : IUserService
+{
+    private readonly IDatabase _db;
+    public UserService(IDatabase db) { _db = db; }
+
+    public async Task&lt;User?&gt; GetByIdAsync(int id)
+    {
+        try { return await _db.QuerySingleAsync&lt;User&gt;(id); }
+        catch (NotFoundException) { return null; }
+    }
+
+    public async Task&lt;List&lt;User&gt;&gt; SearchAsync(string query)
+    {
+        return await _db.QueryAsync&lt;User&gt;($"SELECT * WHERE name LIKE '%{query}%'");
+    }
+}
+</code></pre>
+<p><strong>提示</strong>：使用 trait，<code>Option&lt;User&gt;</code> 而不是 null，<code>Result</code> 而不是 try/catch，并修复 SQL 注入漏洞。</p>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use async_trait::async_trait;
+
+#[derive(Debug, Clone)]
+struct User { id: i64, name: String }
+
+#[async_trait]
+trait Database: Send + Sync {
+    async fn get_user(&amp;self, id: i64) -&gt; Result&lt;Option&lt;User&gt;, sqlx::Error&gt;;
+    async fn search_users(&amp;self, query: &amp;str) -&gt; Result&lt;Vec&lt;User&gt;, sqlx::Error&gt;;
+}
+
+#[async_trait]
+trait UserService: Send + Sync {
+    async fn get_by_id(&amp;self, id: i64) -&gt; Result&lt;Option&lt;User&gt;, AppError&gt;;
+    async fn search(&amp;self, query: &amp;str) -&gt; Result&lt;Vec&lt;User&gt;, AppError&gt;;
+}
+
+struct UserServiceImpl&lt;D: Database&gt; {
+    db: D,  // 不需要 Arc——Rust 的所有权处理它
+}
+
+#[async_trait]
+impl&lt;D: Database&gt; UserService for UserServiceImpl&lt;D&gt; {
+    async fn get_by_id(&amp;self, id: i64) -&gt; Result&lt;Option&lt;User&gt;, AppError&gt; {
+        // Option 而不是 null；Result 而不是 try/catch
+        Ok(self.db.get_user(id).await?)
+    }
+
+    async fn search(&amp;self, query: &amp;str) -&gt; Result&lt;Vec&lt;User&gt;, AppError&gt; {
+        // 参数化查询——无 SQL 注入！
+        // （sqlx 使用 $1 占位符，不是字符串插值）
+        self.db.search_users(query).await.map_err(Into::into)
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>与 C# 的关键变化</strong>：</p>
+<ul>
+<li><code>null</code> → <code>Option&lt;User&gt;</code>（编译时空安全）</li>
+<li><code>try/catch</code> → <code>Result</code> + <code>?</code>（显式错误传播）</li>
+<li>SQL 注入修复：参数化查询，不是字符串插值</li>
+<li><code>IDatabase _db</code> → 泛型 <code>D: Database</code>（静态分发，无装箱）</li>
+</ul>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch14-1-testing.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch15-1-essential-crates-for-c-developers.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch14-1-testing.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch15-1-essential-crates-for-c-developers.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

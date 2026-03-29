@@ -1,0 +1,724 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>3. 内置类型与变量 - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="变量和可变性"><a class="header" href="#变量和可变性">变量和可变性</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> Rust 的变量声明和可变性模型与 C# 的 <code>var</code>/<code>const</code> 对比，
+原始类型映射，关键的 <code>String</code> vs <code>&amp;str</code> 区别，类型推断，
+以及 Rust 如何处理与 C# 不同的转换和转换。</p>
+<p><strong>难度：</strong> 🟢 初学者</p>
+</blockquote>
+<h3 id="c-变量声明"><a class="header" href="#c-变量声明">C# 变量声明</a></h3>
+<pre><code class="language-csharp">// C# - 变量默认可变
+int count = 0;           // 可变
+count = 5;               // ✅ 可以
+
+// readonly 字段（仅限类级别，不能用于局部变量）
+// readonly int maxSize = 100;  // 初始化后不可变
+
+const int BUFFER_SIZE = 1024; // 编译时常量（可作为局部或字段）
+</code></pre>
+<h3 id="rust-变量声明"><a class="header" href="#rust-变量声明">Rust 变量声明</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust - 变量默认不可变
+let count = 0;           // 默认不可变
+// count = 5;            // ❌ 编译错误：不能两次赋值给不可变变量
+
+let mut count = 0;       // 显式可变
+count = 5;               // ✅ 可以
+
+const BUFFER_SIZE: usize = 1024; // 编译时常量
+<span class="boring">}</span></code></pre></pre>
+<h3 id="c-开发者的关键思维转变"><a class="header" href="#c-开发者的关键思维转变">C# 开发者的关键思维转变</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 将 'let' 想象为应用于所有变量的 C# readonly 字段语义
+let name = "John";       // 类似 readonly 字段：一旦设置，不能更改
+let mut age = 30;        // 类似：int age = 30;
+
+// 变量遮蔽（Rust 独有）
+let spaces = "   ";      // 字符串
+let spaces = spaces.len(); // 现在是数字（usize）
+// 这与变异不同——我们正在创建一个新变量
+<span class="boring">}</span></code></pre></pre>
+<h3 id="实际示例计数器"><a class="header" href="#实际示例计数器">实际示例：计数器</a></h3>
+<pre><code class="language-csharp">// C# 版本
+public class Counter
+{
+    private int value = 0;
+
+    public void Increment()
+    {
+        value++;  // 变异
+    }
+
+    public int GetValue() =&gt; value;
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust 版本
+pub struct Counter {
+    value: i32,  // 默认私有
+}
+
+impl Counter {
+    pub fn new() -&gt; Counter {
+        Counter { value: 0 }
+    }
+
+    pub fn increment(&amp;mut self) {  // &amp;mut 变异所需
+        self.value += 1;
+    }
+
+    pub fn get_value(&amp;self) -&gt; i32 {
+        self.value
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="数据类型比较"><a class="header" href="#数据类型比较">数据类型比较</a></h2>
+<h3 id="原始类型"><a class="header" href="#原始类型">原始类型</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>C# 类型</th><th>Rust 类型</th><th>大小</th><th>范围</th></tr></thead><tbody>
+<tr><td><code>byte</code></td><td><code>u8</code></td><td>8 位</td><td>0 到 255</td></tr>
+<tr><td><code>sbyte</code></td><td><code>i8</code></td><td>8 位</td><td>-128 到 127</td></tr>
+<tr><td><code>short</code></td><td><code>i16</code></td><td>16 位</td><td>-32,768 到 32,767</td></tr>
+<tr><td><code>ushort</code></td><td><code>u16</code></td><td>16 位</td><td>0 到 65,535</td></tr>
+<tr><td><code>int</code></td><td><code>i32</code></td><td>32 位</td><td>-2³¹ 到 2³¹-1</td></tr>
+<tr><td><code>uint</code></td><td><code>u32</code></td><td>32 位</td><td>0 到 2³²-1</td></tr>
+<tr><td><code>long</code></td><td><code>i64</code></td><td>64 位</td><td>-2⁶³ 到 2⁶³-1</td></tr>
+<tr><td><code>ulong</code></td><td><code>u64</code></td><td>64 位</td><td>0 到 2⁶⁴-1</td></tr>
+<tr><td><code>float</code></td><td><code>f32</code></td><td>32 位</td><td>IEEE 754</td></tr>
+<tr><td><code>double</code></td><td><code>f64</code></td><td>64 位</td><td>IEEE 754</td></tr>
+<tr><td><code>bool</code></td><td><code>bool</code></td><td>1 位</td><td>true/false</td></tr>
+<tr><td><code>char</code></td><td><code>char</code></td><td>32 位</td><td>Unicode 标量</td></tr>
+</tbody></table>
+</div>
+<h3 id="大小类型重要"><a class="header" href="#大小类型重要">大小类型（重要！）</a></h3>
+<pre><code class="language-csharp">// C# - int 总是 32 位
+int arrayIndex = 0;
+long fileSize = file.Length;
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust - 大小类型匹配指针大小（32 位或 64 位）
+let array_index: usize = 0;    // 类似 C 中的 size_t
+let file_size: u64 = file.len(); // 显式 64 位
+<span class="boring">}</span></code></pre></pre>
+<h3 id="类型推断"><a class="header" href="#类型推断">类型推断</a></h3>
+<pre><code class="language-csharp">// C# - var 关键字
+var name = "John";        // string
+var count = 42;           // int
+var price = 29.99;        // double
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust - 自动类型推断
+let name = "John";        // &amp;str（字符串切片）
+let count = 42;           // i32（默认整数）
+let price = 29.99;        // f64（默认浮点数）
+
+// 显式类型注解
+let count: u32 = 42;
+let price: f32 = 29.99;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="数组和集合概述"><a class="header" href="#数组和集合概述">数组和集合概述</a></h3>
+<pre><code class="language-csharp">// C# - 引用类型，堆分配
+int[] numbers = new int[5];        // 固定大小
+List&lt;int&gt; list = new List&lt;int&gt;();  // 动态大小
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust - 多种选项
+let numbers: [i32; 5] = [1, 2, 3, 4, 5];  // 栈数组，固定大小
+let mut list: Vec&lt;i32&gt; = Vec::new();       // 堆向量，动态大小
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="字符串类型string-vs-str"><a class="header" href="#字符串类型string-vs-str">字符串类型：String vs &amp;str</a></h2>
+<p>这是 C# 开发者最困惑的概念之一，所以让我们仔细分解。</p>
+<h3 id="c-字符串处理"><a class="header" href="#c-字符串处理">C# 字符串处理</a></h3>
+<pre><code class="language-csharp">// C# - 简单字符串模型
+string name = "John";           // 字符串字面量
+string greeting = "Hello, " + name;  // 字符串连接
+string upper = name.ToUpper();  // 方法调用
+</code></pre>
+<h3 id="rust-字符串类型"><a class="header" href="#rust-字符串类型">Rust 字符串类型</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust - 两种主要字符串类型
+
+// 1. &amp;str（字符串切片）- 类似 C# 中的 ReadOnlySpan&lt;char&gt;
+let name: &amp;str = "John";        // 字符串字面量（不可变，借用）
+
+// 2. String - 类似 StringBuilder 或可变字符串
+let mut greeting = String::new();       // 空字符串
+greeting.push_str("Hello, ");          // 追加
+greeting.push_str(name);               // 追加
+
+// 或直接创建
+let greeting = String::from("Hello, John");
+let greeting = "Hello, John".to_string();  // 将 &amp;str 转换为 String
+<span class="boring">}</span></code></pre></pre>
+<h3 id="何时使用哪个"><a class="header" href="#何时使用哪个">何时使用哪个？</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>场景</th><th>使用</th><th>C# 等价物</th></tr></thead><tbody>
+<tr><td>字符串字面量</td><td><code>&amp;str</code></td><td><code>string</code> 字面量</td></tr>
+<tr><td>函数参数（只读）</td><td><code>&amp;str</code></td><td><code>string</code> 或 <code>ReadOnlySpan&lt;char&gt;</code></td></tr>
+<tr><td><em>owned</em>、可变字符串</td><td><code>String</code></td><td><code>StringBuilder</code></td></tr>
+<tr><td>返回_owned_字符串</td><td><code>String</code></td><td><code>string</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="实际示例"><a class="header" href="#实际示例">实际示例</a></h3>
+<pre><pre class="playground"><code class="language-rust">// 接受任何字符串类型的函数
+fn greet(name: &amp;str) {  // 接受 String 和 &amp;str
+    println!("Hello, {}!", name);
+}
+
+fn main() {
+    let literal = "John";                    // &amp;str
+    let owned = String::from("Jane");        // String
+
+    greet(literal);                          // 可以
+    greet(&amp;owned);                           // 可以（将 String 借用为 &amp;str）
+    greet("Bob");                            // 可以
+}
+
+// 返回_owned_字符串的函数
+fn create_greeting(name: &amp;str) -&gt; String {
+    format!("Hello, {}!", name)  // format! 宏返回 String
+}</code></pre></pre>
+<h3 id="c-开发者这样想"><a class="header" href="#c-开发者这样想">C# 开发者：这样想</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// &amp;str 类似 ReadOnlySpan&lt;char&gt; —— 字符串数据的视图
+// String 类似你拥有并可以修改的 char[]
+
+let borrowed: &amp;str = "我不拥有这个数据";
+let owned: String = String::from("我拥有这个数据");
+
+// 在它们之间转换
+let owned_copy: String = borrowed.to_string();  // 复制为_owned_
+let borrowed_view: &amp;str = &amp;owned;               // 从_owned_借用
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="打印和字符串格式化"><a class="header" href="#打印和字符串格式化">打印和字符串格式化</a></h2>
+<p>C# 开发者严重依赖 <code>Console.WriteLine</code> 和字符串插值（<code>$""</code>）。Rust 的格式化系统同样强大，但使用宏和格式说明符而不是。</p>
+<h3 id="基本输出"><a class="header" href="#基本输出">基本输出</a></h3>
+<pre><code class="language-csharp">// C# 输出
+Console.Write("no newline");
+Console.WriteLine("with newline");
+Console.Error.WriteLine("to stderr");
+
+// 字符串插值（C# 6+）
+string name = "Alice";
+int age = 30;
+Console.WriteLine($"{name} is {age} years old");
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust 输出——全是宏（注意！）
+print!("no newline");              // → stdout，无换行
+println!("with newline");           // → stdout + 换行
+eprint!("to stderr");              // → stderr，无换行
+eprintln!("to stderr with newline"); // → stderr + 换行
+
+// 字符串格式化（类似 $"" 插值）
+let name = "Alice";
+let age = 30;
+println!("{name} is {age} years old");     // 内联变量捕获（Rust 1.58+）
+println!("{} is {} years old", name, age); // 位置参数
+
+// format! 返回 String 而不是打印
+let msg = format!("{name} is {age} years old");
+<span class="boring">}</span></code></pre></pre>
+<h3 id="格式说明符"><a class="header" href="#格式说明符">格式说明符</a></h3>
+<pre><code class="language-csharp">// C# 格式说明符
+Console.WriteLine($"{price:F2}");         // 固定小数：29.99
+Console.WriteLine($"{count:D5}");         // 填充整数：00042
+Console.WriteLine($"{value,10}");         // 右对齐，宽度 10
+Console.WriteLine($"{value,-10}");        // 左对齐，宽度 10
+Console.WriteLine($"{hex:X}");            // 十六进制：FF
+Console.WriteLine($"{ratio:P1}");         // 百分比：85.0%
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust 格式说明符
+println!("{price:.2}");          // 2 位小数：29.99
+println!("{count:05}");          // 零填充，宽度 5：00042
+println!("{value:&gt;10}");         // 右对齐，宽度 10
+println!("{value:&lt;10}");         // 左对齐，宽度 10
+println!("{value:^10}");         // 居中对齐，宽度 10
+println!("{hex:#X}");            // 带前缀的十六进制：0xFF
+println!("{hex:08X}");           // 十六进制零填充：000000FF
+println!("{bits:#010b}");        // 带前缀的二进制：0b00001010
+println!("{big}", big = 1_000_000); // 命名参数
+<span class="boring">}</span></code></pre></pre>
+<h3 id="debug-vs-display-打印"><a class="header" href="#debug-vs-display-打印">Debug vs Display 打印</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// {:?}  — Debug trait（用于开发者，自动派生）
+// {:#?} — 漂亮打印的 Debug（缩进，多行）
+// {}    — Display trait（用于用户，必须手动实现）
+
+#[derive(Debug)] // 自动生成 Debug 输出
+struct Point { x: f64, y: f64 }
+
+let p = Point { x: 1.5, y: 2.7 };
+
+println!("{:?}", p);   // Point { x: 1.5, y: 2.7 }   — 紧凑 debug
+println!("{:#?}", p);  // Point {                     — 漂亮 debug
+                        //     x: 1.5,
+                        //     y: 2.7,
+                        // }
+// println!("{}", p);  // ❌ 错误：Point 没有实现 Display
+
+// 实现 Display 用于面向用户的输出：
+use std::fmt;
+
+impl fmt::Display for Point {
+    fn fmt(&amp;self, f: &amp;mut fmt::Formatter&lt;'_&gt;) -&gt; fmt::Result {
+        write!(f, "({}, {})", self.x, self.y)
+    }
+}
+println!("{}", p);    // (1.5, 2.7)  — 用户友好
+<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-csharp">// C# 等价物：
+// {:?}  ≈ object.GetType().ToString() 或反射转储
+// {}    ≈ object.ToString()
+// 在 C# 中你重写 ToString()；在 Rust 中你实现 Display
+</code></pre>
+<h3 id="快速参考"><a class="header" href="#快速参考">快速参考</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>C#</th><th>Rust</th><th>输出</th></tr></thead><tbody>
+<tr><td><code>Console.WriteLine(x)</code></td><td><code>println!("{x}")</code></td><td>Display 格式化</td></tr>
+<tr><td><code>$"{x}"</code>（插值）</td><td><code>format!("{x}")</code></td><td>返回 <code>String</code></td></tr>
+<tr><td><code>x.ToString()</code></td><td><code>x.to_string()</code></td><td>需要 <code>Display</code> trait</td></tr>
+<tr><td>重写 <code>ToString()</code></td><td><code>impl Display</code></td><td>面向用户的输出</td></tr>
+<tr><td>调试器视图</td><td><code>{:?}</code> 或 <code>dbg!(x)</code></td><td>开发者输出</td></tr>
+<tr><td><code>String.Format("{0:F2}", x)</code></td><td><code>format!("{x:.2}")</code></td><td>格式化 <code>String</code></td></tr>
+<tr><td><code>Console.Error.WriteLine</code></td><td><code>eprintln!()</code></td><td>写入 stderr</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h2 id="类型转换和转换"><a class="header" href="#类型转换和转换">类型转换和转换</a></h2>
+<p>C# 有隐式转换、显式强制转换 <code>(int)x</code> 和 <code>Convert.To*()</code>。Rust 更严格——没有隐式数值转换。</p>
+<h3 id="数值转换"><a class="header" href="#数值转换">数值转换</a></h3>
+<pre><code class="language-csharp">// C# —— 隐式和显式转换
+int small = 42;
+long big = small;              // 隐式扩展：好
+double d = small;              // 隐式扩展：好
+int truncated = (int)3.14;     // 显式缩小：3
+byte b = (byte)300;            // 静默溢出：44
+
+// 安全转换
+if (int.TryParse("42", out int parsed)) { /* ... */ }
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 所有数值转换都是显式的
+let small: i32 = 42;
+let big: i64 = small as i64;       // 扩展：显式使用 'as'
+let d: f64 = small as f64;         // 整数到浮点数：显式
+let truncated: i32 = 3.14_f64 as i32; // 缩小：3（截断）
+let b: u8 = 300_u16 as u8;        // 溢出：环绕到 44（类似 C# unchecked）
+
+// 使用 TryFrom 进行安全转换
+use std::convert::TryFrom;
+let safe: Result&lt;u8, _&gt; = u8::try_from(300_u16); // Err —— 超出范围
+let ok: Result&lt;u8, _&gt;   = u8::try_from(42_u16);  // Ok(42)
+
+// 字符串解析——返回 Result，不是 bool + out 参数
+let parsed: Result&lt;i32, _&gt; = "42".parse::&lt;i32&gt;();   // Ok(42)
+let bad: Result&lt;i32, _&gt;    = "abc".parse::&lt;i32&gt;();  // Err(ParseIntError)
+
+// 使用 turbofish 语法：
+let n = "42".parse::&lt;f64&gt;().unwrap(); // 42.0
+<span class="boring">}</span></code></pre></pre>
+<h3 id="字符串转换"><a class="header" href="#字符串转换">字符串转换</a></h3>
+<pre><code class="language-csharp">// C#
+int n = 42;
+string s = n.ToString();          // "42"
+string formatted = $"{n:X}";
+int back = int.Parse(s);          // 42 或抛出
+bool ok = int.TryParse(s, out int result);
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 通过 Display 的 to_string()，通过 FromStr 的 parse()
+let n: i32 = 42;
+let s: String = n.to_string();            // "42"（使用 Display trait）
+let formatted = format!("{n:X}");         // "2A"
+let back: i32 = s.parse().unwrap();       // 42 或 panic
+let result: Result&lt;i32, _&gt; = s.parse();   // Ok(42) —— 安全版本
+
+// &amp;str ↔ String 转换（Rust 中最常见的转换）
+let owned: String = "hello".to_string();    // &amp;str → String
+let owned2: String = String::from("hello"); // &amp;str → String（等价）
+let borrowed: &amp;str = &amp;owned;               // String → &amp;str（免费，只是借用）
+<span class="boring">}</span></code></pre></pre>
+<h3 id="引用转换没有继承强制转换"><a class="header" href="#引用转换没有继承强制转换">引用转换（没有继承强制转换！）</a></h3>
+<pre><code class="language-csharp">// C# —— 向上转换和向下转换
+Animal a = new Dog();              // 向上转换（隐式）
+Dog d = (Dog)a;                    // 向下转换（显式，可能抛出）
+if (a is Dog dog) { /* ... */ }    // 带模式匹配的安全向下转换
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 没有继承，没有向上转换/向下转换
+// 使用 trait 对象进行多态：
+let animal: Box&lt;dyn Animal&gt; = Box::new(Dog);
+
+// "向下转换" 需要 Any trait（很少需要）：
+use std::any::Any;
+if let Some(dog) = animal_any.downcast_ref::&lt;Dog&gt;() {
+    // 使用 dog
+}
+// 实际上，使用枚举而不是向下转换：
+enum Animal {
+    Dog(Dog),
+    Cat(Cat),
+}
+match animal {
+    Animal::Dog(d) =&gt; { /* 使用 d */ }
+    Animal::Cat(c) =&gt; { /* 使用 c */ }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="快速参考-1"><a class="header" href="#快速参考-1">快速参考</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>C#</th><th>Rust</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>(int)x</code></td><td><code>x as i32</code></td><td>截断/环绕转换</td></tr>
+<tr><td>隐式扩展</td><td>必须使用 <code>as</code></td><td>无隐式数值转换</td></tr>
+<tr><td><code>Convert.ToInt32(x)</code></td><td><code>i32::try_from(x)</code></td><td>安全，返回 <code>Result</code></td></tr>
+<tr><td><code>int.Parse(s)</code></td><td><code>s.parse::&lt;i32&gt;().unwrap()</code></td><td>失败时 panic</td></tr>
+<tr><td><code>int.TryParse(s, out n)</code></td><td><code>s.parse::&lt;i32&gt;()</code></td><td>返回 <code>Result&lt;i32, _&gt;</code></td></tr>
+<tr><td><code>(Dog)animal</code></td><td>不可用</td><td>使用枚举或 <code>Any</code></td></tr>
+<tr><td><code>as Dog</code> / <code>is Dog</code></td><td><code>downcast_ref::&lt;Dog&gt;()</code></td><td>通过 <code>Any</code> trait；更喜欢枚举</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h2 id="注释和文档"><a class="header" href="#注释和文档">注释和文档</a></h2>
+<h3 id="普通注释"><a class="header" href="#普通注释">普通注释</a></h3>
+<pre><code class="language-csharp">// C# 注释
+// 单行注释
+/* 多行
+   注释 */
+
+/// &lt;summary&gt;
+/// XML 文档注释
+/// &lt;/summary&gt;
+/// &lt;param name="name"&gt;用户的名字&lt;/param&gt;
+/// &lt;returns&gt;问候字符串&lt;/returns&gt;
+public string Greet(string name)
+{
+    return $"Hello, {name}!";
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust 注释
+// 单行注释
+/* 多行
+   注释 */
+
+/// 文档注释（类似 C# ///）
+/// 此函数按名字问候用户。
+///
+/// # 参数
+///
+/// * `name` - 用户的名字作为字符串切片
+///
+/// # 返回值
+///
+/// 包含问候的 `String`
+///
+/// # 示例
+///
+/// ```
+/// let greeting = greet("Alice");
+/// assert_eq!(greeting, "Hello, Alice!");
+/// ```
+pub fn greet(name: &amp;str) -&gt; String {
+    format!("Hello, {}!", name)
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="文档生成"><a class="header" href="#文档生成">文档生成</a></h3>
+<pre><code class="language-bash"># 生成文档（类似 C# 中的 XML 文档）
+cargo doc --open
+
+# 运行文档测试
+cargo test --doc
+</code></pre>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：类型安全的温度</strong>（点击展开）</summary>
+<p>创建一个 Rust 程序：</p>
+<ol>
+<li>声明一个 <code>const</code> 表示绝对零度（摄氏度）（<code>-273.15</code>）</li>
+<li>声明一个 <code>static</code> 计数器用于记录执行了多少次转换（使用 <code>AtomicU32</code>）</li>
+<li>编写一个函数 <code>celsius_to_fahrenheit(c: f64) -&gt; f64</code>，通过返回 <code>f64::NAN</code> 拒绝低于绝对零度的温度</li>
+<li>通过将字符串 <code>"98.6"</code> 解析为 <code>f64</code> 然后转换来演示遮蔽</li>
+</ol>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><pre class="playground"><code class="language-rust">use std::sync::atomic::{AtomicU32, Ordering};
+
+const ABSOLUTE_ZERO_C: f64 = -273.15;
+static CONVERSION_COUNT: AtomicU32 = AtomicU32::new(0);
+
+fn celsius_to_fahrenheit(c: f64) -&gt; f64 {
+    if c &lt; ABSOLUTE_ZERO_C {
+        return f64::NAN;
+    }
+    CONVERSION_COUNT.fetch_add(1, Ordering::Relaxed);
+    c * 9.0 / 5.0 + 32.0
+}
+
+fn main() {
+    let temp = "98.6";           // &amp;str
+    let temp: f64 = temp.parse().unwrap(); // 遮蔽为 f64
+    let temp = celsius_to_fahrenheit(temp); // 遮蔽为华氏度
+    println!("{temp:.1}°F");
+    println!("Conversions: {}", CONVERSION_COUNT.load(Ordering::Relaxed));
+}</code></pre></pre>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch02-1-essential-keywords-reference.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch03-1-true-immutability-vs-record-illusions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch02-1-essential-keywords-reference.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch03-1-true-immutability-vs-record-illusions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

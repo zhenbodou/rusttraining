@@ -1,0 +1,637 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>14. 应用演练 — 类型安全的 Redfish 服务器 - Type-Driven Correctness in Rust</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Type-Driven Correctness in Rust</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="应用演练--类型安全-redfish-服务器-"><a class="header" href="#应用演练--类型安全-redfish-服务器-">应用演练 —— 类型安全 Redfish 服务器 🟡</a></h1>
+<blockquote>
+<p><strong>你将学到：</strong> 如何将响应构建器类型状态、源可用性令牌、量纲序列化、健康汇总、模式版本化和类型化操作分派组合成 Redfish 服务器，<strong>不能产生模式非合规响应</strong> —— 第 17 章客户端演练的镜像。</p>
+<p><strong>交叉引用：</strong> <a href="ch02-typed-command-interfaces-request-determi.html">ch02</a>（类型化命令 —— 反向用于操作分派）、<a href="ch04-capability-tokens-zero-cost-proof-of-aut.html">ch04</a>（能力令牌 —— 源可用性）、<a href="ch06-dimensional-analysis-making-the-compiler.html">ch06</a>（量纲类型 —— 序列化端）、<a href="ch07-validated-boundaries-parse-dont-validate.html">ch07</a>（验证边界 —— 反向："构造，不要序列化"）、<a href="ch09-phantom-types-for-resource-tracking.html">ch09</a>（幻象类型 —— 模式版本化）、<a href="ch11-fourteen-tricks-from-the-trenches.html">ch11</a>（技巧 3 —— <code>#[non_exhaustive]</code>，技巧 4 —— 构建器类型状态）、<a href="ch17-redfish-applied-walkthrough.html">ch17</a>（客户端对应物）</p>
+</blockquote>
+<h2 id="镜像问题"><a class="header" href="#镜像问题">镜像问题</a></h2>
+<p>第 17 章问：<em>"我如何正确消费 Redfish？"</em> 本章问镜像问题：<em>"我如何正确生产 Redfish？"</em></p>
+<p>在客户端，危险是<strong>信任</strong>坏数据。在服务器端，危险是<strong>发出</strong>坏数据 —— 舰队中的每个客户端都信任你发送的内容。</p>
+<p>单个 <code>GET /redfish/v1/Systems/1</code> 响应必须融合来自许多来源的数据：</p>
+<pre class="mermaid">flowchart LR
+    subgraph Sources
+        SMBIOS[&quot;SMBIOS\nType 1, Type 17&quot;]
+        SDR[&quot;IPMI 传感器\n(SDR + 读数)&quot;]
+        SEL[&quot;IPMI SEL\n(关键事件)&quot;]
+        PCIe[&quot;PCIe 配置\n空间&quot;]
+        FW[&quot;固件\n版本表&quot;]
+        PWR[&quot;电源状态\n寄存器&quot;]
+    end
+    subgraph Server[&quot;Redfish 服务器&quot;]
+        Handler[&quot;GET 处理程序&quot;]
+        Builder[&quot;ComputerSystem\n构建器&quot;]
+    end
+    SMBIOS --&gt;|&quot;Name, UUID, Serial&quot;| Handler
+    SDR --&gt;|&quot;Temperatures, Fans&quot;| Handler
+    SEL --&gt;|&quot;Health escalation&quot;| Handler
+    PCIe --&gt;|&quot;Device links&quot;| Handler
+    FW --&gt;|&quot;BIOS version&quot;| Handler
+    PWR --&gt;|&quot;PowerState&quot;| Handler
+    Handler --&gt; Builder
+    Builder --&gt;|&quot;.build()&quot;| JSON[&quot;模式合规\nJSON 响应&quot;]
+    style JSON fill:#c8e6c9,color:#000
+    style Builder fill:#e1f5fe,color:#000
+</pre>
+<p>在 C 中，这是 500 行处理程序，调用六个子系统，手动用 <code>json_object_set()</code> 构建 JSON 树，并希望每个必需字段都被填充。忘记一个？响应违反 Redfish 模式。单位错误？每个客户端看到损坏的遥测。</p>
+<pre><code class="language-c">// C —— 组装问题
+json_t *get_computer_system(const char *id) {
+    json_t *obj = json_object();
+    json_object_set_new(obj, "@odata.type", json_string("#ComputerSystem.v1_13_0.ComputerSystem"));
+    // 🐛 忘记设置 "Name" —— 模式需要它
+    // 🐛 忘记设置 "UUID" —— 模式需要它
+    smbios_type1_t *t1 = smbios_get_type1();
+    if (t1) {
+        json_object_set_new(obj, "Manufacturer", json_string(t1-&gt;manufacturer));
+    }
+    json_object_set_new(obj, "PowerState", json_string(get_power_state()));
+    // 🐛 读数是原始 ADC 计数，不是 Celsius —— 没有类型捕获它
+    double cpu_temp = read_sensor(SENSOR_CPU_TEMP);
+    // 🐛 Health 是手动计算的 —— 忘记包含 PSU 状态
+    json_object_set_new(obj, "Status", build_status("Enabled", "OK")); // 应该是 "Critical" —— PSU 失败
+    return obj; // 缺少 2 个必需字段，错误健康，原始单位
+}
+</code></pre>
+<p>一个处理程序中的四个 bug。在客户端，每个 bug 影响<strong>一个</strong>客户端。在服务器端，每个 bug 影响<strong>每个</strong>查询此 BMC 的客户端。</p>
+<h2 id="第-1-节--响应构建器类型状态构造不要序列化ch07-反向"><a class="header" href="#第-1-节--响应构建器类型状态构造不要序列化ch07-反向">第 1 节 —— 响应构建器类型状态："构造，不要序列化"（ch07 反向）</a></h2>
+<p>第 7 章教导"解析，不要验证" —— 在边界验证入站数据一次，在类型中携带证明。服务器端镜像是**"构造，不要序列化"** —— 通过构建器构建出站响应，在全部必需字段存在时门控 <code>.build()</code>。</p>
+<pre><code class="language-rust ignore">use std::marker::PhantomData;
+
+pub struct HasField;
+pub struct MissingField;
+
+pub struct ComputerSystemBuilder&lt;Name, Uuid, PowerState, Status&gt; {
+    // 必需字段 —— 在类型级别跟踪
+    name: Option&lt;String&gt;,
+    uuid: Option&lt;String&gt;,
+    power_state: Option&lt;PowerStateValue&gt;,
+    status: Option&lt;ResourceStatus&gt;,
+    // 可选字段 —— 不跟踪（总是可设置）
+    manufacturer: Option&lt;String&gt;,
+    model: Option&lt;String&gt;,
+    serial_number: Option&lt;String&gt;,
+    bios_version: Option&lt;String&gt;,
+    _markers: PhantomData&lt;(Name, Uuid, PowerState, Status)&gt;,
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub enum PowerStateValue { On, Off, PoweringOn, PoweringOff }
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct ResourceStatus {
+    #[serde(rename = "State")] pub state: StatusState,
+    #[serde(rename = "Health")] pub health: HealthValue,
+}
+
+#[derive(Debug, Clone, Copy, serde::Serialize)]
+pub enum StatusState { Enabled, Disabled, Absent }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, serde::Serialize)]
+pub enum HealthValue { OK, Warning, Critical }
+
+impl ComputerSystemBuilder&lt;MissingField, MissingField, MissingField, MissingField&gt; {
+    pub fn new() -&gt; Self {
+        ComputerSystemBuilder {
+            name: None, uuid: None, power_state: None, status: None,
+            manufacturer: None, model: None, serial_number: None,
+            bios_version: None, _markers: PhantomData,
+        }
+    }
+}
+
+impl&lt;U, P, S&gt; ComputerSystemBuilder&lt;MissingField, U, P, S&gt; {
+    pub fn name(self, name: String) -&gt; ComputerSystemBuilder&lt;HasField, U, P, S&gt; {
+        ComputerSystemBuilder { name: Some(name), ..self }
+    }
+}
+
+impl&lt;N, P, S&gt; ComputerSystemBuilder&lt;N, MissingField, P, S&gt; {
+    pub fn uuid(self, uuid: String) -&gt; ComputerSystemBuilder&lt;N, HasField, P, S&gt; {
+        ComputerSystemBuilder { uuid: Some(uuid), ..self }
+    }
+}
+
+impl&lt;N, U, S&gt; ComputerSystemBuilder&lt;N, U, MissingField, S&gt; {
+    pub fn power_state(self, ps: PowerStateValue) -&gt; ComputerSystemBuilder&lt;N, U, HasField, S&gt; {
+        ComputerSystemBuilder { power_state: Some(ps), ..self }
+    }
+}
+
+impl&lt;N, U, P&gt; ComputerSystemBuilder&lt;N, U, P, MissingField&gt; {
+    pub fn status(self, status: ResourceStatus) -&gt; ComputerSystemBuilder&lt;N, U, P, HasField&gt; {
+        ComputerSystemBuilder { status: Some(status), ..self }
+    }
+}
+
+impl&lt;N, U, P, S&gt; ComputerSystemBuilder&lt;N, U, P, S&gt; {
+    pub fn manufacturer(mut self, m: String) -&gt; Self { self.manufacturer = Some(m); self }
+    pub fn model(mut self, m: String) -&gt; Self { self.model = Some(m); self }
+    pub fn serial_number(mut self, s: String) -&gt; Self { self.serial_number = Some(s); self }
+    pub fn bios_version(mut self, v: String) -&gt; Self { self.bios_version = Some(v); self }
+}
+
+impl ComputerSystemBuilder&lt;HasField, HasField, HasField, HasField&gt; {
+    pub fn build(self, id: &amp;str) -&gt; serde_json::Value {
+        serde_json::json!({
+            "@odata.id": format!("/redfish/v1/Systems/{id}"),
+            "@odata.type": "#ComputerSystem.v1_13_0.ComputerSystem",
+            "Id": id,
+            "Name": self.name.unwrap(),
+            "UUID": self.uuid.unwrap(),
+            "PowerState": self.power_state.unwrap(),
+            "Status": self.status.unwrap(),
+        })
+    }
+}
+
+// ✅ 所有必需字段设置 —— .build() 可用：
+// ComputerSystemBuilder::new()
+//     .name("PowerEdge R750".into())
+//     .uuid("4c4c4544-...".into())
+//     .power_state(PowerStateValue::On)
+//     .status(ResourceStatus { .. })
+//     .build("1")
+
+// ❌ 缺少 "Name" —— 编译错误：
+// ComputerSystemBuilder::new()
+//     .uuid("4c4c4544-...".into())
+//     .power_state(PowerStateValue::On)
+//     .status(ResourceStatus { .. })
+//     .build("1")
+//   ERROR: method `build` not found for
+//   `ComputerSystemBuilder&lt;MissingField, HasField, HasField, HasField&gt;`</code></pre>
+<p><strong>消除的 bug 类：</strong> 模式非合规响应。处理程序物理上不能序列化 <code>ComputerSystem</code> 而不提供每个必需字段。编译器错误消息甚至告诉你<em>哪个</em>字段缺失 —— 它就在类型参数中：<code>Name</code> 位置中的 <code>MissingField</code>。</p>
+<h2 id="第-2-节--源可用性令牌能力令牌ch04--新转折"><a class="header" href="#第-2-节--源可用性令牌能力令牌ch04--新转折">第 2 节 —— 源可用性令牌（能力令牌，ch04 —— 新转折）</a></h2>
+<p>在 ch04 和 ch17 中，能力令牌证明<strong>授权</strong> —— "调用者被允许做这个。"在服务器端，相同模式证明<strong>可用性</strong> —— "此数据源成功初始化。"</p>
+<p>BMC 查询的每个子系统可以独立失败。SMBIOS 表可能损坏。传感器子系统可能仍在初始化。PCIe 总线扫描可能超时。将每个编码为证明令牌：</p>
+<pre><code class="language-rust ignore">/// 证明 SMBIOS 表成功解析。
+/// 仅由 SMBIOS init 函数生成。
+pub struct SmbiosReady { _private: () }
+
+/// 证明 IPMI 传感器子系统响应。
+pub struct SensorsReady { _private: () }
+
+/// 证明 PCIe 总线扫描完成。
+pub struct PcieReady { _private: () }
+
+pub struct SmbiosTables {
+    pub product_name: String, pub manufacturer: String,
+    pub serial_number: String, pub uuid: String,
+}
+
+pub struct SensorCache {
+    pub cpu_temp: Celsius, pub inlet_temp: Celsius,
+    pub fan_readings: Vec&lt;(String, Rpm)&gt;,
+    pub psu_power: Vec&lt;(String, Watts)&gt;,
+}
+
+pub fn init_smbios() -&gt; Option&lt;(SmbiosReady, SmbiosTables)&gt; {
+    // 读取 SMBIOS 入口点，解析表...
+    // 如果表不存在或损坏则返回 None
+    Some((SmbiosReady { _private: () }, SmbiosTables { /* ... */ }))
+}
+
+pub fn init_sensors() -&gt; Option&lt;(SensorsReady, SensorCache)&gt; {
+    // 初始化 SDR 存储库，读取所有传感器...
+    // 如果 IPMI 子系统不响应则返回 None
+    Some((SensorsReady { _private: () }, SensorCache { /* ... */ }))
+}</code></pre>
+<p>现在，从数据源填充构建器字段的函数<strong>需要相应的证明令牌</strong>：</p>
+<pre><code class="language-rust ignore">/// 从 SMBIOS 填充字段。需要证明 SMBIOS 可用。
+fn populate_from_smbios&lt;P, S&gt;(
+    builder: ComputerSystemBuilder&lt;MissingField, MissingField, P, S&gt;,
+    _proof: &amp;SmbiosReady,
+    tables: &amp;SmbiosTables,
+) -&gt; ComputerSystemBuilder&lt;HasField, HasField, P, S&gt; {
+    builder.name(tables.product_name.clone()).uuid(tables.uuid.clone())
+}
+
+/// 当 SMBIOS 不可用时的回退 —— 用安全默认值提供必需字段。
+fn populate_smbios_fallback&lt;P, S&gt;(
+    builder: ComputerSystemBuilder&lt;MissingField, MissingField, P, S&gt;,
+) -&gt; ComputerSystemBuilder&lt;HasField, HasField, P, S&gt; {
+    builder.name("Unknown System".into()).uuid("00000000-0000-0000-0000-000000000000".into())
+}</code></pre>
+<p>处理程序根据哪些令牌可用来选择路径：</p>
+<pre><code class="language-rust ignore">fn build_computer_system(
+    smbios: &amp;Option&lt;(SmbiosReady, SmbiosTables)&gt;,
+    power_state: PowerStateValue,
+    health: ResourceStatus,
+) -&gt; serde_json::Value {
+    let builder = ComputerSystemBuilder::new().power_state(power_state).status(health);
+    let builder = match smbios {
+        Some((proof, tables)) =&gt; populate_from_smbios(builder, proof, tables),
+        None =&gt; populate_smbios_fallback(builder),
+    };
+    // 两条路径都为 Name 和 UUID 生成 HasField。
+    // .build() 在任一种方式中都可用。
+    builder.build("1")
+}</code></pre>
+<p><strong>消除的 bug 类：</strong> 调用初始化失败的子系统。如果 SMBIOS 没有解析，你没有 <code>SmbiosReady</code> 令牌 —— 编译器强制你通过回退路径。没有运行时 <code>if (smbios != NULL)</code> 可以忘记。</p>
+<h2 id="第-3-节--序列化边界的量纲类型ch06"><a class="header" href="#第-3-节--序列化边界的量纲类型ch06">第 3 节 —— 序列化边界的量纲类型（ch06）</a></h2>
+<p>在客户端（ch17 §4），量纲类型防止<strong>读取</strong> °C 作为 RPM。在服务器端，它们防止<strong>写入</strong> RPM 到 Celsius JSON 字段。这可能更危险 —— 服务器上的错误值传播到每个客户端。</p>
+<pre><code class="language-rust ignore">use serde::Serialize;
+
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Serialize)]
+pub struct Celsius(pub f64);
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Serialize)]
+pub struct Rpm(pub u32);
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Serialize)]
+pub struct Watts(pub f64);
+
+#[derive(Serialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct TemperatureMember {
+    pub member_id: String,
+    pub name: String,
+    pub reading_celsius: Celsius,           // ← 必须是 Celsius
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub upper_threshold_critical: Option&lt;Celsius&gt;,
+    pub status: ResourceStatus,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct FanMember {
+    pub member_id: String,
+    pub name: String,
+    pub reading: Rpm,                       // ← 必须是 Rpm
+    pub reading_units: &amp;'static str,        // 总是 "RPM"
+    pub status: ResourceStatus,
+}
+
+fn build_thermal_response(_proof: &amp;SensorsReady, cache: &amp;SensorCache) -&gt; serde_json::Value {
+    let temps = vec![
+        TemperatureMember {
+            member_id: "0".into(), name: "CPU Temp".into(),
+            reading_celsius: cache.cpu_temp,     // Celsius → Celsius ✅
+            upper_threshold_critical: Some(Celsius(95.0)),
+            status: ResourceStatus { state: StatusState::Enabled, health: HealthValue::OK },
+        },
+        // ❌ 编译错误 —— 不能将 Rpm 放入 Celsius 字段：
+        // TemperatureMember { reading_celsius: cache.fan_readings[0].1, .. }
+    ];
+    let fans: Vec&lt;FanMember&gt; = cache.fan_readings.iter().enumerate().map(|(i, (name, rpm))| {
+        FanMember {
+            member_id: i.to_string(), name: name.clone(),
+            reading: *rpm,                       // Rpm → Rpm ✅
+            reading_units: "RPM",
+            status: ResourceStatus { state: StatusState::Enabled, health: HealthValue::OK },
+        }
+    }).collect();
+    serde_json::json!({ "@odata.id": "/redfish/v1/Chassis/1/Thermal", "Temperatures": temps, "Fans": fans })
+}</code></pre>
+<p><strong>消除的 bug 类：</strong></p>
+<ul>
+<li><strong>单位混淆：</strong> <code>Celsius</code> ≠ <code>Rpm</code> —— 编译器拒绝将风扇读数放入温度字段。</li>
+<li><strong>错误序列化：</strong> <code>reading_celsius</code> 字段需要 <code>Celsius</code>，不是 <code>f64</code> 或 <code>Rpm</code>。</li>
+<li><strong>类型安全 JSON 生成：</strong> serde 使用 <code>Serialize</code> impl 正确序列化量纲类型。</li>
+</ul>
+<h2 id="第-4-节--健康汇总来自-ch07-sel-的消费者管道"><a class="header" href="#第-4-节--健康汇总来自-ch07-sel-的消费者管道">第 4 节 —— 健康汇总（来自 ch07 SEL 的消费者管道）</a></h2>
+<p>来自 ch07 的 <code>TypedSelSummary</code> 馈送到 Redfish 健康汇总：</p>
+<pre><code class="language-rust ignore">/// 从每个子系统健康计算整体系统健康。
+/// 使用 Ord 实例保证正确性：Critical &gt; Warning &gt; OK。
+fn compute_system_health(
+    sensor_cache: Option&lt;&amp;(SensorsReady, SensorCache)&gt;,
+    sel_summary: Option&lt;&amp;(SelReady, TypedSelSummary)&gt;,
+) -&gt; ResourceStatus {
+    let mut health = HealthValue::OK;
+
+    // 来自传感器的健康
+    if let Some((_, cache)) = sensor_cache {
+        if cache.cpu_temp &gt; Celsius(95.0) { health = HealthValue::Critical; }
+        if cache.inlet_temp &gt; Celsius(42.0) { health = health.max(HealthValue::Warning); }
+    }
+
+    // 来自 SEL 的健康（来自 ch07 的消费者管道）
+    if let Some((_, summary)) = sel_summary {
+        health = health.max(summary.processor_health);
+        health = health.max(summary.memory_health);
+        health = health.max(summary.power_health);
+        health = health.max(summary.thermal_health);
+        health = health.max(summary.fan_health);
+    }
+
+    ResourceStatus {
+        state: StatusState::Enabled,
+        health,
+        health_rollup: Some(health),
+    }
+}</code></pre>
+<p><strong>消除的 bug 类：</strong></p>
+<ul>
+<li><strong>忘记子系统</strong> —— 每个子系统显式汇总。</li>
+<li><strong>错误严重性</strong> —— <code>HealthValue::max()</code> 保证正确汇总（<code>Critical &gt; Warning &gt; OK</code>）。</li>
+<li><strong>来自 ch07 的类型化 SEL</strong> —— <code>TypedSelSummary</code> 携带每个子系统健康，不是损失性的 <code>bool</code>。</li>
+</ul>
+<h2 id="第-5-节--模式版本化幻象类型ch09"><a class="header" href="#第-5-节--模式版本化幻象类型ch09">第 5 节 —— 模式版本化（幻象类型，ch09）</a></h2>
+<p>Redfish 模式随时间演进。幻象类型跟踪响应对哪个模式版本合规：</p>
+<pre><code class="language-rust ignore">pub struct SchemaV1_5;
+pub struct SchemaV1_13;
+
+pub struct VersionedResponse&lt;Schema&gt; {
+    data: serde_json::Value,
+    _schema: PhantomData&lt;Schema&gt;,
+}
+
+impl VersionedResponse&lt;SchemaV1_13&gt; {
+    pub fn with_last_reset_time(data: serde_json::Value, timestamp: &amp;str) -&gt; Self {
+        // LastResetTime 在 v1.13 中添加
+        let mut obj = data;
+        obj["LastResetTime"] = serde_json::json!(timestamp);
+        VersionedResponse { data: obj, _schema: PhantomData }
+    }
+}
+
+// ❌ 编译错误：VersionedResponse&lt;SchemaV1_5&gt; 没有 with_last_reset_time()
+// VersionedResponse::&lt;SchemaV1_5&gt;::with_last_reset_time(data, "2024-01-01");</code></pre>
+<p><strong>消除的 bug 类：</strong></p>
+<ul>
+<li><strong>访问不存在的字段</strong> —— <code>LastResetTime</code> 方法仅在 <code>SchemaV1_13</code> 上可用。</li>
+<li><strong>模式版本不匹配</strong> —— 类型强制执行正确的模式版本用于字段访问。</li>
+</ul>
+<h2 id="完整示例computersystem-get-处理程序"><a class="header" href="#完整示例computersystem-get-处理程序">完整示例：ComputerSystem GET 处理程序</a></h2>
+<pre><code class="language-rust ignore">fn handle_get_computer_system(
+    smbios: &amp;Option&lt;(SmbiosReady, SmbiosTables)&gt;,
+    sensors: &amp;Option&lt;(SensorsReady, SensorCache)&gt;,
+    sel: &amp;Option&lt;(SelReady, TypedSelSummary)&gt;,
+    power_state: PowerStateValue,
+) -&gt; serde_json::Value {
+    // 1. 计算健康汇总
+    let health = compute_system_health(
+        sensors.as_ref(),
+        sel.as_ref(),
+    );
+
+    // 2. 构建响应，使用类型状态保证完整性
+    let builder = ComputerSystemBuilder::new()
+        .power_state(power_state)
+        .status(health);
+
+    let builder = match smbios {
+        Some((proof, tables)) =&gt; populate_from_smbios(builder, proof, tables),
+        None =&gt; populate_smbios_fallback(builder),
+    };
+
+    // 3. 可选字段
+    let builder = if let Some((_, cache)) = sensors {
+        builder.bios_version("2.1.0".into())
+    } else {
+        builder
+    };
+
+    // 4. 构建并返回（.build() 可用，因为必需字段已设置）
+    builder.build("1")
+}</code></pre>
+<h2 id="关键要点"><a class="header" href="#关键要点">关键要点</a></h2>
+<ol>
+<li><strong>构建器类型状态保证响应完整性</strong> —— <code>.build()</code> 门控在所有必需字段上。</li>
+<li><strong>源可用性令牌证明数据源初始化</strong> —— 没有令牌，你不能从该源填充。</li>
+<li><strong>量纲类型防止序列化单位混淆</strong> —— <code>Celsius</code> ≠ <code>Rpm</code> 在 JSON 生成中。</li>
+<li><strong>健康汇总使用 <code>Ord</code> 用于正确严重性</strong> —— <code>Critical &gt; Warning &gt; OK</code>。</li>
+<li><strong>模式版本化使用幻象类型</strong> —— <code>VersionedResponse&lt;SchemaV1_13&gt;</code> 有 v1.13 专用字段。</li>
+<li><strong>镜像客户端模式（ch17）</strong> —— 客户端验证入站数据，服务器构建立即合规的出站数据。</li>
+<li><strong>七个模式组合成零开销服务器</strong> —— 每个模式违规是编译错误，不是运行时 bug。</li>
+</ol>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch17-redfish-applied-walkthrough.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch11-fourteen-tricks-from-the-trenches.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch17-redfish-applied-walkthrough.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch11-fourteen-tricks-from-the-trenches.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

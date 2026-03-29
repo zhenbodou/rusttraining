@@ -1,0 +1,654 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>C# 开发者必备 Crate - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="c-开发者的基本-crates"><a class="header" href="#c-开发者的基本-crates">C# 开发者的基本 Crates</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> Rust crate 等价物用于常见 .NET 库——serde（JSON.NET）、
+reqwest（HttpClient）、tokio（Task/async）、sqlx（Entity Framework），以及 serde 的
+属性系统与 <code>System.Text.Json</code> 的深入比较。</p>
+<p><strong>难度：</strong> 🟡 中级</p>
+</blockquote>
+<h3 id="核心功能等价物"><a class="header" href="#核心功能等价物">核心功能等价物</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Cargo.toml 依赖用于 C# 开发者
+[dependencies]
+<span class="boring">序列化（类似 Newtonsoft.Json 或 System.Text.Json）
+</span>serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+<span class="boring">HTTP 客户端（类似 HttpClient）
+</span>reqwest = { version = "0.11", features = ["json"] }
+
+<span class="boring">异步运行时（类似 Task.Run、async/await）
+</span>tokio = { version = "1.0", features = ["full"] }
+
+<span class="boring">错误处理（类似自定义异常）
+</span>thiserror = "1.0"
+anyhow = "1.0"
+
+<span class="boring">日志记录（类似 ILogger、Serilog）
+</span>log = "0.4"
+env_logger = "0.10"
+
+<span class="boring">日期/时间（类似 DateTime）
+</span>chrono = { version = "0.4", features = ["serde"] }
+
+<span class="boring">UUID（类似 System.Guid）
+</span>uuid = { version = "1.0", features = ["v4", "serde"] }
+
+<span class="boring">集合（类似 List&lt;T&gt;、Dictionary&lt;K,V&gt;）
+</span><span class="boring">内置到 std，但对于高级集合：
+</span>indexmap = "2.0"  # 有序 HashMap
+
+<span class="boring">配置（类似 IConfiguration）
+</span>config = "0.13"
+
+<span class="boring">数据库（类似 Entity Framework）
+</span>sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "uuid", "chrono"] }
+
+<span class="boring">测试（类似 xUnit、NUnit）
+</span><span class="boring">内置到 std，但对于更多特性：
+</span>rstest = "0.18"  # 参数化测试
+
+<span class="boring">Mocking（类似 Moq）
+</span>mockall = "0.11"
+
+<span class="boring">并行处理（类似 Parallel.ForEach）
+</span>rayon = "1.7"
+<span class="boring">}</span></code></pre></pre>
+<h3 id="示例用法模式"><a class="header" href="#示例用法模式">示例用法模式</a></h3>
+<pre><pre class="playground"><code class="language-rust">use serde::{Deserialize, Serialize};
+use reqwest;
+use tokio;
+use thiserror::Error;
+use chrono::{DateTime, Utc};
+use uuid::Uuid;
+
+// 数据模型（类似带属性的 C# POCOs）
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct User {
+    pub id: Uuid,
+    pub name: String,
+    pub email: String,
+    #[serde(with = "chrono::serde::ts_seconds")]
+    pub created_at: DateTime&lt;Utc&gt;,
+}
+
+// 自定义错误类型（类似自定义异常）
+#[derive(Error, Debug)]
+pub enum ApiError {
+    #[error("HTTP request failed: {0}")]
+    Http(#[from] reqwest::Error),
+
+    #[error("Serialization failed: {0}")]
+    Serialization(#[from] serde_json::Error),
+
+    #[error("User not found: {id}")]
+    UserNotFound { id: Uuid },
+
+    #[error("Validation failed: {message}")]
+    Validation { message: String },
+}
+
+// 服务类等价物
+pub struct UserService {
+    client: reqwest::Client,
+    base_url: String,
+}
+
+impl UserService {
+    pub fn new(base_url: String) -&gt; Self {
+        let client = reqwest::Client::builder()
+            .timeout(std::time::Duration::from_secs(30))
+            .build()
+            .expect("Failed to create HTTP client");
+
+        UserService { client, base_url }
+    }
+
+    // 异步方法（类似 C# async Task&lt;User&gt;）
+    pub async fn get_user(&amp;self, id: Uuid) -&gt; Result&lt;User, ApiError&gt; {
+        let url = format!("{}/users/{}", self.base_url, id);
+
+        let response = self.client
+            .get(&amp;url)
+            .send()
+            .await?;
+
+        if response.status() == 404 {
+            return Err(ApiError::UserNotFound { id });
+        }
+
+        let user = response.json::&lt;User&gt;().await?;
+        Ok(user)
+    }
+
+    // 创建用户（类似 C# async Task&lt;User&gt;）
+    pub async fn create_user(&amp;self, name: String, email: String) -&gt; Result&lt;User, ApiError&gt; {
+        if name.trim().is_empty() {
+            return Err(ApiError::Validation {
+                message: "Name cannot be empty".to_string(),
+            });
+        }
+
+        let new_user = User {
+            id: Uuid::new_v4(),
+            name,
+            email,
+            created_at: Utc::now(),
+        };
+
+        let response = self.client
+            .post(&amp;format!("{}/users", self.base_url))
+            .json(&amp;new_user)
+            .send()
+            .await?;
+
+        let created_user = response.json::&lt;User&gt;().await?;
+        Ok(created_user)
+    }
+}
+
+// 用法示例（类似 C# Main 方法）
+#[tokio::main]
+async fn main() -&gt; Result&lt;(), ApiError&gt; {
+    // 初始化日志记录（类似配置 ILogger）
+    env_logger::init();
+
+    let service = UserService::new("https://api.example.com".to_string());
+
+    // 创建用户
+    let user = service.create_user(
+        "John Doe".to_string(),
+        "john@example.com".to_string(),
+    ).await?;
+
+    println!("Created user: {:?}", user);
+
+    // 获取用户
+    let retrieved_user = service.get_user(user.id).await?;
+    println!("Retrieved user: {:?}", retrieved_user);
+
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]  // 类似 C# [Test] 或 [Fact]
+    async fn test_user_creation() {
+        let service = UserService::new("http://localhost:8080".to_string());
+
+        let result = service.create_user(
+            "Test User".to_string(),
+            "test@example.com".to_string(),
+        ).await;
+
+        assert!(result.is_ok());
+        let user = result.unwrap();
+        assert_eq!(user.name, "Test User");
+        assert_eq!(user.email, "test@example.com");
+    }
+
+    #[test]
+    fn test_validation() {
+        // 同步测试
+        let error = ApiError::Validation {
+            message: "Invalid input".to_string(),
+        };
+
+        assert_eq!(error.to_string(), "Validation failed: Invalid input");
+    }
+}</code></pre></pre>
+<hr />
+<h2 id="serde-深入c-开发者的-json-序列化"><a class="header" href="#serde-深入c-开发者的-json-序列化">Serde 深入：C# 开发者的 JSON 序列化</a></h2>
+<p>C# 开发者严重依赖 <code>System.Text.Json</code> 或 <code>Newtonsoft.Json</code>。在 Rust 中，<strong>serde</strong>（serialize/deserialize）是通用框架——理解其属性系统解锁大多数数据处理场景。</p>
+<h3 id="基本-derive起点"><a class="header" href="#基本-derive起点">基本 Derive：起点</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize, Debug)]
+struct User {
+    name: String,
+    age: u32,
+    email: String,
+}
+
+let user = User { name: "Alice".into(), age: 30, email: "alice@co.com".into() };
+let json = serde_json::to_string_pretty(&amp;user)?;
+let parsed: User = serde_json::from_str(&amp;json)?;
+<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-csharp">// C# 等价物
+public class User
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public string Email { get; set; }
+}
+var json = JsonSerializer.Serialize(user, new JsonSerializerOptions { WriteIndented = true });
+var parsed = JsonSerializer.Deserialize&lt;User&gt;(json);
+</code></pre>
+<h3 id="字段级属性类似-jsonproperty"><a class="header" href="#字段级属性类似-jsonproperty">字段级属性（类似 <code>[JsonProperty]</code>）</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize, Debug)]
+struct ApiResponse {
+    // 在 JSON 输出中重命名字段（类似 [JsonPropertyName("user_id")]）
+    #[serde(rename = "user_id")]
+    id: u64,
+
+    // 对序列化和反序列化使用不同名称
+    #[serde(rename(serialize = "userName", deserialize = "user_name"))]
+    name: String,
+
+    // 完全跳过此字段（类似 [JsonIgnore]）
+    #[serde(skip)]
+    internal_cache: Option&lt;String&gt;,
+
+    // 仅在序列化期间跳过
+    #[serde(skip_serializing)]
+    password_hash: String,
+
+    // 如果 JSON 中缺失则默认值（类似默认构造函数值）
+    #[serde(default)]
+    is_active: bool,
+
+    // 自定义默认
+    #[serde(default = "default_role")]
+    role: String,
+
+    // 扁平化嵌套结构体到父级（类似 [JsonExtensionData]）
+    #[serde(flatten)]
+    metadata: Metadata,
+
+    // 如果值为 None 则跳过（省略 null 字段）
+    #[serde(skip_serializing_if = "Option::is_none")]
+    nickname: Option&lt;String&gt;,
+}
+
+fn default_role() -&gt; String { "viewer".into() }
+
+#[derive(Serialize, Deserialize, Debug)]
+struct Metadata {
+    created_at: String,
+    version: u32,
+}
+<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-csharp">// C# 等价物属性
+public class ApiResponse
+{
+    [JsonPropertyName("user_id")]
+    public ulong Id { get; set; }
+
+    [JsonIgnore]
+    public string? InternalCache { get; set; }
+
+    [JsonExtensionData]
+    public Dictionary&lt;string, JsonElement&gt;? Metadata { get; set; }
+}
+</code></pre>
+<h3 id="枚举表示与-c-的关键区别"><a class="header" href="#枚举表示与-c-的关键区别">枚举表示（与 C# 的关键区别）</a></h3>
+<p>Rust serde 支持枚举的<strong>四种不同 JSON 表示</strong>——这个概念没有直接 C# 等价物，因为 C# 枚举总是整数或字符串。</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use serde::{Deserialize, Serialize};
+
+// 1. 外部标记（默认）—— 最常见
+#[derive(Serialize, Deserialize)]
+enum Message {
+    Text(String),
+    Image { url: String, width: u32 },
+    Ping,
+}
+// Text 变体：{"Text": "hello"}
+// Image 变体：{"Image": {"url": "...", "width": 100}}
+// Ping 变体："Ping"
+
+// 2. 内部标记——类似其他语言中的判别联合
+#[derive(Serialize, Deserialize)]
+#[serde(tag = "type")]
+enum Event {
+    Created { id: u64, name: String },
+    Deleted { id: u64 },
+    Updated { id: u64, fields: Vec&lt;String&gt; },
+}
+// {"type": "Created", "id": 1, "name": "Alice"}
+// {"type": "Deleted", "id": 1}
+
+// 3. 相邻标记——标记和内容在单独字段中
+#[derive(Serialize, Deserialize)]
+#[serde(tag = "t", content = "c")]
+enum ApiResult {
+    Success(UserData),
+    Error(String),
+}
+// {"t": "Success", "c": {"name": "Alice"}}
+// {"t": "Error", "c": "not found"}
+
+// 4. 无标记——serde 按顺序尝试每个变体
+#[derive(Serialize, Deserialize)]
+#[serde(untagged)]
+enum FlexibleValue {
+    Integer(i64),
+    Float(f64),
+    Text(String),
+    Bool(bool),
+}
+// 42、3.14、"hello"、true —— serde 自动检测变体
+<span class="boring">}</span></code></pre></pre>
+<h3 id="自定义序列化类似-jsonconverter"><a class="header" href="#自定义序列化类似-jsonconverter">自定义序列化（类似 <code>JsonConverter</code>）</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+// 对特定字段的自定义序列化
+#[derive(Serialize, Deserialize)]
+struct Config {
+    #[serde(serialize_with = "serialize_duration", deserialize_with = "deserialize_duration")]
+    timeout: std::time::Duration,
+}
+
+fn serialize_duration&lt;S: Serializer&gt;(dur: &amp;std::time::Duration, s: S) -&gt; Result&lt;S::Ok, S::Error&gt; {
+    s.serialize_u64(dur.as_millis() as u64)
+}
+
+fn deserialize_duration&lt;'de, D: Deserializer&lt;'de&gt;&gt;(d: D) -&gt; Result&lt;std::time::Duration, D::Error&gt; {
+    let ms = u64::deserialize(d)?;
+    Ok(std::time::Duration::from_millis(ms))
+}
+// JSON: {"timeout": 5000}  ↔  Config { timeout: Duration::from_millis(5000) }
+<span class="boring">}</span></code></pre></pre>
+<h3 id="容器级属性"><a class="header" href="#容器级属性">容器级属性</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]  // 所有字段在 JSON 中变为 camelCase
+struct UserProfile {
+    first_name: String,      // → "firstName"
+    last_name: String,       // → "lastName"
+    email_address: String,   // → "emailAddress"
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]  // 拒绝带额外字段的 JSON（严格解析）
+struct StrictConfig {
+    port: u16,
+    host: String,
+}
+// serde_json::from_str::&lt;StrictConfig&gt;(r#"{"port":8080,"host":"localhost","extra":true}"#)
+// → 错误：未知字段 `extra`
+<span class="boring">}</span></code></pre></pre>
+<h3 id="快速参考serde-属性"><a class="header" href="#快速参考serde-属性">快速参考：Serde 属性</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>属性</th><th>级别</th><th>C# 等价物</th><th>用途</th></tr></thead><tbody>
+<tr><td><code>#[serde(rename = "...")]</code></td><td>字段</td><td><code>[JsonPropertyName]</code></td><td>在 JSON 中重命名</td></tr>
+<tr><td><code>#[serde(skip)]</code></td><td>字段</td><td><code>[JsonIgnore]</code></td><td>完全省略</td></tr>
+<tr><td><code>#[serde(default)]</code></td><td>字段</td><td>默认值</td><td>如果缺失则使用 <code>Default::default()</code></td></tr>
+<tr><td><code>#[serde(flatten)]</code></td><td>字段</td><td><code>[JsonExtensionData]</code></td><td>将嵌套结构体合并到父级</td></tr>
+<tr><td><code>#[serde(skip_serializing_if = "...")]</code></td><td>字段</td><td><code>JsonIgnoreCondition</code></td><td>条件跳过</td></tr>
+<tr><td><code>#[serde(rename_all = "camelCase")]</code></td><td>容器</td><td><code>JsonSerializerOptions.PropertyNamingPolicy</code></td><td>命名约定</td></tr>
+<tr><td><code>#[serde(deny_unknown_fields)]</code></td><td>容器</td><td>—</td><td>严格反序列化</td></tr>
+<tr><td><code>#[serde(tag = "type")]</code></td><td>枚举</td><td>判别器模式</td><td>内部标记</td></tr>
+<tr><td><code>#[serde(untagged)]</code></td><td>枚举</td><td>—</td><td>按顺序尝试变体</td></tr>
+<tr><td><code>#[serde(with = "...")]</code></td><td>字段</td><td><code>[JsonConverter]</code></td><td>自定义 ser/de</td></tr>
+</tbody></table>
+</div>
+<h3 id="超越-jsonserde-适用于所有地方"><a class="header" href="#超越-jsonserde-适用于所有地方">超越 JSON：serde 适用于所有地方</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 相同的 derive 适用于所有格式——只改变 crate
+let user = User { name: "Alice".into(), age: 30, email: "a@b.com".into() };
+
+let json  = serde_json::to_string(&amp;user)?;        // JSON
+let toml  = toml::to_string(&amp;user)?;               // TOML（配置文件）
+let yaml  = serde_yaml::to_string(&amp;user)?;          // YAML
+let cbor  = serde_cbor::to_vec(&amp;user)?;             // CBOR（二进制，紧凑）
+let msgpk = rmp_serde::to_vec(&amp;user)?;              // MessagePack（二进制）
+
+// 一个 #[derive(Serialize, Deserialize)] —— 所有格式免费
+<span class="boring">}</span></code></pre></pre>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch15-migration-patterns-and-case-studies.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch15-2-incremental-adoption-strategy.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch15-migration-patterns-and-case-studies.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch15-2-incremental-adoption-strategy.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

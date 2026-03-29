@@ -1,0 +1,618 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>1. 泛型全貌 - Rust Patterns &amp; Engineering How-Tos</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust Patterns &amp; Engineering How-Tos</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="1-泛型全貌-"><a class="header" href="#1-泛型全貌-">1. 泛型全貌 🟢</a></h1>
+<blockquote>
+<p><strong>你将学到：</strong></p>
+<ul>
+<li>单态化如何提供零成本泛型——以及何时导致代码膨胀</li>
+<li>决策框架：泛型 vs enum vs trait 对象</li>
+<li>Const 泛型用于编译时数组大小，<code>const fn</code> 用于编译时求值</li>
+<li>何时在冷路径上用动态 dispatch 交换静态 dispatch</li>
+</ul>
+</blockquote>
+<h2 id="单态化与零成本"><a class="header" href="#单态化与零成本">单态化与零成本</a></h2>
+<p>Rust 中的泛型是<strong>单态化</strong>的——编译器为每个泛型函数针对它所使用的每个具体类型生成一个专门的副本。这与 Java/C# 相反，后者的泛型在运行时被擦除。</p>
+<pre><pre class="playground"><code class="language-rust">fn max_of&lt;T: PartialOrd&gt;(a: T, b: T) -&gt; T {
+    if a &gt;= b { a } else { b }
+}
+
+fn main() {
+    max_of(3_i32, 5_i32);     // 编译器生成 max_of_i32
+    max_of(2.0_f64, 7.0_f64); // 编译器生成 max_of_f64
+    max_of("a", "z");         // 编译器生成 max_of_str
+}</code></pre></pre>
+<p><strong>编译器实际生成的内容</strong>（概念上）：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 三个独立的函数——无运行时 dispatch，无 vtable：
+fn max_of_i32(a: i32, b: i32) -&gt; i32 { if a &gt;= b { a } else { b } }
+fn max_of_f64(a: f64, b: f64) -&gt; f64 { if a &gt;= b { a } else { b } }
+fn max_of_str&lt;'a&gt;(a: &amp;'a str, b: &amp;'a str) -&gt; &amp;'a str { if a &gt;= b { a } else { b } }
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>为什么 <code>max_of_str</code> 需要 <code>&lt;'a&gt;</code> 而 <code>max_of_i32</code> 不需要？</strong> <code>i32</code> 和 <code>f64</code>
+是 <code>Copy</code> 类型——函数返回一个自有值。但 <code>&amp;str</code> 是引用，
+所以编译器必须知道返回引用的生命周期。<code>&lt;'a&gt;</code> 注解
+表示"返回的 <code>&amp;str</code> 存活时间至少与两个输入一样长。"</p>
+</blockquote>
+<p><strong>优势</strong>：零运行时成本——与手写的专门代码相同。优化器可以内联、向量化和独立专门化每个副本。</p>
+<p><strong>与 C++ 比较</strong>：Rust 泛型像 C++ 模板一样工作，但有一个关键区别——<strong>边界检查发生在定义时，而非实例化时</strong>。在 C++ 中，模板只有在使用特定类型时才编译，导致库代码深处出现晦涩的错误消息。在 Rust 中，<code>T: PartialOrd</code> 在定义函数时检查，因此错误被及早捕获且消息清晰。</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust：在定义位置报错——"T 没有实现 Display"
+fn broken&lt;T&gt;(val: T) {
+    println!("{val}"); // ❌ 错误：T 没有实现 Display
+}
+
+// 修复：添加约束
+fn fixed&lt;T: std::fmt::Display&gt;(val: T) {
+    println!("{val}"); // ✅
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="泛型的代价代码膨胀"><a class="header" href="#泛型的代价代码膨胀">泛型的代价：代码膨胀</a></h3>
+<p>单态化有代价——二进制大小。每个唯一的实例化都会复制函数体：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 这个无辜的函数...
+fn serialize&lt;T: serde::Serialize&gt;(value: &amp;T) -&gt; Vec&lt;u8&gt; {
+    serde_json::to_vec(value).unwrap()
+}
+
+// ...被 50 个不同类型使用 → 二进制中有 50 个副本。
+<span class="boring">}</span></code></pre></pre>
+<p><strong>缓解策略</strong>：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 1. 提取非泛型核心（"outline"模式）
+fn serialize&lt;T: serde::Serialize&gt;(value: &amp;T) -&gt; Result&lt;Vec&lt;u8&gt;, serde_json::Error&gt; {
+    // 泛型部分：只有序列化调用
+    let json_value = serde_json::to_value(value)?;
+    // 非泛型部分：提取到单独的函数中
+    serialize_value(json_value)
+}
+
+fn serialize_value(value: serde_json::Value) -&gt; Result&lt;Vec&lt;u8&gt;, serde_json::Error&gt; {
+    // 这个函数在二进制中只存在一次
+    serde_json::to_vec(&amp;value)
+}
+
+// 2. 当内联不重要时使用 trait 对象（动态 dispatch）
+fn log_item(item: &amp;dyn std::fmt::Display) {
+    // 一个副本——使用 vtable 进行 dispatch
+    println!("[LOG] {item}");
+}
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>经验法则</strong>：对内联重要的热路径使用泛型。
+对 vtable 调用可忽略不计的冷路径（错误处理、日志记录、配置）
+使用 <code>dyn Trait</code>。</p>
+</blockquote>
+<h3 id="泛型-vs-enum-vs-trait-对象决策指南"><a class="header" href="#泛型-vs-enum-vs-trait-对象决策指南">泛型 vs Enum vs Trait 对象——决策指南</a></h3>
+<p>Rust 中处理"不同类型，相同接口"的三种方式：</p>
+<div class="table-wrapper"><table><thead><tr><th>方法</th><th>Dispatch</th><th>已知于</th><th>可扩展？</th><th>开销</th></tr></thead><tbody>
+<tr><td><strong>泛型</strong>（<code>impl Trait</code> / <code>&lt;T: Trait&gt;</code>）</td><td>静态（单态化）</td><td>编译时</td><td>✅（开放集合）</td><td>零——可内联</td></tr>
+<tr><td><strong>Enum</strong></td><td>match 分支</td><td>编译时</td><td>❌（封闭集合）</td><td>零——无 vtable</td></tr>
+<tr><td><strong>Trait 对象</strong>（<code>dyn Trait</code>）</td><td>动态（vtable）</td><td>运行时</td><td>✅（开放集合）</td><td>Vtable 指针 + 间接调用</td></tr>
+</tbody></table>
+</div>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// --- 泛型：开放集合，零成本，编译时 ---
+fn process&lt;H: Handler&gt;(handler: H, request: Request) -&gt; Response {
+    handler.handle(request) // 单态化——每个 H 一个副本
+}
+
+// --- ENUM：封闭集合，零成本，穷尽匹配 ---
+enum Shape {
+    Circle(f64),
+    Rect(f64, f64),
+    Triangle(f64, f64, f64),
+}
+
+impl Shape {
+    fn area(&amp;self) -&gt; f64 {
+        match self {
+            Shape::Circle(r) =&gt; std::f64::consts::PI * r * r,
+            Shape::Rect(w, h) =&gt; w * h,
+            Shape::Triangle(a, b, c) =&gt; {
+                let s = (a + b + c) / 2.0;
+                (s * (s - a) * (s - b) * (s - c)).sqrt()
+            }
+        }
+    }
+}
+// 添加新变体强制更新所有 match 分支——编译器
+// 强制穷尽性。适用于"我控制所有变体"的情况。
+
+// --- TRAIT 对象：开放集合，运行时成本，可扩展 ---
+fn log_all(items: &amp;[Box&lt;dyn std::fmt::Display&gt;]) {
+    for item in items {
+        println!("{item}"); // vtable dispatch
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>决策流程图</strong>：</p>
+<pre class="mermaid">flowchart TD
+    A[&quot;你在编译时知道&lt;br&gt;所有可能的类型吗？&quot;]
+    A --&gt;|&quot;是，小的&lt;br&gt;封闭集合&quot;| B[&quot;Enum&quot;]
+    A --&gt;|&quot;是，但集合&lt;br&gt;是开放的&quot;| C[&quot;泛型&lt;br&gt;（单态化）&quot;]
+    A --&gt;|&quot;否——类型&lt;br&gt;在运行时确定&quot;| D[&quot;dyn Trait&quot;]
+
+    C --&gt; E{&quot;热路径？&lt;br&gt;（数百万次调用）&quot;}
+    E --&gt;|是 | F[&quot;泛型&lt;br&gt;（可内联）&quot;]
+    E --&gt;|否 | G[&quot;dyn Trait&lt;br&gt;没问题&quot;]
+
+    D --&gt; H{&quot;需要混合类型&lt;br&gt;在一个集合中？&quot;}
+    H --&gt;|是 | I[&quot;Vec&amp;lt;Box&amp;lt;dyn Trait&amp;gt;&amp;gt;&quot;]
+    H --&gt;|否 | C
+
+    style A fill:#e8f4f8,stroke:#2980b9,color:#000
+    style B fill:#d4efdf,stroke:#27ae60,color:#000
+    style C fill:#d4efdf,stroke:#27ae60,color:#000
+    style D fill:#fdebd0,stroke:#e67e22,color:#000
+    style F fill:#d4efdf,stroke:#27ae60,color:#000
+    style G fill:#fdebd0,stroke:#e67e22,color:#000
+    style I fill:#fdebd0,stroke:#e67e22,color:#000
+    style E fill:#fef9e7,stroke:#f1c40f,color:#000
+    style H fill:#fef9e7,stroke:#f1c40f,color:#000
+</pre>
+<h3 id="const-泛型"><a class="header" href="#const-泛型">Const 泛型</a></h3>
+<p>从 Rust 1.51 开始，你可以在<em>常量值</em>而不仅仅是类型上参数化类型和函数：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 数组包装器，以大小为参数
+struct Matrix&lt;const ROWS: usize, const COLS: usize&gt; {
+    data: [[f64; COLS]; ROWS],
+}
+
+impl&lt;const ROWS: usize, const COLS: usize&gt; Matrix&lt;ROWS, COLS&gt; {
+    fn new() -&gt; Self {
+        Matrix { data: [[0.0; COLS]; ROWS] }
+    }
+
+    fn transpose(&amp;self) -&gt; Matrix&lt;COLS, ROWS&gt; {
+        let mut result = Matrix::&lt;COLS, ROWS&gt;::new();
+        for r in 0..ROWS {
+            for c in 0..COLS {
+                result.data[c][r] = self.data[r][c];
+            }
+        }
+        result
+    }
+}
+
+// 编译器强制维度正确性：
+fn multiply&lt;const M: usize, const N: usize, const P: usize&gt;(
+    a: &amp;Matrix&lt;M, N&gt;,
+    b: &amp;Matrix&lt;N, P&gt;, // N 必须匹配！
+) -&gt; Matrix&lt;M, P&gt; {
+    let mut result = Matrix::&lt;M, P&gt;::new();
+    for i in 0..M {
+        for j in 0..P {
+            for k in 0..N {
+                result.data[i][j] += a.data[i][k] * b.data[k][j];
+            }
+        }
+    }
+    result
+}
+
+// 用法：
+let a = Matrix::&lt;2, 3&gt;::new(); // 2×3
+let b = Matrix::&lt;3, 4&gt;::new(); // 3×4
+let c = multiply(&amp;a, &amp;b);      // 2×4 ✅
+
+// let d = Matrix::&lt;5, 5&gt;::new();
+// multiply(&amp;a, &amp;d); // ❌ 编译错误：期望 Matrix&lt;3, _&gt;，得到 Matrix&lt;5, 5&gt;
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>C++ 比较</strong>：这类似于 C++ 中的 <code>template&lt;int N&gt;</code>，但 Rust
+const 泛型是急切类型检查的，不会遭受 SFINAE 复杂性。</p>
+</blockquote>
+<h3 id="const-函数const-fn"><a class="header" href="#const-函数const-fn">Const 函数（const fn）</a></h3>
+<p><code>const fn</code> 标记一个函数可在编译时求值——Rust 的等价物
+C++ <code>constexpr</code>。结果可用于 <code>const</code> 和 <code>static</code> 上下文：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 基础 const fn——在 const 上下文中使用时在编译时求值
+const fn celsius_to_fahrenheit(c: f64) -&gt; f64 {
+    c * 9.0 / 5.0 + 32.0
+}
+
+const BOILING_F: f64 = celsius_to_fahrenheit(100.0); // 编译时计算
+const FREEZING_F: f64 = celsius_to_fahrenheit(0.0);  // 32.0
+
+// Const 构造函数——创建 static 无需 lazy_static!
+struct BitMask(u32);
+
+impl BitMask {
+    const fn new(bit: u32) -&gt; Self {
+        BitMask(1 &lt;&lt; bit)
+    }
+
+    const fn or(self, other: BitMask) -&gt; Self {
+        BitMask(self.0 | other.0)
+    }
+
+    const fn contains(&amp;self, bit: u32) -&gt; bool {
+        self.0 &amp; (1 &lt;&lt; bit) != 0
+    }
+}
+
+// 静态查找表——无运行时成本，无惰性初始化
+const GPIO_INPUT:  BitMask = BitMask::new(0);
+const GPIO_OUTPUT: BitMask = BitMask::new(1);
+const GPIO_IRQ:    BitMask = BitMask::new(2);
+const GPIO_IO:     BitMask = GPIO_INPUT.or(GPIO_OUTPUT);
+
+// 寄存器映射为 const 数组：
+const SENSOR_THRESHOLDS: [u16; 4] = {
+    let mut table = [0u16; 4];
+    table[0] = 50;   // 警告
+    table[1] = 70;   // 高
+    table[2] = 85;   // 严重
+    table[3] = 100;  // 关闭
+    table
+};
+// 整个表存在于二进制中——无堆，无运行时初始化。
+<span class="boring">}</span></code></pre></pre>
+<p><strong>你在 <code>const fn</code> 中可以做什么</strong>（截至 Rust 1.79+）：</p>
+<ul>
+<li>算术、位操作、比较</li>
+<li><code>if</code>/<code>else</code>、<code>match</code>、<code>loop</code>、<code>while</code>（控制流）</li>
+<li>创建和修改局部变量（<code>let mut</code>）</li>
+<li>调用其他 <code>const fn</code></li>
+<li>引用（<code>&amp;</code>、<code>&amp;mut</code>——在 const 上下文中）</li>
+<li><code>panic!()</code>（如果在编译时达到则成为编译错误）</li>
+</ul>
+<p><strong>你不能做什么</strong>（尚未）：</p>
+<ul>
+<li>堆分配（<code>Box</code>、<code>Vec</code>、<code>String</code>）</li>
+<li>Trait 方法调用（只有固有方法）</li>
+<li>某些上下文中的浮点数（基本操作已稳定）</li>
+<li>I/O 或副作用</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 带 panic 的 const fn——成为编译时错误：
+const fn checked_div(a: u32, b: u32) -&gt; u32 {
+    if b == 0 {
+        panic!("division by zero"); // 如果 b 在 const 时为 0 则编译错误
+    }
+    a / b
+}
+
+const RESULT: u32 = checked_div(100, 4);  // ✅ 25
+// const BAD: u32 = checked_div(100, 0);  // ❌ 编译错误："division by zero"
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>C++ 比较</strong>：<code>const fn</code> 是 Rust 的 <code>constexpr</code>。关键区别：
+Rust 的版本是 opt-in 的，编译器严格验证只使用
+const 兼容的操作。在 C++ 中，<code>constexpr</code> 函数可以
+静默回退到运行时求值——在 Rust 中，<code>const</code> 上下文
+<em>要求</em> 编译时求值，否则是硬错误。</p>
+</blockquote>
+<blockquote>
+<p><strong>实用建议</strong>：尽可能将构造函数和简单工具函数设为 <code>const fn</code>
+——它没有成本，并允许调用者在 const 上下文中使用它们。对于硬件
+诊断代码，<code>const fn</code> 是寄存器定义、位掩码构建和阈值表的理想选择。</p>
+</blockquote>
+<blockquote>
+<p><strong>要点——泛型</strong></p>
+<ul>
+<li>单态化提供零成本抽象但可能导致代码膨胀——对冷路径使用 <code>dyn Trait</code></li>
+<li>Const 泛型（<code>[T; N]</code>）用编译时检查的数组大小替代 C++ 模板技巧</li>
+<li><code>const fn</code> 消除了 <code>lazy_static!</code> 用于编译时可计算的值</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>另见：</strong> <a href="ch02-traits-in-depth.html">第 2 章 — trait 深入讲解</a> 了解 trait 约束、关联类型和 trait 对象。<a href="ch04-phantomdata-types-that-carry-no-data.html">第 4 章 — PhantomData</a> 了解零大小泛型标记。</p>
+</blockquote>
+<hr />
+<h3 id="练习带淘汰的泛型缓存-约-30-分钟"><a class="header" href="#练习带淘汰的泛型缓存-约-30-分钟">练习：带淘汰的泛型缓存 ★★（约 30 分钟）</a></h3>
+<p>构建一个泛型 <code>Cache&lt;K, V&gt;</code> 结构体，存储键值对，具有可配置的最大容量。满时，最旧的条目被淘汰（FIFO）。要求：</p>
+<ul>
+<li><code>fn new(capacity: usize) -&gt; Self</code></li>
+<li><code>fn insert(&amp;mut self, key: K, value: V)</code> —— 达到容量时淘汰最旧的</li>
+<li><code>fn get(&amp;self, key: &amp;K) -&gt; Option&lt;&amp;V&gt;</code></li>
+<li><code>fn len(&amp;self) -&gt; usize</code></li>
+<li>约束 <code>K: Eq + Hash + Clone</code></li>
+</ul>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><pre class="playground"><code class="language-rust">use std::collections::{HashMap, VecDeque};
+use std::hash::Hash;
+
+struct Cache&lt;K, V&gt; {
+    map: HashMap&lt;K, V&gt;,
+    order: VecDeque&lt;K&gt;,
+    capacity: usize,
+}
+
+impl&lt;K: Eq + Hash + Clone, V&gt; Cache&lt;K, V&gt; {
+    fn new(capacity: usize) -&gt; Self {
+        Cache {
+            map: HashMap::with_capacity(capacity),
+            order: VecDeque::with_capacity(capacity),
+            capacity,
+        }
+    }
+
+    fn insert(&amp;mut self, key: K, value: V) {
+        if self.map.contains_key(&amp;key) {
+            self.map.insert(key, value);
+            return;
+        }
+        if self.map.len() &gt;= self.capacity {
+            if let Some(oldest) = self.order.pop_front() {
+                self.map.remove(&amp;oldest);
+            }
+        }
+        self.order.push_back(key.clone());
+        self.map.insert(key, value);
+    }
+
+    fn get(&amp;self, key: &amp;K) -&gt; Option&lt;&amp;V&gt; {
+        self.map.get(key)
+    }
+
+    fn len(&amp;self) -&gt; usize {
+        self.map.len()
+    }
+}
+
+fn main() {
+    let mut cache = Cache::new(3);
+    cache.insert("a", 1);
+    cache.insert("b", 2);
+    cache.insert("c", 3);
+    assert_eq!(cache.len(), 3);
+
+    cache.insert("d", 4); // 淘汰 "a"
+    assert_eq!(cache.get(&amp;"a"), None);
+    assert_eq!(cache.get(&amp;"d"), Some(&amp;4));
+    println!("Cache works! len = {}", cache.len());
+}</code></pre></pre>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch00-introduction.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch02-traits-in-depth.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch00-introduction.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch02-traits-in-depth.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

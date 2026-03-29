@@ -1,0 +1,482 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>继承 vs 组合 - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="继承-vs-组合"><a class="header" href="#继承-vs-组合">继承 vs 组合</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> 为什么 Rust 没有类继承，traits + 结构体如何替代深层
+类层次结构，以及通过组合实现多态的实用模式。</p>
+<p><strong>难度：</strong> 🟡 中级</p>
+</blockquote>
+<pre><code class="language-csharp">// C# - 基于继承的类
+public abstract class Animal
+{
+    public string Name { get; protected set; }
+    public abstract void MakeSound();
+
+    public virtual void Sleep()
+    {
+        Console.WriteLine($"{Name} is sleeping");
+    }
+}
+
+public class Dog : Animal
+{
+    public Dog(string name) { Name = name; }
+
+    public override void MakeSound()
+    {
+        Console.WriteLine("Woof!");
+    }
+
+    public void Fetch()
+    {
+        Console.WriteLine($"{Name} is fetching");
+    }
+}
+
+// 基于接口的契约
+public interface IFlyable
+{
+    void Fly();
+}
+
+public class Bird : Animal, IFlyable
+{
+    public Bird(string name) { Name = name; }
+
+    public override void MakeSound()
+    {
+        Console.WriteLine("Tweet!");
+    }
+
+    public void Fly()
+    {
+        Console.WriteLine($"{Name} is flying");
+    }
+}
+</code></pre>
+<h3 id="rust-组合模型"><a class="header" href="#rust-组合模型">Rust 组合模型</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust - 带 traits 的组合优于继承
+pub trait Animal {
+    fn name(&amp;self) -&gt; &amp;str;
+    fn make_sound(&amp;self);
+
+    // 默认实现（类似 C# 虚方法）
+    fn sleep(&amp;self) {
+        println!("{} is sleeping", self.name());
+    }
+}
+
+pub trait Flyable {
+    fn fly(&amp;self);
+}
+
+// 将数据与行为分离
+#[derive(Debug)]
+pub struct Dog {
+    name: String,
+}
+
+#[derive(Debug)]
+pub struct Bird {
+    name: String,
+    wingspan: f64,
+}
+
+// 为类型实现行为
+impl Animal for Dog {
+    fn name(&amp;self) -&gt; &amp;str {
+        &amp;self.name
+    }
+
+    fn make_sound(&amp;self) {
+        println!("Woof!");
+    }
+}
+
+impl Dog {
+    pub fn new(name: String) -&gt; Self {
+        Dog { name }
+    }
+
+    pub fn fetch(&amp;self) {
+        println!("{} is fetching", self.name);
+    }
+}
+
+impl Animal for Bird {
+    fn name(&amp;self) -&gt; &amp;str {
+        &amp;self.name
+    }
+
+    fn make_sound(&amp;self) {
+        println!("Tweet!");
+    }
+}
+
+impl Flyable for Bird {
+    fn fly(&amp;self) {
+        println!("{} is flying with {:.1}m wingspan", self.name, self.wingspan);
+    }
+}
+
+// 多个 trait 边界（类似多个接口）
+fn make_flying_animal_sound&lt;T&gt;(animal: &amp;T)
+where
+    T: Animal + Flyable,
+{
+    animal.make_sound();
+    animal.fly();
+}
+<span class="boring">}</span></code></pre></pre>
+<pre class="mermaid">graph TD
+    subgraph &quot;C# 继承层次结构&quot;
+        CS_ANIMAL[&quot;Animal（抽象类）&quot;]
+        CS_DOG[&quot;Dog : Animal&quot;]
+        CS_BIRD[&quot;Bird : Animal, IFlyable&quot;]
+        CS_VTABLE[&quot;虚方法分发&lt;br/&gt;运行时成本&quot;]
+        CS_COUPLING[&quot;[错误] 紧密耦合&lt;br/&gt;[错误] 菱形问题&lt;br/&gt;[错误] 深层层次结构&quot;]
+
+        CS_ANIMAL --&gt; CS_DOG
+        CS_ANIMAL --&gt; CS_BIRD
+        CS_DOG --&gt; CS_VTABLE
+        CS_BIRD --&gt; CS_VTABLE
+        CS_ANIMAL --&gt; CS_COUPLING
+    end
+
+    subgraph &quot;Rust 组合模型&quot;
+        RUST_ANIMAL[&quot;trait Animal&quot;]
+        RUST_FLYABLE[&quot;trait Flyable&quot;]
+        RUST_DOG[&quot;struct Dog&quot;]
+        RUST_BIRD[&quot;struct Bird&quot;]
+        RUST_IMPL1[&quot;impl Animal for Dog&quot;]
+        RUST_IMPL2[&quot;impl Animal for Bird&quot;]
+        RUST_IMPL3[&quot;impl Flyable for Bird&quot;]
+        RUST_STATIC[&quot;静态分发&lt;br/&gt;零成本&quot;]
+        RUST_FLEXIBLE[&quot;[好] 灵活组合&lt;br/&gt;[好] 无层次结构限制&lt;br/&gt;[好] 混合匹配 traits&quot;]
+
+        RUST_DOG --&gt; RUST_IMPL1
+        RUST_BIRD --&gt; RUST_IMPL2
+        RUST_BIRD --&gt; RUST_IMPL3
+        RUST_IMPL1 --&gt; RUST_ANIMAL
+        RUST_IMPL2 --&gt; RUST_ANIMAL
+        RUST_IMPL3 --&gt; RUST_FLYABLE
+        RUST_IMPL1 --&gt; RUST_STATIC
+        RUST_IMPL2 --&gt; RUST_STATIC
+        RUST_IMPL3 --&gt; RUST_STATIC
+        RUST_ANIMAL --&gt; RUST_FLEXIBLE
+        RUST_FLYABLE --&gt; RUST_FLEXIBLE
+    end
+
+    style CS_COUPLING fill:#ffcdd2,color:#000
+    style RUST_FLEXIBLE fill:#c8e6c9,color:#000
+    style CS_VTABLE fill:#fff3e0,color:#000
+    style RUST_STATIC fill:#c8e6c9,color:#000
+</pre>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：用 Traits 替代继承</strong>（点击展开）</summary>
+<p>这段 C# 代码使用继承。使用 trait 组合在 Rust 中重写它：</p>
+<pre><code class="language-csharp">public abstract class Shape { public abstract double Area(); }
+public abstract class Shape3D : Shape { public abstract double Volume(); }
+public class Cylinder : Shape3D
+{
+    public double Radius { get; }
+    public double Height { get; }
+    public Cylinder(double r, double h) { Radius = r; Height = h; }
+    public override double Area() =&gt; 2.0 * Math.PI * Radius * (Radius + Height);
+    public override double Volume() =&gt; Math.PI * Radius * Radius * Height;
+}
+</code></pre>
+<p>要求：</p>
+<ol>
+<li><code>HasArea</code> trait 带 <code>fn area(&amp;self) -&gt; f64</code></li>
+<li><code>HasVolume</code> trait 带 <code>fn volume(&amp;self) -&gt; f64</code></li>
+<li>实现两者的 <code>Cylinder</code> 结构体</li>
+<li>函数 <code>fn print_shape_info(shape: &amp;(impl HasArea + HasVolume))</code>——注意 trait 边界组合（无需继承）</li>
+</ol>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><pre class="playground"><code class="language-rust">use std::f64::consts::PI;
+
+trait HasArea {
+    fn area(&amp;self) -&gt; f64;
+}
+
+trait HasVolume {
+    fn volume(&amp;self) -&gt; f64;
+}
+
+struct Cylinder {
+    radius: f64,
+    height: f64,
+}
+
+impl HasArea for Cylinder {
+    fn area(&amp;self) -&gt; f64 {
+        2.0 * PI * self.radius * (self.radius + self.height)
+    }
+}
+
+impl HasVolume for Cylinder {
+    fn volume(&amp;self) -&gt; f64 {
+        PI * self.radius * self.radius * self.height
+    }
+}
+
+fn print_shape_info(shape: &amp;(impl HasArea + HasVolume)) {
+    println!("Area:   {:.2}", shape.area());
+    println!("Volume: {:.2}", shape.volume());
+}
+
+fn main() {
+    let c = Cylinder { radius: 3.0, height: 5.0 };
+    print_shape_info(&amp;c);
+}</code></pre></pre>
+<p><strong>关键见解</strong>：C# 需要 3 层层次结构（Shape → Shape3D → Cylinder）。Rust 使用扁平 trait 组合——<code>impl HasArea + HasVolume</code> 组合能力而无需继承深度。</p>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch10-1-generic-constraints.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch11-from-and-into-traits.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch10-1-generic-constraints.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch11-from-and-into-traits.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

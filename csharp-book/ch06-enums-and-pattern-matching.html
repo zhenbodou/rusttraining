@@ -1,0 +1,641 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>6. Enum 与模式匹配 - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="代数数据类型-vs-c-联合"><a class="header" href="#代数数据类型-vs-c-联合">代数数据类型 vs C# 联合</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> Rust 的代数数据类型（带数据的枚举）vs C# 有限的判别联合，
+带穷尽检查的 <code>match</code> 表达式、守卫子句和嵌套模式解构。</p>
+<p><strong>难度：</strong> 🟡 中级</p>
+</blockquote>
+<h3 id="c-判别联合有限"><a class="header" href="#c-判别联合有限">C# 判别联合（有限）</a></h3>
+<pre><code class="language-csharp">// C# - 使用继承的有限联合支持
+public abstract class Result
+{
+    public abstract T Match&lt;T&gt;(Func&lt;Success, T&gt; onSuccess, Func&lt;Error, T&gt; onError);
+}
+
+public class Success : Result
+{
+    public string Value { get; }
+    public Success(string value) =&gt; Value = value;
+
+    public override T Match&lt;T&gt;(Func&lt;Success, T&gt; onSuccess, Func&lt;Error, T&gt; onError)
+        =&gt; onSuccess(this);
+}
+
+public class Error : Result
+{
+    public string Message { get; }
+    public Error(string message) =&gt; Message = message;
+
+    public override T Match&lt;T&gt;(Func&lt;Success, T&gt; onSuccess, Func&lt;Error, T&gt; onError)
+        =&gt; onError(this);
+}
+
+// C# 9+ Records 带模式匹配（更好）
+public abstract record Shape;
+public record Circle(double Radius) : Shape;
+public record Rectangle(double Width, double Height) : Shape;
+
+public static double Area(Shape shape) =&gt; shape switch
+{
+    Circle(var radius) =&gt; Math.PI * radius * radius,
+    Rectangle(var width, var height) =&gt; width * height,
+    _ =&gt; throw new ArgumentException("Unknown shape")  // [错误] 可能出现运行时错误
+};
+</code></pre>
+<h3 id="rust-代数数据类型枚举"><a class="header" href="#rust-代数数据类型枚举">Rust 代数数据类型（枚举）</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust - 真正的代数数据类型带穷尽模式匹配
+#[derive(Debug, Clone)]
+pub enum Result&lt;T, E&gt; {
+    Ok(T),
+    Err(E),
+}
+
+#[derive(Debug, Clone)]
+pub enum Shape {
+    Circle { radius: f64 },
+    Rectangle { width: f64, height: f64 },
+    Triangle { base: f64, height: f64 },
+}
+
+impl Shape {
+    pub fn area(&amp;self) -&gt; f64 {
+        match self {
+            Shape::Circle { radius } =&gt; std::f64::consts::PI * radius * radius,
+            Shape::Rectangle { width, height } =&gt; width * height,
+            Shape::Triangle { base, height } =&gt; 0.5 * base * height,
+            // [好] 如果缺少任何变体则编译器错误！
+        }
+    }
+}
+
+// 高级：枚举可以持有不同的类型
+#[derive(Debug)]
+pub enum Value {
+    Integer(i64),
+    Float(f64),
+    Text(String),
+    Boolean(bool),
+    List(Vec&lt;Value&gt;),  // 递归类型！
+}
+
+impl Value {
+    pub fn type_name(&amp;self) -&gt; &amp;'static str {
+        match self {
+            Value::Integer(_) =&gt; "integer",
+            Value::Float(_) =&gt; "float",
+            Value::Text(_) =&gt; "text",
+            Value::Boolean(_) =&gt; "boolean",
+            Value::List(_) =&gt; "list",
+        }
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<pre class="mermaid">graph TD
+    subgraph &quot;C# 判别联合（变通方案）&quot;
+        CS_ABSTRACT[&quot;abstract class Result&quot;]
+        CS_SUCCESS[&quot;class Success : Result&quot;]
+        CS_ERROR[&quot;class Error : Result&quot;]
+        CS_MATCH[&quot;手动 Match 方法&lt;br/&gt;或 switch 表达式&quot;]
+        CS_RUNTIME[&quot;[错误] 运行时异常&lt;br/&gt;用于缺失的情况&quot;]
+        CS_HEAP[&quot;[错误] 堆分配&lt;br/&gt;用于类继承&quot;]
+
+        CS_ABSTRACT --&gt; CS_SUCCESS
+        CS_ABSTRACT --&gt; CS_ERROR
+        CS_SUCCESS --&gt; CS_MATCH
+        CS_ERROR --&gt; CS_MATCH
+        CS_MATCH --&gt; CS_RUNTIME
+        CS_ABSTRACT --&gt; CS_HEAP
+    end
+
+    subgraph &quot;Rust 代数数据类型&quot;
+        RUST_ENUM[&quot;enum Shape { ... }&quot;]
+        RUST_VARIANTS[&quot;Circle { radius }&lt;br/&gt;Rectangle { width, height }&lt;br/&gt;Triangle { base, height }&quot;]
+        RUST_MATCH[&quot;match shape { ... }&quot;]
+        RUST_EXHAUSTIVE[&quot;[好] 穷尽检查&lt;br/&gt;编译时保证&quot;]
+        RUST_STACK[&quot;[好] 栈分配&lt;br/&gt;高效内存使用&quot;]
+        RUST_ZERO[&quot;[好] 零成本抽象&quot;]
+
+        RUST_ENUM --&gt; RUST_VARIANTS
+        RUST_VARIANTS --&gt; RUST_MATCH
+        RUST_MATCH --&gt; RUST_EXHAUSTIVE
+        RUST_ENUM --&gt; RUST_STACK
+        RUST_STACK --&gt; RUST_ZERO
+    end
+
+    style CS_RUNTIME fill:#ffcdd2,color:#000
+    style CS_HEAP fill:#fff3e0,color:#000
+    style RUST_EXHAUSTIVE fill:#c8e6c9,color:#000
+    style RUST_STACK fill:#c8e6c9,color:#000
+    style RUST_ZERO fill:#c8e6c9,color:#000
+</pre>
+<hr />
+<h2 id="枚举和模式匹配"><a class="header" href="#枚举和模式匹配">枚举和模式匹配</a></h2>
+<p>Rust 枚举比 C# 枚举强大得多——它们可以持有数据，是类型安全编程的基础。</p>
+<h3 id="c-枚举限制"><a class="header" href="#c-枚举限制">C# 枚举限制</a></h3>
+<pre><code class="language-csharp">// C# enum - 只是命名常量
+public enum Status
+{
+    Pending,
+    Approved,
+    Rejected
+}
+
+// 带后备值的 C# enum
+public enum HttpStatusCode
+{
+    OK = 200,
+    NotFound = 404,
+    InternalServerError = 500
+}
+
+// 需要单独的类来处理复杂数据
+public abstract class Result
+{
+    public abstract bool IsSuccess { get; }
+}
+
+public class Success : Result
+{
+    public string Value { get; }
+    public override bool IsSuccess =&gt; true;
+
+    public Success(string value)
+    {
+        Value = value;
+    }
+}
+
+public class Error : Result
+{
+    public string Message { get; }
+    public override bool IsSuccess =&gt; false;
+
+    public Error(string message)
+    {
+        Message = message;
+    }
+}
+</code></pre>
+<h3 id="rust-枚举能力"><a class="header" href="#rust-枚举能力">Rust 枚举能力</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 简单枚举（类似 C# enum）
+#[derive(Debug, PartialEq)]
+enum Status {
+    Pending,
+    Approved,
+    Rejected,
+}
+
+// 带数据的枚举（这是 Rust 的亮点！）
+#[derive(Debug)]
+enum Result&lt;T, E&gt; {
+    Ok(T),      // 成功变体，持有 T 类型的值
+    Err(E),     // 错误变体，持有 E 类型的错误
+}
+
+// 带不同数据类型的复杂枚举
+#[derive(Debug)]
+enum Message {
+    Quit,                       // 无数据
+    Move { x: i32, y: i32 },   // 类似结构体的变体
+    Write(String),             // 类似元组的变体
+    ChangeColor(i32, i32, i32), // 多个值
+}
+
+// 现实世界示例：HTTP 响应
+#[derive(Debug)]
+enum HttpResponse {
+    Ok { body: String, headers: Vec&lt;String&gt; },
+    NotFound { path: String },
+    InternalError { message: String, code: u16 },
+    Redirect { location: String },
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="使用-match-进行模式匹配"><a class="header" href="#使用-match-进行模式匹配">使用 Match 进行模式匹配</a></h3>
+<pre><code class="language-csharp">// C# switch 语句（有限）
+public string HandleStatus(Status status)
+{
+    switch (status)
+    {
+        case Status.Pending:
+            return "Waiting for approval";
+        case Status.Approved:
+            return "Request approved";
+        case Status.Rejected:
+            return "Request rejected";
+        default:
+            return "Unknown status"; // 总是需要 default
+    }
+}
+
+// C# 模式匹配（C# 8+）
+public string HandleResult(Result result)
+{
+    return result switch
+    {
+        Success success =&gt; $"Success: {success.Value}",
+        Error error =&gt; $"Error: {error.Message}",
+        _ =&gt; "Unknown result" // 仍然需要通配符
+    };
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust match - 穷尽且强大
+fn handle_status(status: Status) -&gt; String {
+    match status {
+        Status::Pending =&gt; "Waiting for approval".to_string(),
+        Status::Approved =&gt; "Request approved".to_string(),
+        Status::Rejected =&gt; "Request rejected".to_string(),
+        // 不需要 default - 编译器确保穷尽性
+    }
+}
+
+// 带数据提取的模式匹配
+fn handle_result&lt;T, E&gt;(result: Result&lt;T, E&gt;) -&gt; String
+where
+    T: std::fmt::Debug,
+    E: std::fmt::Debug,
+{
+    match result {
+        Result::Ok(value) =&gt; format!("Success: {:?}", value),
+        Result::Err(error) =&gt; format!("Error: {:?}", error),
+        // 穷尽 - 不需要 default
+    }
+}
+
+// 复杂模式匹配
+fn handle_message(msg: Message) -&gt; String {
+    match msg {
+        Message::Quit =&gt; "Goodbye!".to_string(),
+        Message::Move { x, y } =&gt; format!("Move to ({}, {})", x, y),
+        Message::Write(text) =&gt; format!("Write: {}", text),
+        Message::ChangeColor(r, g, b) =&gt; format!("Change color to RGB({}, {}, {})", r, g, b),
+    }
+}
+
+// HTTP 响应处理
+fn handle_http_response(response: HttpResponse) -&gt; String {
+    match response {
+        HttpResponse::Ok { body, headers } =&gt; {
+            format!("Success! Body: {}, Headers: {:?}", body, headers)
+        },
+        HttpResponse::NotFound { path } =&gt; {
+            format!("404: Path '{}' not found", path)
+        },
+        HttpResponse::InternalError { message, code } =&gt; {
+            format!("Error {}: {}", code, message)
+        },
+        HttpResponse::Redirect { location } =&gt; {
+            format!("Redirect to: {}", location)
+        },
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="守卫和高级模式"><a class="header" href="#守卫和高级模式">守卫和高级模式</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 带守卫的模式匹配
+fn describe_number(x: i32) -&gt; String {
+    match x {
+        n if n &lt; 0 =&gt; "negative".to_string(),
+        0 =&gt; "zero".to_string(),
+        n if n &lt; 10 =&gt; "single digit".to_string(),
+        n if n &lt; 100 =&gt; "double digit".to_string(),
+        _ =&gt; "large number".to_string(),
+    }
+}
+
+// 匹配范围
+fn describe_age(age: u32) -&gt; String {
+    match age {
+        0..=12 =&gt; "child".to_string(),
+        13..=19 =&gt; "teenager".to_string(),
+        20..=64 =&gt; "adult".to_string(),
+        65.. =&gt; "senior".to_string(),
+    }
+}
+
+// 解构结构体和元组
+<span class="boring">}</span></code></pre></pre>
+<details>
+<summary><strong>🏋️ 练习：命令解析器</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：使用 Rust 枚举建模 CLI 命令系统。将字符串输入解析为 <code>Command</code> 枚举并执行每个变体。使用适当的错误处理处理未知命令。</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 起始代码——填空
+#[derive(Debug)]
+enum Command {
+    // TODO: 为 Quit、Echo(String)、Move { x: i32, y: i32 }、Count(u32) 添加变体
+}
+
+fn parse_command(input: &amp;str) -&gt; Result&lt;Command, String&gt; {
+    let parts: Vec&lt;&amp;str&gt; = input.splitn(2, ' ').collect();
+    // TODO: 匹配 parts[0] 并解析参数
+    todo!()
+}
+
+fn execute(cmd: &amp;Command) -&gt; String {
+    // TODO: 匹配每个变体并返回描述
+    todo!()
+}
+<span class="boring">}</span></code></pre></pre>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug)]
+enum Command {
+    Quit,
+    Echo(String),
+    Move { x: i32, y: i32 },
+    Count(u32),
+}
+
+fn parse_command(input: &amp;str) -&gt; Result&lt;Command, String&gt; {
+    let parts: Vec&lt;&amp;str&gt; = input.splitn(2, ' ').collect();
+    match parts[0] {
+        "quit" =&gt; Ok(Command::Quit),
+        "echo" =&gt; {
+            let msg = parts.get(1).unwrap_or(&amp;"").to_string();
+            Ok(Command::Echo(msg))
+        }
+        "move" =&gt; {
+            let args = parts.get(1).ok_or("move requires 'x y'")?;
+            let coords: Vec&lt;&amp;str&gt; = args.split_whitespace().collect();
+            let x = coords.get(0).ok_or("missing x")?.parse::&lt;i32&gt;().map_err(|e| e.to_string())?;
+            let y = coords.get(1).ok_or("missing y")?.parse::&lt;i32&gt;().map_err(|e| e.to_string())?;
+            Ok(Command::Move { x, y })
+        }
+        "count" =&gt; {
+            let n = parts.get(1).ok_or("count requires a number")?
+                .parse::&lt;u32&gt;().map_err(|e| e.to_string())?;
+            Ok(Command::Count(n))
+        }
+        other =&gt; Err(format!("Unknown command: {other}")),
+    }
+}
+
+fn execute(cmd: &amp;Command) -&gt; String {
+    match cmd {
+        Command::Quit           =&gt; "Goodbye!".to_string(),
+        Command::Echo(msg)      =&gt; msg.clone(),
+        Command::Move { x, y }  =&gt; format!("Moving to ({x}, {y})"),
+        Command::Count(n)       =&gt; format!("Counted to {n}"),
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>关键要点</strong>：</p>
+<ul>
+<li>每个枚举变体可以持有不同的数据——不需要类层次结构</li>
+<li><code>match</code> 强制你处理每个变体，防止遗漏的情况</li>
+<li><code>?</code> 操作符清晰地链接错误传播——没有嵌套的 try-catch</li>
+</ul>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch05-2-collections-vec-hashmap-and-iterators.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch06-1-exhaustive-matching-and-null-safety.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch05-2-collections-vec-hashmap-and-iterators.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch06-1-exhaustive-matching-and-null-safety.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

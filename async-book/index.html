@@ -1,0 +1,322 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>引言 - Async Rust: From Futures to Production</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Async Rust: From Futures to Production</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="async-rust从-future-到生产"><a class="header" href="#async-rust从-future-到生产">Async Rust：从 Future 到生产</a></h1>
+<h2 id="演讲者介绍"><a class="header" href="#演讲者介绍">演讲者介绍</a></h2>
+<ul>
+<li>微软 SCHIE（硅与云硬件基础设施工程）团队首席固件架构师</li>
+<li>行业资深专家，专长于安全、系统编程（固件、操作系统、虚拟机监控程序）、CPU 和平台架构以及 C++ 系统</li>
+<li>2017 年开始使用 Rust 编程（@AWS EC2），从此爱上了这门语言</li>
+</ul>
+<hr />
+<p>一份异步 Rust 编程的深入指南。与大多数从 <code>tokio::main</code> 开始并对内部原理轻描淡写的异步教程不同，本指南从第一性原理构建理解——<code>Future</code> trait、polling、状态机——然后逐步深入到真实世界的模式、运行时选择和生产陷阱。</p>
+<h2 id="本书适合谁"><a class="header" href="#本书适合谁">本书适合谁</a></h2>
+<ul>
+<li>能够编写同步 Rust 但发现异步令人困惑的 Rust 开发者</li>
+<li>来自 C#、Go、Python 或 JavaScript 的开发者，了解 <code>async/await</code> 但不熟悉 Rust 的模型</li>
+<li>任何曾被 <code>Future is not Send</code>、<code>Pin&lt;Box&lt;dyn Future&gt;&gt;</code> 或"为什么我的程序挂起了？"困扰过的人</li>
+</ul>
+<h2 id="前置知识"><a class="header" href="#前置知识">前置知识</a></h2>
+<p>你应该熟悉以下内容：</p>
+<ul>
+<li>所有权、借用和生命周期</li>
+<li>Trait 和泛型（包括 <code>impl Trait</code>）</li>
+<li>使用 <code>Result&lt;T, E&gt;</code> 和 <code>?</code> 运算符</li>
+<li>基础多线程（<code>std::thread::spawn</code>、<code>Arc</code>、<code>Mutex</code>）</li>
+</ul>
+<p>无需任何异步 Rust 经验。</p>
+<h2 id="如何使用本书"><a class="header" href="#如何使用本书">如何使用本书</a></h2>
+<p><strong>首次阅读时按顺序阅读。</strong> 第一部分到第三部分相互依赖。每章都有：</p>
+<div class="table-wrapper"><table><thead><tr><th>符号</th><th>含义</th></tr></thead><tbody>
+<tr><td>🟢</td><td>初学者 — 基础概念</td></tr>
+<tr><td>🟡</td><td>中级 — 需要前面章节的知识</td></tr>
+<tr><td>🔴</td><td>高级 — 深入内部原理或生产模式</td></tr>
+</tbody></table>
+</div>
+<p>每章包括：</p>
+<ul>
+<li>顶部的 <strong>"你将学到什么"</strong> 模块</li>
+<li><strong>Mermaid 图表</strong> 供视觉学习者使用</li>
+<li><strong>内联练习</strong> 附带隐藏答案</li>
+<li><strong>关键要点</strong> 总结核心思想</li>
+<li><strong>交叉引用</strong> 指向相关章节</li>
+</ul>
+<h2 id="进度指南"><a class="header" href="#进度指南">进度指南</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>章节</th><th>主题</th><th>建议时间</th><th>检查点</th></tr></thead><tbody>
+<tr><td>1–5</td><td>异步的工作原理</td><td>6–8 小时</td><td>你能解释 <code>Future</code>、<code>Poll</code>、<code>Pin</code>，以及为什么 Rust 没有内置运行时</td></tr>
+<tr><td>6–10</td><td>生态系统</td><td>6–8 小时</td><td>你可以手动构建 future、选择运行时并使用 tokio 的 API</td></tr>
+<tr><td>11–13</td><td>生产级异步</td><td>6–8 小时</td><td>你可以编写生产级异步代码，包括 stream、适当的错误处理和优雅关闭</td></tr>
+<tr><td>综合项目</td><td>聊天服务器</td><td>4–6 小时</td><td>你已构建了一个集成所有概念的真实异步应用</td></tr>
+</tbody></table>
+</div>
+<p><strong>总估计时间：22–30 小时</strong></p>
+<h2 id="完成练习"><a class="header" href="#完成练习">完成练习</a></h2>
+<p>每章内容都有一个内联练习。第 16 章的综合项目将所有内容整合到一个项目中。为了最大化学习效果：</p>
+<ol>
+<li><strong>在查看答案之前先尝试练习</strong> — 挣扎是学习发生的地方</li>
+<li><strong>手动输入代码，不要复制粘贴</strong> — 肌肉记忆对 Rust 语法很重要</li>
+<li><strong>运行每个示例</strong> — <code>cargo new async-exercises</code> 并边学边测试</li>
+</ol>
+<h2 id="目录"><a class="header" href="#目录">目录</a></h2>
+<h3 id="第一部分异步的工作原理"><a class="header" href="#第一部分异步的工作原理">第一部分：异步的工作原理</a></h3>
+<ul>
+<li><a href="ch01-why-async-is-different-in-rust.html">1. 为什么 Rust 中的异步与众不同</a> 🟢 — 根本区别：Rust 没有内置运行时</li>
+<li><a href="ch02-the-future-trait.html">2. Future trait</a> 🟡 — <code>poll()</code>、<code>Waker</code>，以及使一切工作的契约</li>
+<li><a href="ch03-how-poll-works.html">3. Poll 是如何工作的</a> 🟡 — polling 状态机和最小化执行器</li>
+<li><a href="ch04-pin-and-unpin.html">4. Pin 和 Unpin</a> 🔴 — 为什么自引用结构体需要 pinning</li>
+<li><a href="ch05-the-state-machine-reveal.html">5. 状态机揭秘</a> 🟢 — 编译器实际上从 <code>async fn</code> 生成了什么</li>
+</ul>
+<h3 id="第二部分生态系统"><a class="header" href="#第二部分生态系统">第二部分：生态系统</a></h3>
+<ul>
+<li><a href="ch06-building-futures-by-hand.html">6. 手动构建 Future</a> 🟡 — TimerFuture、Join、Select 从零开始</li>
+<li><a href="ch07-executors-and-runtimes.html">7. 执行器和运行时</a> 🟡 — tokio、smol、async-std、embassy — 如何选择</li>
+<li><a href="ch08-tokio-deep-dive.html">8. Tokio 深度解析</a> 🟡 — 运行时类型、spawn、channel、同步原语</li>
+<li><a href="ch09-when-tokio-isnt-the-right-fit.html">9. 何时 Tokio 不是最佳选择</a> 🟡 — LocalSet、FuturesUnordered、运行时无关设计</li>
+<li><a href="ch10-async-traits.html">10. 异步 trait</a> 🟡 — RPITIT、dyn 分发、trait_variant、异步闭包</li>
+</ul>
+<h3 id="第三部分生产级异步"><a class="header" href="#第三部分生产级异步">第三部分：生产级异步</a></h3>
+<ul>
+<li><a href="ch11-streams-and-asynciterator.html">11. Stream 和 AsyncIterator</a> 🟡 — 异步迭代、AsyncRead/Write、stream 组合器</li>
+<li><a href="ch12-common-pitfalls.html">12. 常见陷阱</a> 🔴 — 9 个生产 bug 及如何避免它们</li>
+<li><a href="ch13-production-patterns.html">13. 生产模式</a> 🔴 — 优雅关闭、背压、Tower 中间件</li>
+</ul>
+<h3 id="附录"><a class="header" href="#附录">附录</a></h3>
+<ul>
+<li><a href="ch15-summary-and-reference-card.html">总结与参考卡片</a> — 快速查找表和决策树</li>
+<li><a href="ch16-capstone-project.html">综合项目：异步聊天服务器</a> — 构建一个完整的异步应用</li>
+</ul>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+                            <a rel="next prefetch" href="ch01-why-async-is-different-in-rust.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+                    <a rel="next prefetch" href="ch01-why-async-is-different-in-rust.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

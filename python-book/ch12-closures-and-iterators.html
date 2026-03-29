@@ -1,0 +1,655 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>12. 闭包和迭代器 - Rust for Python Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for Python Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="rust-闭包-vs-python-lambda"><a class="header" href="#rust-闭包-vs-python-lambda">Rust 闭包 vs Python Lambda</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> 多行闭包（不仅是一表达式 lambda），<code>Fn</code>/<code>FnMut</code>/<code>FnOnce</code> 捕获语义，
+迭代器链 vs 列表推导式，<code>map</code>/<code>filter</code>/<code>fold</code>，以及 <code>macro_rules!</code> 基础。</p>
+<p><strong>难度：</strong> 🟡 中级</p>
+</blockquote>
+<h3 id="python-闭包和-lambda"><a class="header" href="#python-闭包和-lambda">Python 闭包和 Lambda</a></h3>
+<pre><code class="language-python"># Python —— lambda 是单表达式匿名函数
+double = lambda x: x * 2
+result = double(5)  # 10
+
+# 完整闭包从外部作用域捕获变量：
+def make_adder(n):
+    def adder(x):
+        return x + n    # 从外部作用域捕获 `n`
+    return adder
+
+add_5 = make_adder(5)
+print(add_5(10))  # 15
+
+# 高阶函数：
+numbers = [1, 2, 3, 4, 5]
+doubled = list(map(lambda x: x * 2, numbers))
+evens = list(filter(lambda x: x % 2 == 0, numbers))
+</code></pre>
+<h3 id="rust-闭包"><a class="header" href="#rust-闭包">Rust 闭包</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 闭包使用 |args| body 语法
+let double = |x: i32| x * 2;
+let result = double(5);  # 10
+
+<span class="boring">闭包从外部作用域捕获变量：
+</span>fn make_adder(n: i32) -&gt; impl Fn(i32) -&gt; i32 {
+    move |x| x + n    # `move` 将 `n` 的所有权转移到闭包中
+}
+
+let add_5 = make_adder(5);
+println!("{}", add_5(10));  # 15
+
+<span class="boring">使用迭代器的高阶函数：
+</span>let numbers = vec![1, 2, 3, 4, 5];
+let doubled: Vec&lt;i32&gt; = numbers.iter().map(|x| x * 2).collect();
+let evens: Vec&lt;i32&gt; = numbers.iter().filter(|&amp;&amp;x| x % 2 == 0).copied().collect();
+<span class="boring">}</span></code></pre></pre>
+<h3 id="闭包语法比较"><a class="header" href="#闭包语法比较">闭包语法比较</a></h3>
+<pre><code class="language-text">Python：                              Rust：
+─────────                            ─────
+lambda x: x * 2                      |x| x * 2
+lambda x, y: x + y                   |x, y| x + y
+lambda: 42                           || 42
+
+# 多行
+def f(x):                            |x| {
+    y = x * 2                            let y = x * 2;
+    return y + 1                         y + 1
+                                      }
+</code></pre>
+<h3 id="闭包捕获--rust-如何不同"><a class="header" href="#闭包捕获--rust-如何不同">闭包捕获 —— Rust 如何不同</a></h3>
+<pre><code class="language-python"># Python —— 闭包通过引用捕获（后期绑定！）
+funcs = [lambda: i for i in range(3)]
+print([f() for f in funcs])  # [2, 2, 2] —— 惊喜！都捕获同一个 `i`
+
+# 用默认参数技巧修复：
+funcs = [lambda i=i: i for i in range(3)]
+print([f() for f in funcs])  # [0, 1, 2]
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 闭包正确捕获（无后期绑定问题！）
+let funcs: Vec&lt;Box&lt;dyn Fn() -&gt; i32&gt;&gt; = (0..3)
+    .map(|i| Box::new(move || i) as Box&lt;dyn Fn() -&gt; i32&gt;)
+    .collect();
+
+let results: Vec&lt;i32&gt; = funcs.iter().map(|f| f()).collect();
+println!("{:?}", results);  # [0, 1, 2] —— 正确！
+
+<span class="boring">`move` 为每个闭包捕获 `i` 的副本 —— 无后期绑定惊喜。
+</span><span class="boring">}</span></code></pre></pre>
+<h3 id="三个闭包-trait"><a class="header" href="#三个闭包-trait">三个闭包 Trait</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust 闭包实现这些 trait 中的一个或多个：
+
+<span class="boring">Fn —— 可以多次调用，不突变捕获（最常见）
+</span>fn apply(f: impl Fn(i32) -&gt; i32, x: i32) -&gt; i32 { f(x) }
+
+<span class="boring">FnMut —— 可以多次调用，可能突变捕获
+</span>fn apply_mut(mut f: impl FnMut(i32) -&gt; i32, x: i32) -&gt; i32 { f(x) }
+
+<span class="boring">FnOnce —— 只能调用一次（消耗捕获）
+</span>fn apply_once(f: impl FnOnce() -&gt; String) -&gt; String { f() }
+
+<span class="boring">Python 没有等价物 —— 闭包始终像 Fn。
+</span><span class="boring">在 Rust 中，编译器自动确定使用哪个 trait。
+</span><span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="迭代器-vs-生成器"><a class="header" href="#迭代器-vs-生成器">迭代器 vs 生成器</a></h2>
+<h3 id="python-生成器"><a class="header" href="#python-生成器">Python 生成器</a></h3>
+<pre><code class="language-python"># Python —— 使用 yield 的生成器
+def fibonacci():
+    a, b = 0, 1
+    while True:
+        yield a
+        a, b = b, a + b
+
+# 惰性 —— 值按需计算
+fib = fibonacci()
+first_10 = [next(fib) for _ in range(10)]
+
+# 生成器表达式 —— 如惰性列表推导式
+squares = (x ** 2 for x in range(1000000))  # 无内存分配
+first_5 = [next(squares) for _ in range(5)]
+</code></pre>
+<h3 id="rust-迭代器"><a class="header" href="#rust-迭代器">Rust 迭代器</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— Iterator trait（概念相似，语法不同）
+struct Fibonacci {
+    a: u64,
+    b: u64,
+}
+
+impl Fibonacci {
+    fn new() -&gt; Self {
+        Fibonacci { a: 0, b: 1 }
+    }
+}
+
+impl Iterator for Fibonacci {
+    type Item = u64;
+
+    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+        let current = self.a;
+        self.a = self.b;
+        self.b = current + self.b;
+        Some(current)
+    }
+}
+
+<span class="boring">惰性 —— 值按需计算（如 Python 生成器）
+</span>let first_10: Vec&lt;u64&gt; = Fibonacci::new().take(10).collect();
+
+<span class="boring">迭代器链 —— 如生成器表达式
+</span>let squares: Vec&lt;u64&gt; = (0..1_000_000u64).map(|x| x * x).take(5).collect();
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="推导式-vs-迭代器链"><a class="header" href="#推导式-vs-迭代器链">推导式 vs 迭代器链</a></h2>
+<p>本节将 Python 的推导式语法映射到 Rust 的迭代器链。</p>
+<h3 id="列表推导式--mapfiltercollect"><a class="header" href="#列表推导式--mapfiltercollect">列表推导式 → map/filter/collect</a></h3>
+<pre><code class="language-python"># Python 推导式：
+squares = [x ** 2 for x in range(10)]
+evens = [x for x in range(20) if x % 2 == 0]
+names = [user.name for user in users if user.active]
+pairs = [(x, y) for x in range(3) for y in range(3)]
+flat = [item for sublist in nested for item in sublist]
+</code></pre>
+<pre class="mermaid">flowchart LR
+    A[&quot;源\n[1,2,3,4,5]&quot;] --&gt;|.iter\(\)| B[&quot;迭代器&quot;]
+    B --&gt;|.filter\(\|x\| x%2==0\)| C[&quot;[2, 4]&quot;]
+    C --&gt;|.map\(\|x\| x*x\)| D[&quot;[4, 16]&quot;]
+    D --&gt;|.collect\(\)| E[&quot;Vec&amp;lt;i32&amp;gt;\n[4, 16]&quot;]
+    style A fill:#ffeeba
+    style E fill:#d4edda
+</pre>
+<blockquote>
+<p><strong>关键见解</strong>：Rust 迭代器是惰性的 —— 直到 <code>.collect()</code> 才发生什么。Python 的生成器类似工作，但列表推导式急切求值。</p>
+</blockquote>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust 迭代器链：
+let squares: Vec&lt;i32&gt; = (0..10).map(|x| x * x).collect();
+let evens: Vec&lt;i32&gt; = (0..20).filter(|x| x % 2 == 0).collect();
+let names: Vec&lt;&amp;str&gt; = users.iter()
+    .filter(|u| u.active)
+    .map(|u| u.name.as_str())
+    .collect();
+let pairs: Vec&lt;(i32, i32)&gt; = (0..3)
+    .flat_map(|x| (0..3).map(move |y| (x, y)))
+    .collect();
+let flat: Vec&lt;i32&gt; = nested.iter()
+    .flat_map(|sublist| sublist.iter().copied())
+    .collect();
+<span class="boring">}</span></code></pre></pre>
+<h3 id="dict-推导式--collect-到-hashmap"><a class="header" href="#dict-推导式--collect-到-hashmap">Dict 推导式 → collect 到 HashMap</a></h3>
+<pre><code class="language-python"># Python
+word_lengths = {word: len(word) for word in words}
+inverted = {v: k for k, v in mapping.items()}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust
+let word_lengths: HashMap&lt;&amp;str, usize&gt; = words.iter()
+    .map(|w| (*w, w.len()))
+    .collect();
+let inverted: HashMap&lt;&amp;V, &amp;K&gt; = mapping.iter()
+    .map(|(k, v)| (v, k))
+    .collect();
+<span class="boring">}</span></code></pre></pre>
+<h3 id="set-推导式--collect-到-hashset"><a class="header" href="#set-推导式--collect-到-hashset">Set 推导式 → collect 到 HashSet</a></h3>
+<pre><code class="language-python"># Python
+unique_lengths = {len(word) for word in words}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust
+let unique_lengths: HashSet&lt;usize&gt; = words.iter()
+    .map(|w| w.len())
+    .collect();
+<span class="boring">}</span></code></pre></pre>
+<h3 id="常见迭代器方法"><a class="header" href="#常见迭代器方法">常见迭代器方法</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Python</th><th>Rust</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>map(f, iter)</code></td><td><code>.map(f)</code></td><td>转换每个元素</td></tr>
+<tr><td><code>filter(f, iter)</code></td><td><code>.filter(f)</code></td><td>保留匹配元素</td></tr>
+<tr><td><code>sum(iter)</code></td><td><code>.sum()</code></td><td>求和所有元素</td></tr>
+<tr><td><code>min(iter)</code> / <code>max(iter)</code></td><td><code>.min()</code> / <code>.max()</code></td><td>返回 <code>Option</code></td></tr>
+<tr><td><code>any(f(x) for x in iter)</code></td><td><code>.any(f)</code></td><td>如果任何匹配则为 true</td></tr>
+<tr><td><code>all(f(x) for x in iter)</code></td><td><code>.all(f)</code></td><td>如果所有匹配则为 true</td></tr>
+<tr><td><code>enumerate(iter)</code></td><td><code>.enumerate()</code></td><td>索引 + 值</td></tr>
+<tr><td><code>zip(a, b)</code></td><td><code>a.zip(b)</code></td><td>配对元素</td></tr>
+<tr><td><code>len(list)</code></td><td><code>.count()</code>（消耗！）或 <code>.len()</code></td><td>计数元素</td></tr>
+<tr><td><code>list(reversed(x))</code></td><td><code>.rev()</code></td><td>反向迭代</td></tr>
+<tr><td><code>itertools.chain(a, b)</code></td><td><code>a.chain(b)</code></td><td>连接迭代器</td></tr>
+<tr><td><code>next(iter)</code></td><td><code>.next()</code></td><td>获取下一个元素</td></tr>
+<tr><td><code>next(iter, default)</code></td><td><code>.next().unwrap_or(default)</code></td><td>带默认值</td></tr>
+<tr><td><code>list(iter)</code></td><td><code>.collect::&lt;Vec&lt;_&gt;&gt;()</code></td><td>实体化为集合</td></tr>
+<tr><td><code>sorted(iter)</code></td><td>克隆，然后 <code>.sort()</code></td><td>无惰性排序迭代器</td></tr>
+<tr><td><code>functools.reduce(f, iter)</code></td><td><code>.fold(init, f)</code> 或 <code>.reduce(f)</code></td><td>累积</td></tr>
+</tbody></table>
+</div>
+<h3 id="关键差异"><a class="header" href="#关键差异">关键差异</a></h3>
+<pre><code class="language-text">Python 迭代器：                     Rust 迭代器：
+─────────────────                     ──────────────
+- 默认惰性（生成器）               - 默认惰性（所有迭代器链）
+- yield 创建生成器                - impl Iterator { fn next() }
+- StopIteration 结束              - None 结束
+- 可以消耗一次                    - 可以消耗一次
+- 无类型安全                      - 完全类型安全
+- 稍慢（解释器）                  - 零成本（编译掉）
+</code></pre>
+<hr />
+<!-- ch12a: 宏 -->
+<h2 id="为什么宏存在于-rust-中"><a class="header" href="#为什么宏存在于-rust-中">为什么宏存在于 Rust 中</a></h2>
+<p>Python 没有宏系统 —— 它使用装饰器、metaclass 和运行时
+内省进行元编程。Rust 使用宏进行编译时代码生成。</p>
+<h3 id="python-元编程-vs-rust-宏"><a class="header" href="#python-元编程-vs-rust-宏">Python 元编程 vs Rust 宏</a></h3>
+<pre><code class="language-python"># Python —— 装饰器和 metaclass 用于元编程
+from dataclasses import dataclass
+from functools import wraps
+
+@dataclass              # 在导入时生成 __init__、__repr__、__eq__
+class Point:
+    x: float
+    y: float
+
+# 自定义装饰器
+def log_calls(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        print(f"Calling {func.__name__}")
+        return func(*args, **kwargs)
+    return wrapper
+
+@log_calls
+def process(data):
+    return data.upper()
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 派生宏和声明宏用于代码生成
+#[derive(Debug, Clone, PartialEq)]  # 在编译时生成 Debug、Clone、PartialEq 实现
+struct Point {
+    x: f64,
+    y: f64,
+}
+
+<span class="boring">声明宏（如模板）
+</span>macro_rules! log_call {
+    ($func_name:expr, $body:expr) =&gt; {
+        println!("Calling {}", $func_name);
+        $body
+    };
+}
+
+fn process(data: &amp;str) -&gt; String {
+    log_call!("process", data.to_uppercase())
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="常见内置宏"><a class="header" href="#常见内置宏">常见内置宏</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">这些宏在 Rust 中到处使用：
+</span>
+println!("Hello, {}!", name);           # 带格式化打印
+format!("Value: {}", x);               # 创建格式化 String
+vec![1, 2, 3];                          # 创建 Vec
+assert_eq!(2 + 2, 4);                  # 测试断言
+assert!(value &gt; 0, "must be positive"); # 布尔断言
+dbg!(expression);                       # 调试打印：打印表达式和值
+todo!();                                # 占位符 —— 编译但如果到达则 panic
+unimplemented!();                       # 标记代码为未实现
+panic!("something went wrong");         # 崩溃带消息（如 raise RuntimeError）
+
+<span class="boring">为什么这些是宏而不是函数？
+</span><span class="boring">- println! 接受可变参数（Rust 函数不能）
+</span><span class="boring">- vec! 为任何类型和大小生成代码
+</span><span class="boring">- assert_eq! 知道你比较的源代码
+</span><span class="boring">- dbg! 知道文件名和行号
+</span><span class="boring">}</span></code></pre></pre>
+<h2 id="使用-macro_rules-编写简单宏"><a class="header" href="#使用-macro_rules-编写简单宏">使用 macro_rules! 编写简单宏</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">Python dict() 等价物
+</span><span class="boring">Python：d = dict(a=1, b=2)
+</span><span class="boring">Rust：  let d = hashmap!{ "a" =&gt; 1, "b" =&gt; 2 };
+</span>
+macro_rules! hashmap {
+    ($($key:expr =&gt; $value:expr),* $(,)?) =&gt; {
+        {
+            let mut map = std::collections::HashMap::new();
+            $(map.insert($key, $value);)*
+            map
+        }
+    };
+}
+
+let scores = hashmap! {
+    "Alice" =&gt; 100,
+    "Bob" =&gt; 85,
+    "Charlie" =&gt; 90,
+};
+<span class="boring">}</span></code></pre></pre>
+<h2 id="派生宏--自动实现-trait"><a class="header" href="#派生宏--自动实现-trait">派生宏 —— 自动实现 Trait</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">#[derive(...)] 是 Python 的 @dataclass 装饰器的 Rust 等价物
+</span>
+<span class="boring">Python：
+</span><span class="boring">@dataclass(frozen=True, order=True)
+</span><span class="boring">class Student:
+</span><span class="boring">    name: str
+</span><span class="boring">    grade: int
+</span>
+<span class="boring">Rust：
+</span>#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+struct Student {
+    name: String,
+    grade: i32,
+}
+
+<span class="boring">常见派生宏：
+</span><span class="boring">Debug         → {:?} 格式化（如 __repr__）
+</span><span class="boring">Clone         → .clone() 深复制
+</span><span class="boring">Copy          → 隐式复制（仅用于简单类型）
+</span><span class="boring">PartialEq, Eq → == 比较（如 __eq__）
+</span><span class="boring">PartialOrd, Ord → &lt;, &gt;, 排序（如 __lt__ 等）
+</span><span class="boring">Hash          → 可用作 HashMap 键（如 __hash__）
+</span><span class="boring">Default       → MyType::default()（如无参数 __init__）
+</span>
+<span class="boring">crate 提供的派生宏：
+</span><span class="boring">Serialize, Deserialize (serde) → JSON/YAML/TOML 序列化
+</span><span class="boring">                                 （如 Python 的 json.dumps/loads 但类型安全）
+</span><span class="boring">}</span></code></pre></pre>
+<h3 id="python-装饰器-vs-rust-派生"><a class="header" href="#python-装饰器-vs-rust-派生">Python 装饰器 vs Rust 派生</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Python 装饰器</th><th>Rust 派生</th><th>用途</th></tr></thead><tbody>
+<tr><td><code>@dataclass</code></td><td><code>#[derive(Debug, Clone, PartialEq)]</code></td><td>数据类</td></tr>
+<tr><td><code>@dataclass(frozen=True)</code></td><td>默认不可变</td><td>不可变性</td></tr>
+<tr><td><code>@dataclass(order=True)</code></td><td><code>#[derive(Ord, PartialOrd)]</code></td><td>比较/排序</td></tr>
+<tr><td><code>@total_ordering</code></td><td><code>#[derive(PartialOrd, Ord)]</code></td><td>完全排序</td></tr>
+<tr><td>JSON <code>json.dumps(obj.__dict__)</code></td><td><code>#[derive(Serialize)]</code></td><td>序列化</td></tr>
+<tr><td>JSON <code>MyClass(**json.loads(s))</code></td><td><code>#[derive(Deserialize)]</code></td><td>反序列化</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：派生和自定义 Debug</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：创建一个 <code>User</code> struct，字段为 <code>name: String</code>、<code>email: String</code> 和 <code>password_hash: String</code>。派生 <code>Clone</code> 和 <code>PartialEq</code>，但手动实现 <code>Debug</code>，使其打印名称和电子邮件但隐藏密码（显示 <code>"***"</code> 而不是）。</p>
+<details>
+<summary>🔑 解答</summary>
+<pre><pre class="playground"><code class="language-rust">use std::fmt;
+
+#[derive(Clone, PartialEq)]
+struct User {
+    name: String,
+    email: String,
+    password_hash: String,
+}
+
+impl fmt::Debug for User {
+    fn fmt(&amp;self, f: &amp;mut fmt::Formatter&lt;'_&gt;) -&gt; fmt::Result {
+        f.debug_struct("User")
+            .field("name", &amp;self.name)
+            .field("email", &amp;self.email)
+            .field("password_hash", &amp;"***")
+            .finish()
+    }
+}
+
+fn main() {
+    let user = User {
+        name: "Alice".into(),
+        email: "alice@example.com".into(),
+        password_hash: "a1b2c3d4e5f6".into(),
+    };
+    println!("{user:?}");
+<span class="boring">    输出：User { name: "Alice", email: "alice@example.com", password_hash: "***" }
+</span>}</code></pre></pre>
+<p><strong>关键要点</strong>：与 Python 的 <code>__repr__</code> 不同，Rust 让你免费派生 <code>Debug</code> —— 但你可以为敏感字段覆盖它。这比 Python 更安全，在 Python 中 <code>print(user)</code> 可能意外泄露秘密。</p>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch11-from-and-into-traits.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch13-concurrency.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch11-from-and-into-traits.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch13-concurrency.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

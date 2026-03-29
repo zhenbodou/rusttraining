@@ -1,0 +1,625 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>4. 代码覆盖率 — 发现测试遗漏 - Rust Engineering Practices — Beyond cargo build</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust Engineering Practices — Beyond cargo build</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="代码覆盖率--发现测试遗漏-"><a class="header" href="#代码覆盖率--发现测试遗漏-">代码覆盖率 — 发现测试遗漏 🟢</a></h1>
+<blockquote>
+<p><strong>你将学到：</strong></p>
+<ul>
+<li>使用 <code>cargo-llvm-cov</code> 进行基于源代码的覆盖率（最准确的 Rust 覆盖率工具）</li>
+<li>使用 <code>cargo-tarpaulin</code> 和 Mozilla 的 <code>grcov</code> 进行快速覆盖率检查</li>
+<li>使用 Codecov 和 Coveralls 在 CI 中设置覆盖率门禁</li>
+<li>优先处理高风险盲点的覆盖率引导测试策略</li>
+</ul>
+<p><strong>交叉引用：</strong> <a href="ch05-miri-valgrind-and-sanitizers-verifying-u.html">Miri 和 Sanitizers</a> — 覆盖率发现未测试的代码，Miri 发现已测试代码中的 UB · <a href="ch03-benchmarking-measuring-what-matters.html">基准测试</a> — 覆盖率显示<em>测试了什么</em>，基准测试显示<em>什么快</em> · <a href="ch11-putting-it-all-together-a-production-cic.html">CI/CD 流水线</a> — 流水线中的覆盖率门禁</p>
+</blockquote>
+<p>代码覆盖率衡量你的测试实际执行了哪些行、分支或函数。它不能证明正确性（被覆盖的行仍然可能有 bug），
+但它可靠地揭示<strong>盲点</strong> — 没有任何测试练习的代码路径。</p>
+<p>在许多 crate 中有 1,006 个测试，项目有大量的测试投入。
+覆盖率分析回答："这个投入是否触及了重要的代码？"</p>
+<h3 id="使用-llvm-cov-进行基于源代码的覆盖率"><a class="header" href="#使用-llvm-cov-进行基于源代码的覆盖率">使用 <code>llvm-cov</code> 进行基于源代码的覆盖率</a></h3>
+<p>Rust 使用 LLVM，它提供基于源代码的覆盖率插桩 — 可用的最准确的覆盖率方法。
+推荐的工具是 <a href="https://github.com/taiki-e/cargo-llvm-cov"><code>cargo-llvm-cov</code></a>：</p>
+<pre><code class="language-bash"># 安装
+cargo install cargo-llvm-cov
+
+# 或通过 rustup 组件（用于原始 llvm 工具）
+rustup component add llvm-tools-preview
+</code></pre>
+<p><strong>基本用法：</strong></p>
+<pre><code class="language-bash"># 运行测试并显示每文件覆盖率摘要
+cargo llvm-cov
+
+# 生成 HTML 报告（可浏览、逐行高亮）
+cargo llvm-cov --html
+# 输出：target/llvm-cov/html/index.html
+
+# 生成 LCOV 格式（用于 CI 集成）
+cargo llvm-cov --lcov --output-path lcov.info
+
+# 整个工作空间的覆盖率（所有 crate）
+cargo llvm-cov --workspace
+
+# 仅包含特定包
+cargo llvm-cov --package accel_diag --package topology_lib
+
+# 包含 doc 测试的覆盖率
+cargo llvm-cov --doctests
+</code></pre>
+<p><strong>阅读 HTML 报告：</strong></p>
+<pre><code class="language-text">target/llvm-cov/html/index.html
+├── 文件名          │ 函数 │ 行   │ 分支 │ 区域
+├─ accel_diag/src/lib.rs │  78.5%  │ 82.3% │ 61.2% │  74.1%
+├─ sel_mgr/src/parse.rs│  95.2%  │ 96.8% │ 88.0% │  93.5%
+├─ topology_lib/src/.. │  91.0%  │ 93.4% │ 79.5% │  89.2%
+└─ ...
+
+绿色 = 已覆盖    红色 = 未覆盖    黄色 = 部分覆盖（分支）
+</code></pre>
+<p><strong>覆盖率类型解释：</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>类型</th><th>衡量内容</th><th>意义</th></tr></thead><tbody>
+<tr><td><strong>行覆盖率</strong></td><td>执行了哪些源代码行</td><td>基本"这段代码被触及了吗？"</td></tr>
+<tr><td><strong>分支覆盖率</strong></td><td>采用了哪些 <code>if</code>/<code>match</code> 分支</td><td>捕获未测试的条件</td></tr>
+<tr><td><strong>函数覆盖率</strong></td><td>调用了哪些函数</td><td>发现死代码</td></tr>
+<tr><td><strong>区域覆盖率</strong></td><td>触及了哪些代码区域（子表达式）</td><td>最细粒度</td></tr>
+</tbody></table>
+</div>
+<h3 id="cargo-tarpaulin--快速路径"><a class="header" href="#cargo-tarpaulin--快速路径">cargo-tarpaulin — 快速路径</a></h3>
+<p><a href="https://github.com/xd009642/tarpaulin"><code>cargo-tarpaulin</code></a> 是 Linux 特定的覆盖率工具，
+设置更简单（不需要 LLVM 组件）：</p>
+<pre><code class="language-bash"># 安装
+cargo install cargo-tarpaulin
+
+# 基本覆盖率报告
+cargo tarpaulin
+
+# HTML 输出
+cargo tarpaulin --out Html
+
+# 使用特定选项
+cargo tarpaulin \
+    --workspace \
+    --timeout 120 \
+    --out Xml Html \
+    --output-dir coverage/ \
+    --exclude-files "*/tests/*" "*/benches/*" \
+    --ignore-panics
+
+# 跳过特定 crate
+cargo tarpaulin --workspace --exclude diag_tool  # 排除二进制 crate
+</code></pre>
+<p><strong>tarpaulin vs llvm-cov 比较：</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>特性</th><th>cargo-llvm-cov</th><th>cargo-tarpaulin</th></tr></thead><tbody>
+<tr><td>准确性</td><td>基于源代码（最准确）</td><td>基于 Ptrace（偶尔过度计数）</td></tr>
+<tr><td>平台</td><td>任意（基于 llvm）</td><td>仅 Linux</td></tr>
+<tr><td>分支覆盖率</td><td>是</td><td>有限</td></tr>
+<tr><td>Doc 测试</td><td>是</td><td>否</td></tr>
+<tr><td>设置</td><td>需要 <code>llvm-tools-preview</code></td><td>自包含</td></tr>
+<tr><td>速度</td><td>更快（编译时插桩）</td><td>更慢（ptrace 开销）</td></tr>
+<tr><td>稳定性</td><td>非常稳定</td><td>偶尔假阳性</td></tr>
+</tbody></table>
+</div>
+<p><strong>推荐</strong>：为了准确性使用 <code>cargo-llvm-cov</code>。当你需要在不安装 LLVM 工具的情况下进行快速检查时使用 <code>cargo-tarpaulin</code>。</p>
+<h3 id="grcov--mozilla-的覆盖率工具"><a class="header" href="#grcov--mozilla-的覆盖率工具">grcov — Mozilla 的覆盖率工具</a></h3>
+<p><a href="https://github.com/mozilla/grcov"><code>grcov</code></a> 是 Mozilla 的覆盖率聚合器。
+它消耗原始 LLVM 分析数据并生成多种格式的报告：</p>
+<pre><code class="language-bash"># 安装
+cargo install grcov
+
+# 步骤 1：使用覆盖率插桩构建
+export RUSTFLAGS="-Cinstrument-coverage"
+export LLVM_PROFILE_FILE="target/coverage/%p-%m.profraw"
+cargo build --tests
+
+# 步骤 2：运行测试（生成 .profraw 文件）
+cargo test
+
+# 步骤 3：使用 grcov 聚合
+grcov target/coverage/ \
+    --binary-path target/debug/ \
+    --source-dir . \
+    --output-types html,lcov \
+    --output-path target/coverage/report \
+    --branch \
+    --ignore-not-existing \
+    --ignore "*/tests/*" \
+    --ignore "*/.cargo/*"
+
+# 步骤 4：查看报告
+open target/coverage/report/html/index.html
+</code></pre>
+<p><strong>何时使用 grcov</strong>：当你需要<strong>合并多次测试运行的覆盖率</strong>（例如，单元测试 + 集成测试 + 模糊测试）到单个报告中时最有用。</p>
+<h3 id="ci-中的覆盖率codecov-和-coveralls"><a class="header" href="#ci-中的覆盖率codecov-和-coveralls">CI 中的覆盖率：Codecov 和 Coveralls</a></h3>
+<p>上传覆盖率数据到跟踪服务以获取历史趋势和 PR 注释：</p>
+<pre><code class="language-yaml"># .github/workflows/coverage.yml
+name: 代码覆盖率
+
+on: [push, pull_request]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+
+      - name: 安装 cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+
+      - name: 生成覆盖率
+        run: cargo llvm-cov --workspace --lcov --output-path lcov.info
+
+      - name: 上传到 Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: lcov.info
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+
+      # 可选：强制执行最低覆盖率
+      - name: 检查覆盖率阈值
+        run: |
+          cargo llvm-cov --workspace --fail-under-lines 80
+          # 如果行覆盖率降至 80% 以下则构建失败
+</code></pre>
+<p><strong>覆盖率门禁</strong> — 通过读取 JSON 输出对每个 crate 强制执行最小值：</p>
+<pre><code class="language-bash"># 获取每个 crate 的覆盖率为 JSON
+cargo llvm-cov --workspace --json | jq '.data[0].totals.lines.percent'
+
+# 如果低于阈值则失败
+cargo llvm-cov --workspace --fail-under-lines 80
+cargo llvm-cov --workspace --fail-under-functions 70
+cargo llvm-cov --workspace --fail-under-regions 60
+</code></pre>
+<h3 id="覆盖率引导测试策略"><a class="header" href="#覆盖率引导测试策略">覆盖率引导测试策略</a></h3>
+<p>如果没有策略，覆盖率数字本身毫无意义。这是如何有效使用覆盖率数据：</p>
+<p><strong>步骤 1：按风险分类</strong></p>
+<pre><code class="language-text">高覆盖率，高风险     → ✅ 好 — 保持它
+高覆盖率，低风险     → 🔄 可能过度测试 — 如果慢则跳过
+低覆盖率，高风险     → 🔴 立即编写测试 — 这是 bug 隐藏的地方
+低覆盖率，低风险     → 🟡 跟踪但不要惊慌
+</code></pre>
+<p><strong>步骤 2：关注分支覆盖率，而不是行覆盖率</strong></p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 100% 行覆盖率，50% 分支覆盖率 — 仍然有风险！
+pub fn classify_temperature(temp_c: i32) -&gt; ThermalState {
+    if temp_c &gt; 105 {       // ← 用 temp=110 测试 → Critical
+        ThermalState::Critical
+    } else if temp_c &gt; 85 { // ← 用 temp=90 测试 → Warning
+        ThermalState::Warning
+    } else if temp_c &lt; -10 { // ← 从未测试 → 传感器错误情况遗漏
+        ThermalState::SensorError
+    } else {
+        ThermalState::Normal  // ← 用 temp=25 测试 → Normal
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>步骤 3：排除噪音</strong></p>
+<pre><code class="language-bash"># 从覆盖率中排除测试代码（它总是"已覆盖"）
+cargo llvm-cov --workspace --ignore-filename-regex 'tests?\.rs$|benches/'
+
+# 排除生成的代码
+cargo llvm-cov --workspace --ignore-filename-regex 'target/'
+</code></pre>
+<p>在代码中，标记不可测试的部分：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 覆盖率工具识别此模式
+#[cfg(not(tarpaulin_include))]  // tarpaulin
+fn unreachable_hardware_path() {
+    // 此路径需要实际 GPU 硬件才能触发
+}
+
+// 对于 llvm-cov，使用更有针对性的方法：
+// 只需接受某些路径需要集成/硬件测试，而不是单元测试。
+// 在覆盖率例外列表中跟踪它们。
+<span class="boring">}</span></code></pre></pre>
+<h3 id="互补测试工具"><a class="header" href="#互补测试工具">互补测试工具</a></h3>
+<p><strong><code>proptest</code> — 基于属性的测试</strong> 发现手写测试遗漏的边界情况：</p>
+<pre><code class="language-toml">[dev-dependencies]
+proptest = "1"
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use proptest::prelude::*;
+
+proptest! {
+    #[test]
+    fn parse_never_panics(input in "\\PC*") {
+        // proptest 生成数千个随机字符串
+        // 如果 parse_gpu_csv 在任何输入上 panic，测试失败
+        // proptest 会为你最小化失败的情况。
+        let _ = parse_gpu_csv(&amp;input);
+    }
+
+    #[test]
+    fn temperature_roundtrip(raw in 0u16..4096) {
+        let temp = Temperature::from_raw(raw);
+        let md = temp.millidegrees_c();
+        // 属性：millidegrees 应该始终可以从 raw 派生
+        assert_eq!(md, (raw as i32) * 625 / 10);
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong><code>insta</code> — 快照测试</strong> 用于大型结构化输出（JSON、文本报告）：</p>
+<pre><code class="language-toml">[dev-dependencies]
+insta = { version = "1", features = ["json"] }
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[test]
+fn test_der_report_format() {
+    let report = generate_der_report(&amp;test_results);
+    // 第一次运行：创建快照文件。后续运行：与之比较。
+    // 运行 `cargo insta review` 以交互方式接受更改。
+    insta::assert_json_snapshot!(report);
+}
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>何时添加 proptest/insta</strong>：如果你的单元测试都是"快乐路径"示例，
+proptest 会发现你遗漏的边界情况。如果你测试大型输出格式（JSON 报告、DER 记录），
+insta 快照比手写断言更快编写和维护。</p>
+</blockquote>
+<h3 id="应用1000-测试覆盖率图"><a class="header" href="#应用1000-测试覆盖率图">应用：1,000+ 测试覆盖率图</a></h3>
+<p>项目有 1,000+ 测试但没有覆盖率跟踪。添加它会揭示测试投入分布。
+未覆盖的路径是 <a href="ch05-miri-valgrind-and-sanitizers-verifying-u.html">Miri 和 sanitizer</a> 验证的主要候选：</p>
+<p><strong>推荐的覆盖率配置：</strong></p>
+<pre><code class="language-bash"># 快速工作空间覆盖率（拟议的 CI 命令）
+cargo llvm-cov --workspace \
+    --ignore-filename-regex 'tests?\.rs$' \
+    --fail-under-lines 75 \
+    --html
+
+# 每个 crate 的覆盖率用于有针对性的改进
+for crate in accel_diag event_log topology_lib network_diag compute_diag fan_diag; do
+    echo "=== $crate ==="
+    cargo llvm-cov --package "$crate" --json 2&gt;/dev/null | \
+        jq -r '.data[0].totals | "行：\(.lines.percent | round)%  分支：\(.branches.percent | round)%"'
+done
+</code></pre>
+<p><strong>预期高覆盖率的 crate</strong>（基于测试密度）：</p>
+<ul>
+<li><code>topology_lib</code> — 922 行黄金文件测试套件</li>
+<li><code>event_log</code> — 带有 <code>create_test_record()</code> 助手的注册表</li>
+<li><code>cable_diag</code> — <code>make_test_event()</code> / <code>make_test_context()</code> 模式</li>
+</ul>
+<p><strong>预期覆盖率差距</strong>（基于代码检查）：</p>
+<ul>
+<li>IPMI 通信路径中的错误处理分支</li>
+<li>GPU 硬件特定分支（需要实际 GPU）</li>
+<li><code>dmesg</code> 解析边界情况（平台相关输出）</li>
+</ul>
+<blockquote>
+<p><strong>覆盖率的 80/20 法则</strong>：从 0% 到 80% 覆盖率很简单。
+从 80% 到 95% 需要越来越牵强的测试场景。从 95% 到 100% 需要 <code>#[cfg(not(...))]</code> 排除，很少值得努力。
+以<strong>80% 行覆盖率和 70% 分支覆盖率</strong>作为实际底线。</p>
+</blockquote>
+<h3 id="覆盖率故障排除"><a class="header" href="#覆盖率故障排除">覆盖率故障排除</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>症状</th><th>原因</th><th>修复</th></tr></thead><tbody>
+<tr><td><code>llvm-cov</code> 显示所有文件 0%</td><td>未应用插桩</td><td>确保运行 <code>cargo llvm-cov</code>，而不是分别运行 <code>cargo test</code> + <code>llvm-cov</code></td></tr>
+<tr><td>覆盖率将 <code>unreachable!()</code> 计为未覆盖</td><td>这些分支存在于编译后的代码中</td><td>使用 <code>#[cfg(not(tarpaulin_include))]</code> 或添加到排除正则表达式</td></tr>
+<tr><td>覆盖率下测试二进制文件崩溃</td><td>插桩 + sanitizer 冲突</td><td>不要将 <code>cargo llvm-cov</code> 与 <code>-Zsanitizer=address</code> 结合使用；分别运行它们</td></tr>
+<tr><td><code>llvm-cov</code> 和 <code>tarpaulin</code> 之间的覆盖率不同</td><td>不同的插桩技术</td><td>使用 <code>llvm-cov</code> 作为事实来源（编译器原生）；为大差异提交问题</td></tr>
+<tr><td><code>error: profraw file is malformed</code></td><td>测试二进制文件在执行中途崩溃</td><td>首先修复测试失败；当进程异常退出时 profraw 文件损坏</td></tr>
+<tr><td>分支覆盖率看起来低得离谱</td><td>优化器为 match 分支、unwrap 等创建分支</td><td>对实际阈值关注<em>行</em>覆盖率；分支覆盖率天生较低</td></tr>
+</tbody></table>
+</div>
+<h3 id="亲自尝试"><a class="header" href="#亲自尝试">亲自尝试</a></h3>
+<ol>
+<li>
+<p><strong>测量项目上的覆盖率</strong>：运行 <code>cargo llvm-cov --workspace --html</code> 并打开报告。
+找到覆盖率最低的三个文件。它们是未测试的，还是天生难以测试（硬件相关代码）？</p>
+</li>
+<li>
+<p><strong>设置覆盖率门禁</strong>：在 CI 中添加 <code>cargo llvm-cov --workspace --fail-under-lines 60</code>。
+故意注释掉一个测试并验证 CI 失败。然后将阈值提高到项目实际覆盖率水平减 2%。</p>
+</li>
+<li>
+<p><strong>分支 vs 行覆盖率</strong>：编写一个带有 3 分支 <code>match</code> 的函数并只测试 2 个分支。
+比较行覆盖率（可能显示 66%）vs 分支覆盖率（可能显示 50%）。哪个指标对你的项目更有用？</p>
+</li>
+</ol>
+<h3 id="覆盖率工具选择"><a class="header" href="#覆盖率工具选择">覆盖率工具选择</a></h3>
+<pre class="mermaid">flowchart TD
+    START[&quot;需要代码覆盖率？&quot;] --&gt; ACCURACY{&quot;优先级？&quot;}
+
+    ACCURACY --&gt;|&quot;最准确&quot;| LLVM[&quot;cargo-llvm-cov\n基于源代码、编译器原生&quot;]
+    ACCURACY --&gt;|&quot;快速检查&quot;| TARP[&quot;cargo-tarpaulin\n仅 Linux、快速&quot;]
+    ACCURACY --&gt;|&quot;多次运行聚合&quot;| GRCOV[&quot;grcov\nMozilla、合并配置文件&quot;]
+
+    LLVM --&gt; CI_GATE[&quot;CI 覆盖率门禁\n--fail-under-lines 80&quot;]
+    TARP --&gt; CI_GATE
+
+    CI_GATE --&gt; UPLOAD{&quot;上传到？&quot;}
+    UPLOAD --&gt;|&quot;Codecov&quot;| CODECOV[&quot;codecov/codecov-action&quot;]
+    UPLOAD --&gt;|&quot;Coveralls&quot;| COVERALLS[&quot;coverallsapp/github-action&quot;]
+
+    style LLVM fill:#91e5a3,color:#000
+    style TARP fill:#e3f2fd,color:#000
+    style GRCOV fill:#e3f2fd,color:#000
+    style CI_GATE fill:#ffd43b,color:#000
+</pre>
+<h3 id="-练习"><a class="header" href="#-练习">🏋️ 练习</a></h3>
+<h4 id="-练习-1第一个覆盖率报告"><a class="header" href="#-练习-1第一个覆盖率报告">🟢 练习 1：第一个覆盖率报告</a></h4>
+<p>安装 <code>cargo-llvm-cov</code>，在任何 Rust 项目上运行它，并打开 HTML 报告。
+找到行覆盖率最低的三个文件。</p>
+<details>
+<summary>解决方案</summary>
+<pre><code class="language-bash">cargo install cargo-llvm-cov
+cargo llvm-cov --workspace --html --open
+# 报告按覆盖率排序文件 — 最低的在底部
+# 查找低于 50% 的文件 — 那些是你的盲点
+</code></pre>
+</details>
+<h4 id="-练习-2ci-覆盖率门禁"><a class="header" href="#-练习-2ci-覆盖率门禁">🟡 练习 2：CI 覆盖率门禁</a></h4>
+<p>在 GitHub Actions 工作流中添加覆盖率门禁，如果行覆盖率降至 60% 以下则失败。
+通过注释掉一个测试来验证它是否有效。</p>
+<details>
+<summary>解决方案</summary>
+<pre><code class="language-yaml"># .github/workflows/coverage.yml
+name: 覆盖率
+on: [push, pull_request]
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+      - run: cargo install cargo-llvm-cov
+      - run: cargo llvm-cov --workspace --fail-under-lines 60
+</code></pre>
+<p>注释掉一个测试，推送，然后观察工作流失败。</p>
+</details>
+<h3 id="关键要点"><a class="header" href="#关键要点">关键要点</a></h3>
+<ul>
+<li><code>cargo-llvm-cov</code> 是 Rust 最准确的覆盖率工具 — 它使用编译器自己的插桩</li>
+<li>覆盖率不能证明正确性，但<strong>零覆盖率证明零测试</strong> — 用它来发现盲点</li>
+<li>在 CI 中设置覆盖率门禁（例如 <code>--fail-under-lines 80</code>）以防止回归</li>
+<li>不要追求 100% 覆盖率 — 专注于高风险代码路径（错误处理、unsafe、解析）</li>
+<li>永远不要在同一运行中将覆盖率插桩与 sanitizers 结合使用</li>
+</ul>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch03-benchmarking-measuring-what-matters.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch05-miri-valgrind-and-sanitizers-verifying-u.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch03-benchmarking-measuring-what-matters.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch05-miri-valgrind-and-sanitizers-verifying-u.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

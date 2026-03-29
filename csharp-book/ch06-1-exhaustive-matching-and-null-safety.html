@@ -1,0 +1,694 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>穷尽匹配与空值安全 - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="穷尽模式匹配编译器保证-vs-运行时错误"><a class="header" href="#穷尽模式匹配编译器保证-vs-运行时错误">穷尽模式匹配：编译器保证 vs 运行时错误</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> 为什么 C# <code>switch</code> 表达式静默遗漏情况而 Rust 的 <code>match</code> 在编译时捕获它们，
+<code>Option&lt;T&gt;</code> vs <code>Nullable&lt;T&gt;</code> 用于空安全，以及带 <code>Result&lt;T, E&gt;</code> 的自定义错误类型。</p>
+<p><strong>难度：</strong> 🟡 中级</p>
+</blockquote>
+<h3 id="c-switch-表达式仍然不完整"><a class="header" href="#c-switch-表达式仍然不完整">C# Switch 表达式——仍然不完整</a></h3>
+<pre><code class="language-csharp">// C# switch 表达式看起来穷尽但没有保证
+public enum HttpStatus { Ok, NotFound, ServerError, Unauthorized }
+
+public string HandleResponse(HttpStatus status) =&gt; status switch
+{
+    HttpStatus.Ok =&gt; "Success",
+    HttpStatus.NotFound =&gt; "Resource not found",
+    HttpStatus.ServerError =&gt; "Internal error",
+    // 缺少 Unauthorized 情况——编译时警告 CS8524，但不是错误！
+    // 运行时：如果 status 是 Unauthorized 则抛出 SwitchExpressionException
+};
+
+// 即使有空值警告，这也能编译：
+public class User
+{
+    public string Name { get; set; }
+    public bool IsActive { get; set; }
+}
+
+public string ProcessUser(User? user) =&gt; user switch
+{
+    { IsActive: true } =&gt; $"Active: {user.Name}",
+    { IsActive: false } =&gt; $"Inactive: {user.Name}",
+    // 缺少 null 情况——编译器警告 CS8655，但不是错误！
+    // 运行时：当 user 为 null 时抛出 SwitchExpressionException
+};
+</code></pre>
+<pre><code class="language-csharp">// 以后添加枚举变体不会破坏现有 switch 的编译
+public enum HttpStatus
+{
+    Ok,
+    NotFound,
+    ServerError,
+    Unauthorized,
+    Forbidden  // 添加这个会产生另一个 CS8524 警告但不会破坏编译！
+}
+</code></pre>
+<h3 id="rust-模式匹配真正的穷尽性"><a class="header" href="#rust-模式匹配真正的穷尽性">Rust 模式匹配——真正的穷尽性</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug)]
+enum HttpStatus {
+    Ok,
+    NotFound,
+    ServerError,
+    Unauthorized,
+}
+
+fn handle_response(status: HttpStatus) -&gt; &amp;'static str {
+    match status {
+        HttpStatus::Ok =&gt; "Success",
+        HttpStatus::NotFound =&gt; "Resource not found",
+        HttpStatus::ServerError =&gt; "Internal error",
+        HttpStatus::Unauthorized =&gt; "Authentication required",
+        // 如果缺少任何情况则编译器错误！
+        // 这根本不会编译
+    }
+}
+
+// 添加新变体会在它被使用的每个地方破坏编译
+#[derive(Debug)]
+enum HttpStatus {
+    Ok,
+    NotFound,
+    ServerError,
+    Unauthorized,
+    Forbidden,  // 添加这个会在 handle_response() 中破坏编译
+}
+// 编译器强制你处理所有情况
+
+// Option&lt;T&gt; 模式匹配也是穷尽的
+fn process_optional_value(value: Option&lt;i32&gt;) -&gt; String {
+    match value {
+        Some(n) =&gt; format!("Got value: {}", n),
+        None =&gt; "No value".to_string(),
+        // 忘记任何一种情况 = 编译错误
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<pre class="mermaid">graph TD
+    subgraph &quot;C# 模式匹配限制&quot;
+        CS_SWITCH[&quot;switch 表达式&quot;]
+        CS_WARNING[&quot;⚠️ 仅编译器警告&quot;]
+        CS_COMPILE[&quot;✅ 成功编译&quot;]
+        CS_RUNTIME[&quot;💥 运行时异常&quot;]
+        CS_DEPLOY[&quot;❌ Bug 进入生产环境&quot;]
+        CS_SILENT[&quot;😰 枚举更改时的静默失败&quot;]
+
+        CS_SWITCH --&gt; CS_WARNING
+        CS_WARNING --&gt; CS_COMPILE
+        CS_COMPILE --&gt; CS_RUNTIME
+        CS_RUNTIME --&gt; CS_DEPLOY
+        CS_SWITCH --&gt; CS_SILENT
+    end
+
+    subgraph &quot;Rust 穷尽匹配&quot;
+        RUST_MATCH[&quot;match 表达式&quot;]
+        RUST_ERROR[&quot;🛑 编译失败&quot;]
+        RUST_FIX[&quot;✅ 必须处理所有情况&quot;]
+        RUST_SAFE[&quot;✅ 零运行时意外&quot;]
+        RUST_EVOLUTION[&quot;🔄 枚举更改破坏编译&quot;]
+        RUST_REFACTOR[&quot;🛠️ 强制重构&quot;]
+
+        RUST_MATCH --&gt; RUST_ERROR
+        RUST_ERROR --&gt; RUST_FIX
+        RUST_FIX --&gt; RUST_SAFE
+        RUST_MATCH --&gt; RUST_EVOLUTION
+        RUST_EVOLUTION --&gt; RUST_REFACTOR
+    end
+
+    style CS_RUNTIME fill:#ffcdd2,color:#000
+    style CS_DEPLOY fill:#ffcdd2,color:#000
+    style CS_SILENT fill:#ffcdd2,color:#000
+    style RUST_SAFE fill:#c8e6c9,color:#000
+    style RUST_REFACTOR fill:#c8e6c9,color:#000
+</pre>
+<hr />
+<h2 id="空安全nullablet-vs-optiont"><a class="header" href="#空安全nullablet-vs-optiont">空安全：<code>Nullable&lt;T&gt;</code> vs <code>Option&lt;T&gt;</code></a></h2>
+<h3 id="c-空处理演进"><a class="header" href="#c-空处理演进">C# 空处理演进</a></h3>
+<pre><code class="language-csharp">// C# - 传统空处理（容易出错）
+public class User
+{
+    public string Name { get; set; }  // 可以为 null！
+    public string Email { get; set; } // 可以为 null！
+}
+
+public string GetUserDisplayName(User user)
+{
+    if (user?.Name != null)  // 空条件运算符
+    {
+        return user.Name;
+    }
+    return "Unknown User";
+}
+</code></pre>
+<pre><code class="language-csharp">// C# 8+ 可空引用类型
+public class User
+{
+    public string Name { get; set; }    // 不可空
+    public string? Email { get; set; }  // 显式可空
+}
+
+// C# Nullable&lt;T&gt; 用于值类型
+int? maybeNumber = GetNumber();
+if (maybeNumber.HasValue)
+{
+    Console.WriteLine(maybeNumber.Value);
+}
+</code></pre>
+<h3 id="rust-optiont-系统"><a class="header" href="#rust-optiont-系统">Rust <code>Option&lt;T&gt;</code> 系统</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust - 使用 Option&lt;T&gt; 显式空处理
+#[derive(Debug)]
+pub struct User {
+    name: String,           // 永不为 null
+    email: Option&lt;String&gt;,  // 显式可选
+}
+
+impl User {
+    pub fn get_display_name(&amp;self) -&gt; &amp;str {
+        &amp;self.name  // 不需要空检查 - 保证存在
+    }
+
+    pub fn get_email_or_default(&amp;self) -&gt; String {
+        self.email
+            .as_ref()
+            .map(|e| e.clone())
+            .unwrap_or_else(|| "no-email@example.com".to_string())
+    }
+}
+
+// 模式匹配强制处理 None 情况
+fn handle_optional_user(user: Option&lt;User&gt;) {
+    match user {
+        Some(u) =&gt; println!("User: {}", u.get_display_name()),
+        None =&gt; println!("No user found"),
+        // 如果未处理 None 情况则编译器错误！
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<pre class="mermaid">graph TD
+    subgraph &quot;C# 空处理演进&quot;
+        CS_NULL[&quot;传统：string name&lt;br/&gt;[错误] 可以为 null&quot;]
+        CS_NULLABLE[&quot;Nullable&amp;lt;T&amp;gt;: int? value&lt;br/&gt;[好] 值类型显式&quot;]
+        CS_NRT[&quot;可空引用类型&lt;br/&gt;string? name&lt;br/&gt;[警告] 仅编译时警告&quot;]
+
+        CS_RUNTIME[&quot;运行时 NullReferenceException&lt;br/&gt;[错误] 仍然可能崩溃&quot;]
+        CS_NULL --&gt; CS_RUNTIME
+        CS_NRT -.-&gt; CS_RUNTIME
+
+        CS_CHECKS[&quot;手动空检查&lt;br/&gt;if (obj?.Property != null)&quot;]
+    end
+
+    subgraph &quot;Rust Option&amp;lt;T&amp;gt; 系统&quot;
+        RUST_OPTION[&quot;Option&amp;lt;T&amp;gt;&lt;br/&gt;Some(value) | None&quot;]
+        RUST_FORCE[&quot;编译器强制处理&lt;br/&gt;[好] 不能忽略 None&quot;]
+        RUST_MATCH[&quot;模式匹配&lt;br/&gt;match option { ... }&quot;]
+        RUST_METHODS[&quot;丰富的 API&lt;br/&gt;.map()、.unwrap_or()、.and_then()&quot;]
+
+        RUST_OPTION --&gt; RUST_FORCE
+        RUST_FORCE --&gt; RUST_MATCH
+        RUST_FORCE --&gt; RUST_METHODS
+
+        RUST_SAFE[&quot;编译时空安全&lt;br/&gt;[好] 无空指针异常&quot;]
+        RUST_MATCH --&gt; RUST_SAFE
+        RUST_METHODS --&gt; RUST_SAFE
+    end
+
+    style CS_RUNTIME fill:#ffcdd2,color:#000
+    style RUST_SAFE fill:#c8e6c9,color:#000
+    style CS_NRT fill:#fff3e0,color:#000
+    style RUST_FORCE fill:#c8e6c9,color:#000
+</pre>
+<hr />
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug)]
+struct Point {
+    x: i32,
+    y: i32,
+}
+
+fn describe_point(point: Point) -&gt; String {
+    match point {
+        Point { x: 0, y: 0 } =&gt; "origin".to_string(),
+        Point { x: 0, y } =&gt; format!("on y-axis at y={}", y),
+        Point { x, y: 0 } =&gt; format!("on x-axis at x={}", x),
+        Point { x, y } if x == y =&gt; format!("on diagonal at ({}, {})", x, y),
+        Point { x, y } =&gt; format!("point at ({}, {})", x, y),
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="option-和-result-类型"><a class="header" href="#option-和-result-类型">Option 和 Result 类型</a></h3>
+<pre><code class="language-csharp">// C# 可空引用类型（C# 8+）
+public class PersonService
+{
+    private Dictionary&lt;int, string&gt; people = new();
+
+    public string? FindPerson(int id)
+    {
+        return people.TryGetValue(id, out string? name) ? name : null;
+    }
+
+    public string GetPersonOrDefault(int id)
+    {
+        return FindPerson(id) ?? "Unknown";
+    }
+
+    // 基于异常的错误处理
+    public void SavePerson(int id, string name)
+    {
+        if (string.IsNullOrEmpty(name))
+            throw new ArgumentException("Name cannot be empty");
+
+        people[id] = name;
+    }
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust">use std::collections::HashMap;
+
+// Rust 使用 Option&lt;T&gt; 而不是 null
+struct PersonService {
+    people: HashMap&lt;i32, String&gt;,
+}
+
+impl PersonService {
+    fn new() -&gt; Self {
+        PersonService {
+            people: HashMap::new(),
+        }
+    }
+
+    // 返回 Option&lt;T&gt; - 无 null！
+    fn find_person(&amp;self, id: i32) -&gt; Option&lt;&amp;String&gt; {
+        self.people.get(&amp;id)
+    }
+
+    // Option 上的模式匹配
+    fn get_person_or_default(&amp;self, id: i32) -&gt; String {
+        match self.find_person(id) {
+            Some(name) =&gt; name.clone(),
+            None =&gt; "Unknown".to_string(),
+        }
+    }
+
+    // 使用 Option 方法（更函数式风格）
+    fn get_person_or_default_functional(&amp;self, id: i32) -&gt; String {
+        self.find_person(id)
+            .map(|name| name.clone())
+            .unwrap_or_else(|| "Unknown".to_string())
+    }
+
+    // Result&lt;T, E&gt; 用于错误处理
+    fn save_person(&amp;mut self, id: i32, name: String) -&gt; Result&lt;(), String&gt; {
+        if name.is_empty() {
+            return Err("Name cannot be empty".to_string());
+        }
+
+        self.people.insert(id, name);
+        Ok(())
+    }
+
+    // 链接操作
+    fn get_person_length(&amp;self, id: i32) -&gt; Option&lt;usize&gt; {
+        self.find_person(id).map(|name| name.len())
+    }
+}
+
+fn main() {
+    let mut service = PersonService::new();
+
+    // 处理 Result
+    match service.save_person(1, "Alice".to_string()) {
+        Ok(()) =&gt; println!("Person saved successfully"),
+        Err(error) =&gt; println!("Error: {}", error),
+    }
+
+    // 处理 Option
+    match service.find_person(1) {
+        Some(name) =&gt; println!("Found: {}", name),
+        None =&gt; println!("Person not found"),
+    }
+
+    // 函数式风格带 Option
+    let name_length = service.get_person_length(1)
+        .unwrap_or(0);
+    println!("Name length: {}", name_length);
+
+    // 用于提前返回的问号运算符
+    fn try_operation(service: &amp;mut PersonService) -&gt; Result&lt;String, String&gt; {
+        service.save_person(2, "Bob".to_string())?; // 如果错误则提前返回
+        let name = service.find_person(2).ok_or("Person not found")?; // 将 Option 转换为 Result
+        Ok(format!("Hello, {}", name))
+    }
+
+    match try_operation(&amp;mut service) {
+        Ok(message) =&gt; println!("{}", message),
+        Err(error) =&gt; println!("Operation failed: {}", error),
+    }
+}</code></pre></pre>
+<h3 id="自定义错误类型"><a class="header" href="#自定义错误类型">自定义错误类型</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 定义自定义错误枚举
+#[derive(Debug)]
+enum PersonError {
+    NotFound(i32),
+    InvalidName(String),
+    DatabaseError(String),
+}
+
+impl std::fmt::Display for PersonError {
+    fn fmt(&amp;self, f: &amp;mut std::fmt::Formatter&lt;'_&gt;) -&gt; std::fmt::Result {
+        match self {
+            PersonError::NotFound(id) =&gt; write!(f, "Person with ID {} not found", id),
+            PersonError::InvalidName(name) =&gt; write!(f, "Invalid name: '{}'", name),
+            PersonError::DatabaseError(msg) =&gt; write!(f, "Database error: {}", msg),
+        }
+    }
+}
+
+impl std::error::Error for PersonError {}
+
+// 增强的 PersonService 带自定义错误
+impl PersonService {
+    fn save_person_enhanced(&amp;mut self, id: i32, name: String) -&gt; Result&lt;(), PersonError&gt; {
+        if name.is_empty() || name.len() &gt; 50 {
+            return Err(PersonError::InvalidName(name));
+        }
+
+        // 模拟可能失败的数据库操作
+        if id &lt; 0 {
+            return Err(PersonError::DatabaseError("Negative IDs not allowed".to_string()));
+        }
+
+        self.people.insert(id, name);
+        Ok(())
+    }
+
+    fn find_person_enhanced(&amp;self, id: i32) -&gt; Result&lt;&amp;String, PersonError&gt; {
+        self.people.get(&amp;id).ok_or(PersonError::NotFound(id))
+    }
+}
+
+fn demo_error_handling() {
+    let mut service = PersonService::new();
+
+    // 处理不同的错误类型
+    match service.save_person_enhanced(-1, "Invalid".to_string()) {
+        Ok(()) =&gt; println!("Success"),
+        Err(PersonError::NotFound(id)) =&gt; println!("Not found: {}", id),
+        Err(PersonError::InvalidName(name)) =&gt; println!("Invalid name: {}", name),
+        Err(PersonError::DatabaseError(msg)) =&gt; println!("DB Error: {}", msg),
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：Option 组合器</strong>（点击展开）</summary>
+<p>使用 Rust <code>Option</code> 组合器（<code>and_then</code>、<code>map</code>、<code>unwrap_or</code>）重写这个深度嵌套的 C# 空检查代码：</p>
+<pre><code class="language-csharp">string GetCityName(User? user)
+{
+    if (user != null)
+        if (user.Address != null)
+            if (user.Address.City != null)
+                return user.Address.City.ToUpper();
+    return "UNKNOWN";
+}
+</code></pre>
+<p>使用这些 Rust 类型：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct User { address: Option&lt;Address&gt; }
+struct Address { city: Option&lt;String&gt; }
+<span class="boring">}</span></code></pre></pre>
+<p>写成一个<strong>单一表达式</strong>，没有 <code>if let</code> 或 <code>match</code>。</p>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><pre class="playground"><code class="language-rust">struct User { address: Option&lt;Address&gt; }
+struct Address { city: Option&lt;String&gt; }
+
+fn get_city_name(user: Option&lt;&amp;User&gt;) -&gt; String {
+    user.and_then(|u| u.address.as_ref())
+        .and_then(|a| a.city.as_ref())
+        .map(|c| c.to_uppercase())
+        .unwrap_or_else(|| "UNKNOWN".to_string())
+}
+
+fn main() {
+    let user = User {
+        address: Some(Address { city: Some("seattle".to_string()) }),
+    };
+    assert_eq!(get_city_name(Some(&amp;user)), "SEATTLE");
+    assert_eq!(get_city_name(None), "UNKNOWN");
+
+    let no_city = User { address: Some(Address { city: None }) };
+    assert_eq!(get_city_name(Some(&amp;no_city)), "UNKNOWN");
+}</code></pre></pre>
+<p><strong>关键见解</strong>：<code>and_then</code> 是 Rust 中 <code>Option</code> 的 <code>?.</code> 运算符。每一步返回 <code>Option</code>，链在 <code>None</code> 处短路——完全像 C# 的空条件运算符 <code>?.</code>，但显式且类型安全。</p>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch06-enums-and-pattern-matching.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch07-ownership-and-borrowing.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch06-enums-and-pattern-matching.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch07-ownership-and-borrowing.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

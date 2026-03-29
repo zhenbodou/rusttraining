@@ -1,0 +1,671 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>集合 — Vec、HashMap 与迭代器 - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="vect-vs-listt"><a class="header" href="#vect-vs-listt"><code>Vec&lt;T&gt;</code> vs <code>List&lt;T&gt;</code></a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> <code>Vec&lt;T&gt;</code> vs <code>List&lt;T&gt;</code>，<code>HashMap</code> vs <code>Dictionary</code>，安全访问模式
+（为什么 Rust 返回 <code>Option</code> 而不是抛出），以及集合的所有权含义。</p>
+<p><strong>难度：</strong> 🟢 初学者</p>
+</blockquote>
+<p><code>Vec&lt;T&gt;</code> 是 Rust 中 C# <code>List&lt;T&gt;</code> 的等价物，但带有所有权语义。</p>
+<h3 id="c-listt"><a class="header" href="#c-listt">C# <code>List&lt;T&gt;</code></a></h3>
+<pre><code class="language-csharp">// C# List&lt;T&gt; - 引用类型，堆分配
+var numbers = new List&lt;int&gt;();
+numbers.Add(1);
+numbers.Add(2);
+numbers.Add(3);
+
+// 传递给方法 - 引用被复制
+ProcessList(numbers);
+Console.WriteLine(numbers.Count);  // 仍然可以访问
+
+void ProcessList(List&lt;int&gt; list)
+{
+    list.Add(4);  // 修改原始列表
+    Console.WriteLine($"Count in method: {list.Count}");
+}
+</code></pre>
+<h3 id="rust-vect"><a class="header" href="#rust-vect">Rust <code>Vec&lt;T&gt;</code></a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust Vec&lt;T&gt; - 拥有类型，堆分配
+let mut numbers = Vec::new();
+numbers.push(1);
+numbers.push(2);
+numbers.push(3);
+
+// 获取所有权的方法
+process_vec(numbers);
+// println!("{:?}", numbers);  // ❌ 错误：numbers 被移动了
+
+// 借用的方法
+let mut numbers = vec![1, 2, 3];  // vec! 宏用于方便
+process_vec_borrowed(&amp;mut numbers);
+println!("{:?}", numbers);  // ✅ 仍然可以访问
+
+fn process_vec(mut vec: Vec&lt;i32&gt;) {  // 获取所有权
+    vec.push(4);
+    println!("Count in method: {}", vec.len());
+    // vec 在这里被丢弃
+}
+
+fn process_vec_borrowed(vec: &amp;mut Vec&lt;i32&gt;) {  // 可变借用
+    vec.push(4);
+    println!("Count in method: {}", vec.len());
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="创建和初始化向量"><a class="header" href="#创建和初始化向量">创建和初始化向量</a></h3>
+<pre><code class="language-csharp">// C# List 初始化
+var numbers = new List&lt;int&gt; { 1, 2, 3, 4, 5 };
+var empty = new List&lt;int&gt;();
+var sized = new List&lt;int&gt;(10);  // 初始容量
+
+// 从其他集合
+var fromArray = new List&lt;int&gt;(new[] { 1, 2, 3 });
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust Vec 初始化
+let numbers = vec![1, 2, 3, 4, 5];  // vec! 宏
+let empty: Vec&lt;i32&gt; = Vec::new();   // 空的需要类型注解
+let sized = Vec::with_capacity(10); // 预分配容量
+
+// 从迭代器
+let from_range: Vec&lt;i32&gt; = (1..=5).collect();
+let from_array = vec![1, 2, 3];
+<span class="boring">}</span></code></pre></pre>
+<h3 id="常见操作比较"><a class="header" href="#常见操作比较">常见操作比较</a></h3>
+<pre><code class="language-csharp">// C# List 操作
+var list = new List&lt;int&gt; { 1, 2, 3 };
+
+list.Add(4);                    // 添加元素
+list.Insert(0, 0);              // 在索引处插入
+list.Remove(2);                 // 移除第一个匹配项
+list.RemoveAt(1);               // 在索引处移除
+list.Clear();                   // 清空所有
+
+int first = list[0];            // 索引访问
+int count = list.Count;         // 获取计数
+bool contains = list.Contains(3); // 检查是否包含
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust Vec 操作
+let mut vec = vec![1, 2, 3];
+
+vec.push(4);                    // 添加元素
+vec.insert(0, 0);               // 在索引处插入
+vec.retain(|&amp;x| x != 2);        // 移除元素（函数式风格）
+vec.remove(1);                  // 在索引处移除
+vec.clear();                    // 清空所有
+
+let first = vec[0];             // 索引访问（如果越界则 panic）
+let safe_first = vec.get(0);    // 安全访问，返回 Option&lt;&amp;T&gt;
+let count = vec.len();          // 获取计数
+let contains = vec.contains(&amp;3); // 检查是否包含
+<span class="boring">}</span></code></pre></pre>
+<h3 id="安全访问模式"><a class="header" href="#安全访问模式">安全访问模式</a></h3>
+<pre><code class="language-csharp">// C# - 基于异常的边界检查
+public int SafeAccess(List&lt;int&gt; list, int index)
+{
+    try
+    {
+        return list[index];
+    }
+    catch (ArgumentOutOfRangeException)
+    {
+        return -1;  // 默认值
+    }
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust">// Rust - 基于 Option 的安全访问
+fn safe_access(vec: &amp;Vec&lt;i32&gt;, index: usize) -&gt; Option&lt;i32&gt; {
+    vec.get(index).copied()  // 返回 Option&lt;i32&gt;
+}
+
+fn main() {
+    let vec = vec![1, 2, 3];
+
+    // 安全访问模式
+    match vec.get(10) {
+        Some(value) =&gt; println!("Value: {}", value),
+        None =&gt; println!("Index out of bounds"),
+    }
+
+    // 或使用 unwrap_or
+    let value = vec.get(10).copied().unwrap_or(-1);
+    println!("Value: {}", value);
+}</code></pre></pre>
+<hr />
+<h2 id="hashmap-vs-dictionary"><a class="header" href="#hashmap-vs-dictionary">HashMap vs Dictionary</a></h2>
+<p>HashMap 是 Rust 中 C# <code>Dictionary&lt;K,V&gt;</code> 的等价物。</p>
+<h3 id="c-dictionary"><a class="header" href="#c-dictionary">C# Dictionary</a></h3>
+<pre><code class="language-csharp">// C# Dictionary&lt;TKey, TValue&gt;
+var scores = new Dictionary&lt;string, int&gt;
+{
+    ["Alice"] = 100,
+    ["Bob"] = 85,
+    ["Charlie"] = 92
+};
+
+// 添加/更新
+scores["Dave"] = 78;
+scores["Alice"] = 105;  // 更新现有
+
+// 安全访问
+if (scores.TryGetValue("Eve", out int score))
+{
+    Console.WriteLine($"Eve's score: {score}");
+}
+else
+{
+    Console.WriteLine("Eve not found");
+}
+
+// 迭代
+foreach (var kvp in scores)
+{
+    Console.WriteLine($"{kvp.Key}: {kvp.Value}");
+}
+</code></pre>
+<h3 id="rust-hashmap"><a class="header" href="#rust-hashmap">Rust HashMap</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::collections::HashMap;
+
+// 创建和初始化 HashMap
+let mut scores = HashMap::new();
+scores.insert("Alice".to_string(), 100);
+scores.insert("Bob".to_string(), 85);
+scores.insert("Charlie".to_string(), 92);
+
+// 或使用从迭代器
+let scores: HashMap&lt;String, i32&gt; = [
+    ("Alice".to_string(), 100),
+    ("Bob".to_string(), 85),
+    ("Charlie".to_string(), 92),
+].into_iter().collect();
+
+// 添加/更新
+let mut scores = scores;  // 设为可变
+scores.insert("Dave".to_string(), 78);
+scores.insert("Alice".to_string(), 105);  // 更新现有
+
+// 安全访问
+match scores.get("Eve") {
+    Some(score) =&gt; println!("Eve's score: {}", score),
+    None =&gt; println!("Eve not found"),
+}
+
+// 迭代
+for (name, score) in &amp;scores {
+    println!("{}: {}", name, score);
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="hashmap-操作"><a class="header" href="#hashmap-操作">HashMap 操作</a></h3>
+<pre><code class="language-csharp">// C# Dictionary 操作
+var dict = new Dictionary&lt;string, int&gt;();
+
+dict["key"] = 42;                    // 插入/更新
+bool exists = dict.ContainsKey("key"); // 检查存在
+bool removed = dict.Remove("key");    // 移除
+dict.Clear();                        // 清空所有
+
+// 获取带默认值
+int value = dict.GetValueOrDefault("missing", 0);
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::collections::HashMap;
+
+// Rust HashMap 操作
+let mut map = HashMap::new();
+
+map.insert("key".to_string(), 42);   // 插入/更新
+let exists = map.contains_key("key"); // 检查存在
+let removed = map.remove("key");      // 移除，返回 Option&lt;V&gt;
+map.clear();                         // 清空所有
+
+// 用于高级操作的 Entry API
+let mut map = HashMap::new();
+map.entry("key".to_string()).or_insert(42);  // 如果不存在则插入
+map.entry("key".to_string()).and_modify(|v| *v += 1); // 如果存在则修改
+
+// 获取带默认值
+let value = map.get("missing").copied().unwrap_or(0);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="hashmap-键和值的所有权"><a class="header" href="#hashmap-键和值的所有权">HashMap 键和值的所有权</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 理解 HashMap 的所有权
+fn ownership_example() {
+    let mut map = HashMap::new();
+
+    // String 键和值被移动到 map 中
+    let key = String::from("name");
+    let value = String::from("Alice");
+
+    map.insert(key, value);
+    // println!("{}", key);   // ❌ 错误：key 被移动了
+    // println!("{}", value); // ❌ 错误：value 被移动了
+
+    // 通过引用访问
+    if let Some(name) = map.get("name") {
+        println!("Name: {}", name);  // 借用值
+    }
+}
+
+// 使用 &amp;str 键（无所有权转移）
+fn string_slice_keys() {
+    let mut map = HashMap::new();
+
+    map.insert("name", "Alice");     // &amp;str 键和值
+    map.insert("age", "30");
+
+    // 字符串字面量无所有权问题
+    println!("Name exists: {}", map.contains_key("name"));
+}
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="使用集合"><a class="header" href="#使用集合">使用集合</a></h2>
+<h3 id="迭代模式"><a class="header" href="#迭代模式">迭代模式</a></h3>
+<pre><code class="language-csharp">// C# 迭代模式
+var numbers = new List&lt;int&gt; { 1, 2, 3, 4, 5 };
+
+// 带索引的 for 循环
+for (int i = 0; i &lt; numbers.Count; i++)
+{
+    Console.WriteLine($"Index {i}: {numbers[i]}");
+}
+
+// Foreach 循环
+foreach (int num in numbers)
+{
+    Console.WriteLine(num);
+}
+
+// LINQ 方法
+var doubled = numbers.Select(x =&gt; x * 2).ToList();
+var evens = numbers.Where(x =&gt; x % 2 == 0).ToList();
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust 迭代模式
+let numbers = vec![1, 2, 3, 4, 5];
+
+// 带索引的 for 循环
+for (i, num) in numbers.iter().enumerate() {
+    println!("Index {}: {}", i, num);
+}
+
+// 对值的 for 循环
+for num in &amp;numbers {  // 借用每个元素
+    println!("{}", num);
+}
+
+// 迭代器方法（类似 LINQ）
+let doubled: Vec&lt;i32&gt; = numbers.iter().map(|x| x * 2).collect();
+let evens: Vec&lt;i32&gt; = numbers.iter().filter(|&amp;x| x % 2 == 0).cloned().collect();
+
+// 或更高效地，消耗迭代器
+let doubled: Vec&lt;i32&gt; = numbers.into_iter().map(|x| x * 2).collect();
+<span class="boring">}</span></code></pre></pre>
+<h3 id="iterator-vs-intoiterator-vs-iter"><a class="header" href="#iterator-vs-intoiterator-vs-iter">Iterator vs IntoIterator vs Iter</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 理解不同的迭代方法
+fn iteration_methods() {
+    let vec = vec![1, 2, 3, 4, 5];
+
+    // 1. iter() - 借用元素（&amp;T）
+    for item in vec.iter() {
+        println!("{}", item);  // item 是 &amp;i32
+    }
+    // vec 在这里仍然可用
+
+    // 2. into_iter() - 获取所有权（T）
+    for item in vec.into_iter() {
+        println!("{}", item);  // item 是 i32
+    }
+    // vec 在这里不再可用
+
+    let mut vec = vec![1, 2, 3, 4, 5];
+
+    // 3. iter_mut() - 可变借用（&amp;mut T）
+    for item in vec.iter_mut() {
+        *item *= 2;  // item 是 &amp;mut i32
+    }
+    println!("{:?}", vec);  // [2, 4, 6, 8, 10]
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="收集结果"><a class="header" href="#收集结果">收集结果</a></h3>
+<pre><code class="language-csharp">// C# - 处理可能有错误的集合
+public List&lt;int&gt; ParseNumbers(List&lt;string&gt; inputs)
+{
+    var results = new List&lt;int&gt;();
+    foreach (string input in inputs)
+    {
+        if (int.TryParse(input, out int result))
+        {
+            results.Add(result);
+        }
+        // 静默跳过无效输入
+    }
+    return results;
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust">// Rust - 使用 collect 显式错误处理
+fn parse_numbers(inputs: Vec&lt;String&gt;) -&gt; Result&lt;Vec&lt;i32&gt;, std::num::ParseIntError&gt; {
+    inputs.into_iter()
+        .map(|s| s.parse::&lt;i32&gt;())  // 返回 Result&lt;i32, ParseIntError&gt;
+        .collect()                  // 收集到 Result&lt;Vec&lt;i32&gt;, ParseIntError&gt;
+}
+
+// 替代方案：过滤掉错误
+fn parse_numbers_filter(inputs: Vec&lt;String&gt;) -&gt; Vec&lt;i32&gt; {
+    inputs.into_iter()
+        .filter_map(|s| s.parse::&lt;i32&gt;().ok())  // 只保留 Ok 值
+        .collect()
+}
+
+fn main() {
+    let inputs = vec!["1".to_string(), "2".to_string(), "invalid".to_string(), "4".to_string()];
+
+    // 在第一个错误处失败的版本
+    match parse_numbers(inputs.clone()) {
+        Ok(numbers) =&gt; println!("All parsed: {:?}", numbers),
+        Err(error) =&gt; println!("Parse error: {}", error),
+    }
+
+    // 跳过错误的版本
+    let numbers = parse_numbers_filter(inputs);
+    println!("Successfully parsed: {:?}", numbers);  // [1, 2, 4]
+}</code></pre></pre>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：LINQ 到迭代器</strong>（点击展开）</summary>
+<p>将此 C# LINQ 查询翻译为惯用的 Rust 迭代器：</p>
+<pre><code class="language-csharp">var result = students
+    .Where(s =&gt; s.Grade &gt;= 90)
+    .OrderByDescending(s =&gt; s.Grade)
+    .Select(s =&gt; $"{s.Name}: {s.Grade}")
+    .Take(3)
+    .ToList();
+</code></pre>
+<p>使用这个结构体：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct Student { name: String, grade: u32 }
+<span class="boring">}</span></code></pre></pre>
+<p>返回一个 <code>Vec&lt;String&gt;</code>，包含前 3 名成绩 ≥ 90 的学生，格式为 <code>"Name: Grade"</code>。</p>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><pre class="playground"><code class="language-rust">#[derive(Debug)]
+struct Student { name: String, grade: u32 }
+
+fn top_students(students: &amp;mut [Student]) -&gt; Vec&lt;String&gt; {
+    students.sort_by(|a, b| b.grade.cmp(&amp;a.grade)); // 降序排序
+    students.iter()
+        .filter(|s| s.grade &gt;= 90)
+        .take(3)
+        .map(|s| format!("{}: {}", s.name, s.grade))
+        .collect()
+}
+
+fn main() {
+    let mut students = vec![
+        Student { name: "Alice".into(), grade: 95 },
+        Student { name: "Bob".into(), grade: 88 },
+        Student { name: "Carol".into(), grade: 92 },
+        Student { name: "Dave".into(), grade: 97 },
+        Student { name: "Eve".into(), grade: 91 },
+    ];
+    let result = top_students(&amp;mut students);
+    assert_eq!(result, vec!["Dave: 97", "Alice: 95", "Carol: 92"]);
+    println!("{result:?}");
+}</code></pre></pre>
+<p><strong>与 C# 的关键区别</strong>：Rust 迭代器是惰性的（类似 LINQ），但 <code>.sort_by()</code> 是急切的且原地排序——没有惰性的 <code>OrderBy</code>。你先排序，然后链接惰性操作。</p>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch05-1-constructor-patterns.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch06-enums-and-pattern-matching.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch05-1-constructor-patterns.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch06-enums-and-pattern-matching.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

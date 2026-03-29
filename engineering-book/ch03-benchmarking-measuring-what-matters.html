@@ -1,0 +1,732 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>3. 基准测试 — 度量关键指标 - Rust Engineering Practices — Beyond cargo build</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust Engineering Practices — Beyond cargo build</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="基准测试--度量关键指标-"><a class="header" href="#基准测试--度量关键指标-">基准测试 — 度量关键指标 🟡</a></h1>
+<blockquote>
+<p><strong>你将学到：</strong></p>
+<ul>
+<li>为什么使用 <code>Instant::now()</code> 进行简单计时会产生不可靠的结果</li>
+<li>使用 Criterion.rs 和更轻量级的 Divan 替代方案进行统计基准测试</li>
+<li>使用 <code>perf</code>、火焰图和 PGO 分析热点</li>
+<li>在 CI 中设置持续基准测试以自动捕获回归</li>
+</ul>
+<p><strong>交叉引用：</strong> <a href="ch07-release-profiles-and-binary-size.html">Release Profile</a> — 找到热点后优化二进制文件 · <a href="ch11-putting-it-all-together-a-production-cic.html">CI/CD 流水线</a> — 流水线中的基准测试作业 · <a href="ch04-code-coverage-seeing-what-tests-miss.html">代码覆盖率</a> — 覆盖率告诉你测试了什么，基准测试告诉你什么快</p>
+</blockquote>
+<p>"我们应该忘记小效率，大约 97% 的时间：过早优化是万恶之源。
+然而，我们不应放弃那关键的 3% 中的机会。" — Donald Knuth</p>
+<p>困难的部分不是<em>编写</em>基准测试 — 而是编写能产生<strong>有意义、可重现、可操作</strong>数字的基准测试。
+本章涵盖的工具和技术能让你从"它看起来很快"到"我们有统计证据表明 PR #347 使解析吞吐量下降了 4.2%。"</p>
+<h3 id="为什么不使用-stdtimeinstant"><a class="header" href="#为什么不使用-stdtimeinstant">为什么不使用 <code>std::time::Instant</code>？</a></h3>
+<p>诱惑：</p>
+<pre><pre class="playground"><code class="language-rust">// ❌ 简单基准测试 — 结果不可靠
+use std::time::Instant;
+
+fn main() {
+    let start = Instant::now();
+    let result = parse_device_query_output(&amp;sample_data);
+    let elapsed = start.elapsed();
+    println!("解析耗时 {:?}", elapsed);
+    // 问题 1：编译器可能优化掉 `result`（死代码消除）
+    // 问题 2：单个样本 — 没有统计意义
+    // 问题 3：CPU 频率缩放、热节流、其他进程
+    // 问题 4：冷缓存与热缓存未受控制
+}</code></pre></pre>
+<p>手动计时的问题：</p>
+<ol>
+<li><strong>死代码消除</strong> — 如果结果未使用，编译器可能完全跳过计算。</li>
+<li><strong>没有预热</strong> — 第一次运行包括缓存未命中、JIT 效应（在 Rust 中不相关，但 OS 页故障适用）和惰性初始化。</li>
+<li><strong>没有统计分析</strong> — 单次测量不能告诉你方差、异常值或置信区间。</li>
+<li><strong>没有回归检测</strong> — 你无法与之前的运行进行比较。</li>
+</ol>
+<h3 id="criterionrs--统计基准测试"><a class="header" href="#criterionrs--统计基准测试">Criterion.rs — 统计基准测试</a></h3>
+<p><a href="https://bheisler.github.io/criterion.rs/book/">Criterion.rs</a> 是 Rust 微基准测试的事实标准。
+它使用统计方法产生可靠的测量结果并自动检测性能回归。</p>
+<p><strong>设置：</strong></p>
+<pre><code class="language-toml"># Cargo.toml
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports", "cargo_bench_support"] }
+
+[[bench]]
+name = "parsing_bench"
+harness = false  # 使用 Criterion 的 harness，而不是内置的测试 harness
+</code></pre>
+<p><strong>完整的基准测试：</strong></p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// benches/parsing_bench.rs
+use criterion::{black_box, criterion_group, criterion_main, Criterion, BenchmarkId};
+
+/// 用于解析后的 GPU 信息的数据类型
+#[derive(Debug, Clone)]
+struct GpuInfo {
+    index: u32,
+    name: String,
+    temp_c: u32,
+    power_w: f64,
+}
+
+/// 被测试的函数 — 模拟解析 device-query CSV 输出
+fn parse_gpu_csv(input: &amp;str) -&gt; Vec&lt;GpuInfo&gt; {
+    input
+        .lines()
+        .filter(|line| !line.starts_with('#'))
+        .filter_map(|line| {
+            let fields: Vec&lt;&amp;str&gt; = line.split(", ").collect();
+            if fields.len() &gt;= 4 {
+                Some(GpuInfo {
+                    index: fields[0].parse().ok()?,
+                    name: fields[1].to_string(),
+                    temp_c: fields[2].parse().ok()?,
+                    power_w: fields[3].parse().ok()?,
+                })
+            } else {
+                None
+            }
+        })
+        .collect()
+}
+
+fn bench_parse_gpu_csv(c: &amp;mut Criterion) {
+    // 代表性测试数据
+    let small_input = "0, Acme Accel-V1-80GB, 32, 65.5\n\
+                       1, Acme Accel-V1-80GB, 34, 67.2\n";
+
+    let large_input = (0..64)
+        .map(|i| format!("{i}, Acme Accel-X1-80GB, {}, {:.1}\n", 30 + i % 20, 60.0 + i as f64))
+        .collect::&lt;String&gt;();
+
+    c.bench_function("parse_2_gpus", |b| {
+        b.iter(|| parse_gpu_csv(black_box(small_input)))
+    });
+
+    c.bench_function("parse_64_gpus", |b| {
+        b.iter(|| parse_gpu_csv(black_box(&amp;large_input)))
+    });
+}
+
+criterion_group!(benches, bench_parse_gpu_csv);
+criterion_main!(benches);
+<span class="boring">}</span></code></pre></pre>
+<p><strong>运行和读取结果：</strong></p>
+<pre><code class="language-bash"># 运行所有基准测试
+cargo bench
+
+# 按名称运行特定基准测试
+cargo bench -- parse_64
+
+# 输出：
+# parse_2_gpus        time:   [1.2345 µs  1.2456 µs  1.2578 µs]
+#                      ▲            ▲           ▲
+#                      │       置信区间
+#                   下 95%    中位数    上 95%
+#
+# parse_64_gpus       time:   [38.123 µs  38.456 µs  38.812 µs]
+#                     change: [-1.2345% -0.5678% +0.1234%] (p = 0.12 &gt; 0.05)
+#                     未检测到性能变化。
+</code></pre>
+<p><strong><code>black_box()</code> 的作用</strong>：它是编译器提示，防止死代码消除和过度积极的常量折叠。
+编译器无法看透 <code>black_box</code>，因此它必须实际计算结果。</p>
+<h3 id="参数化基准测试和基准测试组"><a class="header" href="#参数化基准测试和基准测试组">参数化基准测试和基准测试组</a></h3>
+<p>比较多种实现或输入大小：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// benches/comparison_bench.rs
+use criterion::{criterion_group, criterion_main, Criterion, BenchmarkId, Throughput};
+
+fn bench_parsing_strategies(c: &amp;mut Criterion) {
+    let mut group = c.benchmark_group("csv_parsing");
+
+    // 在不同输入大小下测试
+    for num_gpus in [1, 8, 32, 64, 128] {
+        let input = generate_gpu_csv(num_gpus);
+
+        // 设置吞吐量用于字节/秒报告
+        group.throughput(Throughput::Bytes(input.len() as u64));
+
+        group.bench_with_input(
+            BenchmarkId::new("split_based", num_gpus),
+            &amp;input,
+            |b, input| b.iter(|| parse_split(input)),
+        );
+
+        group.bench_with_input(
+            BenchmarkId::new("regex_based", num_gpus),
+            &amp;input,
+            |b, input| b.iter(|| parse_regex(input)),
+        );
+
+        group.bench_with_input(
+            BenchmarkId::new("nom_based", num_gpus),
+            &amp;input,
+            |b, input| b.iter(|| parse_nom(input)),
+        );
+    }
+    group.finish();
+}
+
+criterion_group!(benches, bench_parsing_strategies);
+criterion_main!(benches);
+<span class="boring">}</span></code></pre></pre>
+<p><strong>输出</strong>：Criterion 在 <code>target/criterion/report/index.html</code> 生成 HTML 报告，
+包含小提琴图、比较图表和回归分析 — 在浏览器中打开。</p>
+<h3 id="divan--更轻量级的替代方案"><a class="header" href="#divan--更轻量级的替代方案">Divan — 更轻量级的替代方案</a></h3>
+<p><a href="https://github.com/nvzqz/divan">Divan</a> 是一个更新的基准测试框架，
+使用属性宏而不是 Criterion 的宏 DSL：</p>
+<pre><code class="language-toml"># Cargo.toml
+[dev-dependencies]
+divan = "0.1"
+
+[[bench]]
+name = "parsing_bench"
+harness = false
+</code></pre>
+<pre><pre class="playground"><code class="language-rust">// benches/parsing_bench.rs
+use divan::black_box;
+
+const SMALL_INPUT: &amp;str = "0, Acme Accel-V1-80GB, 32, 65.5\n\
+                          1, Acme Accel-V1-80GB, 34, 67.2\n";
+
+fn generate_gpu_csv(n: usize) -&gt; String {
+    (0..n)
+        .map(|i| format!("{i}, Acme Accel-X1-80GB, {}, {:.1}\n", 30 + i % 20, 60.0 + i as f64))
+        .collect()
+}
+
+fn main() {
+    divan::main();
+}
+
+#[divan::bench]
+fn parse_2_gpus() -&gt; Vec&lt;GpuInfo&gt; {
+    parse_gpu_csv(black_box(SMALL_INPUT))
+}
+
+#[divan::bench(args = [1, 8, 32, 64, 128])]
+fn parse_n_gpus(n: usize) -&gt; Vec&lt;GpuInfo&gt; {
+    let input = generate_gpu_csv(n);
+    parse_gpu_csv(black_box(&amp;input))
+}
+
+// Divan 输出是干净的表格：
+// ╰─ parse_2_gpus   fastest  │ slowest  │ median   │ mean     │ samples │ iters
+//                   1.234 µs │ 1.567 µs │ 1.345 µs │ 1.350 µs │ 100     │ 1600</code></pre></pre>
+<p><strong>何时选择 Divan 而不是 Criterion：</strong></p>
+<ul>
+<li>更简单的 API（属性宏，更少的样板代码）</li>
+<li>更快的编译（更少的依赖）</li>
+<li>适合开发期间的快速性能检查</li>
+</ul>
+<p><strong>何时选择 Criterion：</strong></p>
+<ul>
+<li>跨运行的统计回归检测</li>
+<li>带有图表的 HTML 报告</li>
+<li>成熟的生态系统，更多的 CI 集成</li>
+</ul>
+<h3 id="使用-perf-和火焰图分析"><a class="header" href="#使用-perf-和火焰图分析">使用 <code>perf</code> 和火焰图分析</a></h3>
+<p>基准测试告诉你<em>有多快</em> — 分析告诉你<em>时间花在哪里</em>。</p>
+<pre><code class="language-bash"># 步骤 1：使用 debug 信息构建（release 速度，debug 符号）
+cargo build --release
+# 确保有 debug 信息可用：
+# [profile.release]
+# debug = true          # 临时添加此选项用于分析
+
+# 步骤 2：使用 perf 记录
+perf record --call-graph=dwarf ./target/release/diag_tool --run-diagnostics
+
+# 步骤 3：生成火焰图
+# 安装：cargo install flamegraph
+# 安装：cargo install addr2line --features=bin（可选，加速 cargo-flamegraph）
+cargo flamegraph --root -- --run-diagnostics
+# 打开交互式 SVG 火焰图
+
+# 替代方案：使用 perf + inferno
+perf script | inferno-collapse-perf | inferno-flamegraph &gt; flamegraph.svg
+</code></pre>
+<p><strong>阅读火焰图：</strong></p>
+<ul>
+<li><strong>宽度</strong> = 函数中花费的时间（越宽 = 越慢）</li>
+<li><strong>高度</strong> = 调用栈深度（越高 ≠ 越慢，只是更深）</li>
+<li><strong>底部</strong> = 入口点，<strong>顶部</strong> = 执行实际工作的叶函数</li>
+<li>在顶部寻找宽平台 — 那些是你的热点</li>
+</ul>
+<p><strong>Profile-guided optimization（PGO）：</strong></p>
+<pre><code class="language-bash"># 步骤 1：使用插桩构建
+RUSTFLAGS="-Cprofile-generate=/tmp/pgo-data" cargo build --release
+
+# 步骤 2：运行代表性工作负载
+./target/release/diag_tool --run-full   # 生成分析数据
+
+# 步骤 3：合并分析数据
+# 使用与 rustc 的 LLVM 版本匹配的 llvm-profdata：
+# $(rustc --print sysroot)/lib/rustlib/x86_64-unknown-linux-gnu/bin/llvm-profdata
+# 或者如果安装了 llvm-tools：rustup component add llvm-tools
+llvm-profdata merge -o /tmp/pgo-data/merged.profdata /tmp/pgo-data/
+
+# 步骤 4：使用分析反馈重新构建
+RUSTFLAGS="-Cprofile-use=/tmp/pgo-data/merged.profdata" cargo build --release
+# 典型改进：计算密集型代码（解析、加密、代码生成）提升 5-20%。
+# I/O 密集型或系统调用繁重的代码（如大型项目）收益会小得多，
+# 因为 CPU 主要在等待，而不是执行热循环。
+</code></pre>
+<blockquote>
+<p><strong>提示</strong>：在花时间进行 PGO 之前，确保你的 <a href="ch07-release-profiles-and-binary-size.html">release profile</a>
+已经启用了 LTO — 它通常以更少的努力带来更大的收益。</p>
+</blockquote>
+<h3 id="hyperfine--快速端到端计时"><a class="header" href="#hyperfine--快速端到端计时"><code>hyperfine</code> — 快速端到端计时</a></h3>
+<p><a href="https://github.com/sharkdp/hyperfine"><code>hyperfine</code></a> 基准测试整个命令，
+而不是单个函数。它非常适合测量整体二进制性能：</p>
+<pre><code class="language-bash"># 安装
+cargo install hyperfine
+# 或：sudo apt install hyperfine  （Ubuntu 23.04+）
+
+# 基本基准测试
+hyperfine './target/release/diag_tool --run-diagnostics'
+
+# 比较两种实现
+hyperfine './target/release/diag_tool_v1 --run-diagnostics' \
+          './target/release/diag_tool_v2 --run-diagnostics'
+
+# 预热运行 + 最小迭代次数
+hyperfine --warmup 3 --min-runs 10 './target/release/diag_tool --run-all'
+
+# 导出结果为 JSON 用于 CI 比较
+hyperfine --export-json bench.json './target/release/diag_tool --run-all'
+</code></pre>
+<p><strong>何时使用 <code>hyperfine</code> vs Criterion：</strong></p>
+<ul>
+<li><code>hyperfine</code>：整个二进制计时、比较重构前后、I/O 密集型工作负载</li>
+<li>Criterion：单个函数的微基准测试、统计回归检测</li>
+</ul>
+<h3 id="ci-中的持续基准测试"><a class="header" href="#ci-中的持续基准测试">CI 中的持续基准测试</a></h3>
+<p>在性能回归发布前检测到它们：</p>
+<pre><code class="language-yaml"># .github/workflows/bench.yml
+name: 基准测试
+
+on:
+  pull_request:
+    paths: ['**/*.rs', 'Cargo.toml', 'Cargo.lock']
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: 运行基准测试
+        # 需要 criterion = { features = ["cargo_bench_support"] } 用于 --output-format
+        run: cargo bench -- --output-format bencher | tee bench_output.txt
+
+      - name: 存储基准测试结果
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: 'cargo'
+          output-file-path: bench_output.txt
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+          alert-threshold: '120%'    # 如果慢 20% 则告警
+          comment-on-alert: true
+          fail-on-alert: true        # 如果检测到回归则阻止 PR
+</code></pre>
+<p><strong>关键 CI 注意事项：</strong></p>
+<ul>
+<li>使用<strong>专用基准测试运行器</strong>（而非共享 CI）以获得一致的结果</li>
+<li>如果使用云 CI，将运行器固定到特定机器类型</li>
+<li>存储历史数据以检测逐渐回归</li>
+<li>根据你的工作负载容忍度设置阈值（热路径 5%，冷路径 20%）</li>
+</ul>
+<h3 id="应用解析性能"><a class="header" href="#应用解析性能">应用：解析性能</a></h3>
+<p>项目有几个性能敏感的解析路径受益于基准测试：</p>
+<div class="table-wrapper"><table><thead><tr><th>解析热点</th><th>Crate</th><th>为什么重要</th></tr></thead><tbody>
+<tr><td>accelerator-query CSV/XML 输出</td><td><code>device_diag</code></td><td>每个 GPU 调用，每次运行最多 8 次</td></tr>
+<tr><td>传感器事件解析</td><td><code>event_log</code></td><td>繁忙服务器上有数千条记录</td></tr>
+<tr><td>PCIe 拓扑 JSON</td><td><code>topology_lib</code></td><td>复杂的嵌套结构，黄金文件验证</td></tr>
+<tr><td>报告 JSON 序列化</td><td><code>diag_framework</code></td><td>最终报告输出，大小敏感</td></tr>
+<tr><td>配置 JSON 加载</td><td><code>config_loader</code></td><td>启动延迟</td></tr>
+</tbody></table>
+</div>
+<p><strong>推荐的第一个基准测试</strong> — 拓扑解析器，它已经有黄金文件测试数据：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// topology_lib/benches/parse_bench.rs（拟议）
+use criterion::{criterion_group, criterion_main, Criterion, Throughput};
+use std::fs;
+
+fn bench_topology_parse(c: &amp;mut Criterion) {
+    let mut group = c.benchmark_group("topology_parse");
+
+    for golden_file in ["S2001", "S1015", "S1035", "S1080"] {
+        let path = format!("tests/test_data/{golden_file}.json");
+        let data = fs::read_to_string(&amp;path).expect("golden file not found");
+        group.throughput(Throughput::Bytes(data.len() as u64));
+
+        group.bench_function(golden_file, |b| {
+            b.iter(|| {
+                topology_lib::TopologyProfile::from_json_str(
+                    criterion::black_box(&amp;data)
+                )
+            });
+        });
+    }
+    group.finish();
+}
+
+criterion_group!(benches, bench_topology_parse);
+criterion_main!(benches);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="亲自尝试"><a class="header" href="#亲自尝试">亲自尝试</a></h3>
+<ol>
+<li>
+<p><strong>编写 Criterion 基准测试</strong>：选择代码库中的任何解析函数。
+创建 <code>benches/</code> 目录，设置一个 Criterion 基准测试，以字节/秒为单位测量吞吐量。
+运行 <code>cargo bench</code> 并检查 HTML 报告。</p>
+</li>
+<li>
+<p><strong>生成火焰图</strong>：在 <code>[profile.release]</code> 中使用 <code>debug = true</code> 构建项目，
+然后运行 <code>cargo flamegraph -- &lt;your-args&gt;</code>。识别火焰图顶部的三个最宽栈 — 那些是你的热点。</p>
+</li>
+<li>
+<p><strong>使用 <code>hyperfine</code> 比较</strong>：安装 <code>hyperfine</code> 并使用不同标志基准测试二进制文件的整体执行时间。
+将其与 Criterion 的每函数时间进行比较。Criterion 看不到的时间花在哪里？
+（答案：I/O、系统调用、进程启动。）</p>
+</li>
+</ol>
+<h3 id="基准测试工具选择"><a class="header" href="#基准测试工具选择">基准测试工具选择</a></h3>
+<pre class="mermaid">flowchart TD
+    START[&quot;想要测量性能？&quot;] --&gt; WHAT{&quot;什么级别？&quot;}
+
+    WHAT --&gt;|&quot;单个函数&quot;| CRITERION[&quot;Criterion.rs\n统计、回归检测&quot;]
+    WHAT --&gt;|&quot;快速函数检查&quot;| DIVAN[&quot;Divan\n更轻量级、属性宏&quot;]
+    WHAT --&gt;|&quot;整个二进制&quot;| HYPERFINE[&quot;hyperfine\n端到端、挂钟时间&quot;]
+    WHAT --&gt;|&quot;查找热点&quot;| PERF[&quot;perf + 火焰图\nCPU 采样分析器&quot;]
+
+    CRITERION --&gt; CI_BENCH[&quot;持续基准测试\n在 GitHub Actions 中&quot;]
+    PERF --&gt; OPTIMIZE[&quot;Profile-Guided\n优化 (PGO)&quot;]
+
+    style CRITERION fill:#91e5a3,color:#000
+    style DIVAN fill:#91e5a3,color:#000
+    style HYPERFINE fill:#e3f2fd,color:#000
+    style PERF fill:#ffd43b,color:#000
+    style CI_BENCH fill:#e3f2fd,color:#000
+    style OPTIMIZE fill:#ffd43b,color:#000
+</pre>
+<h3 id="-练习"><a class="header" href="#-练习">🏋️ 练习</a></h3>
+<h4 id="-练习-1第一个-criterion-基准测试"><a class="header" href="#-练习-1第一个-criterion-基准测试">🟢 练习 1：第一个 Criterion 基准测试</a></h4>
+<p>创建一个带有函数的 crate，该函数对 10,000 个随机元素的 <code>Vec&lt;u64&gt;</code> 进行排序。
+为其编写 Criterion 基准测试，然后切换到 <code>.sort_unstable()</code> 并在 HTML 报告中观察性能差异。</p>
+<details>
+<summary>解决方案</summary>
+<pre><code class="language-toml"># Cargo.toml
+[[bench]]
+name = "sort_bench"
+harness = false
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+rand = "0.8"
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// benches/sort_bench.rs
+use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use rand::Rng;
+
+fn generate_data(n: usize) -&gt; Vec&lt;u64&gt; {
+    let mut rng = rand::thread_rng();
+    (0..n).map(|_| rng.gen()).collect()
+}
+
+fn bench_sort(c: &amp;mut Criterion) {
+    let mut group = c.benchmark_group("sort-10k");
+
+    group.bench_function("stable", |b| {
+        b.iter_batched(
+            || generate_data(10_000),
+            |mut data| { data.sort(); black_box(&amp;data); },
+            criterion::BatchSize::SmallInput,
+        )
+    });
+
+    group.bench_function("unstable", |b| {
+        b.iter_batched(
+            || generate_data(10_000),
+            |mut data| { data.sort_unstable(); black_box(&amp;data); },
+            criterion::BatchSize::SmallInput,
+        )
+    });
+
+    group.finish();
+}
+
+criterion_group!(benches, bench_sort);
+criterion_main!(benches);
+<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-bash">cargo bench
+open target/criterion/sort-10k/report/index.html
+</code></pre>
+</details>
+<h4 id="-练习-2火焰图热点"><a class="header" href="#-练习-2火焰图热点">🟡 练习 2：火焰图热点</a></h4>
+<p>在 <code>[profile.release]</code> 中使用 <code>debug = true</code> 构建项目，然后生成火焰图。
+识别前 3 个最宽的栈。</p>
+<details>
+<summary>解决方案</summary>
+<pre><code class="language-toml"># Cargo.toml
+[profile.release]
+debug = true  # 为火焰图保留符号
+</code></pre>
+<pre><code class="language-bash">cargo install flamegraph
+cargo flamegraph --release -- &lt;your-args&gt;
+# 在浏览器中打开 flamegraph.svg
+# 顶部最宽的栈是你的热点
+</code></pre>
+</details>
+<h3 id="关键要点"><a class="header" href="#关键要点">关键要点</a></h3>
+<ul>
+<li>永远不要用 <code>Instant::now()</code> 进行基准测试 — 使用 Criterion.rs 获得统计严谨性和回归检测</li>
+<li><code>black_box()</code> 防止编译器优化掉你的基准测试目标</li>
+<li><code>hyperfine</code> 测量整个二进制的挂钟时间；Criterion 测量单个函数 — 两者都使用</li>
+<li>火焰图显示<em>时间花在哪里</em>；基准测试显示<em>花了多少时间</em></li>
+<li>CI 中的持续基准测试在性能回归发布前捕获它们</li>
+</ul>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch02-cross-compilation-one-source-many-target.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch04-code-coverage-seeing-what-tests-miss.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch02-cross-compilation-one-source-many-target.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch04-code-coverage-seeing-what-tests-miss.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

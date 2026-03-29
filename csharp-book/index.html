@@ -1,0 +1,422 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>简介 - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="面向-c-程序员的-rust完整培训指南"><a class="header" href="#面向-c-程序员的-rust完整培训指南">面向 C# 程序员的 Rust：完整培训指南</a></h1>
+<p>一本面向具有 C# 经验的开发者学习 Rust 的综合指南。本指南涵盖从基础语法到高级模式的所有内容，重点关注两种语言之间的概念转变和实际差异。</p>
+<h2 id="课程概述"><a class="header" href="#课程概述">课程概述</a></h2>
+<ul>
+<li><strong>选择 Rust 的理由</strong> — 为什么 Rust 对 C# 开发者很重要：性能、安全性和正确性</li>
+<li><strong>入门</strong> — 安装、工具链和你的第一个程序</li>
+<li><strong>基础构建块</strong> — 类型、变量、控制流</li>
+<li><strong>数据结构</strong> — 数组、元组、struct、集合</li>
+<li><strong>模式匹配和 enum</strong> — 代数数据类型和穷尽匹配</li>
+<li><strong>所有权和借用</strong> — Rust 的内存管理模型</li>
+<li><strong>模块和 crate</strong> — 代码组织和依赖</li>
+<li><strong>错误处理</strong> — 基于 Result 的错误传播</li>
+<li><strong>Trait 和泛型</strong> — Rust 的类型系统</li>
+<li><strong>闭包和迭代器</strong> — 函数式编程模式</li>
+<li><strong>并发</strong> — 具有类型系统保证的无畏并发，async/await 深入</li>
+<li><strong>Unsafe Rust 和 FFI</strong> — 何时以及如何超越安全 Rust</li>
+<li><strong>迁移模式</strong> — 现实世界的 C# 到 Rust 模式和渐进式采用</li>
+<li><strong>最佳实践</strong> — 面向 C# 开发者的惯用 Rust</li>
+</ul>
+<hr />
+<h1 id="自学指南"><a class="header" href="#自学指南">自学指南</a></h1>
+<p>本材料既适用于讲师指导的课程，也适用于自学。如果你是独自学习，以下是如何充分利用它的方法。</p>
+<p><strong>进度建议：</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>章节</th><th>主题</th><th>建议时间</th><th>检查点</th></tr></thead><tbody>
+<tr><td>1–4</td><td>设置、类型、控制流</td><td>1 天</td><td>你可以用 Rust 编写 CLI 温度转换器</td></tr>
+<tr><td>5–6</td><td>数据结构、enum、模式匹配</td><td>1–2 天</td><td>你可以定义带数据的 enum 并对其穷尽 <code>match</code></td></tr>
+<tr><td>7</td><td>所有权和借用</td><td>1–2 天</td><td>你可以解释<em>为什么</em> <code>let s2 = s1</code> 会使 <code>s1</code> 失效</td></tr>
+<tr><td>8–9</td><td>模块、错误处理</td><td>1 天</td><td>你可以创建一个多文件项目，用 <code>?</code> 传播错误</td></tr>
+<tr><td>10–12</td><td>Trait、泛型、闭包、迭代器</td><td>1–2 天</td><td>你可以将 LINQ 链转换为 Rust 迭代器</td></tr>
+<tr><td>13</td><td>并发和 async</td><td>1 天</td><td>你可以用 <code>Arc&lt;Mutex&lt;T&gt;&gt;</code> 编写线程安全的计数器</td></tr>
+<tr><td>14</td><td>Unsafe Rust、FFI、测试</td><td>1 天</td><td>你可以通过 P/Invoke 从 C# 调用 Rust 函数</td></tr>
+<tr><td>15–16</td><td>迁移、最佳实践、工具链</td><td>根据你的节奏</td><td>参考资料 — 在编写实际代码时查阅</td></tr>
+<tr><td>17</td><td>综合项目</td><td>1–2 天</td><td>你有一个可以获取天气数据的可用 CLI 工具</td></tr>
+</tbody></table>
+</div>
+<p><strong>如何使用练习：</strong></p>
+<ul>
+<li>章节包含可折叠 <code>&lt;details&gt;</code> 块中的动手练习及解答</li>
+<li><strong>在查看答案之前，务必先尝试练习。</strong> 与 borrow checker 的斗争是学习的一部分 — 编译器的错误信息是你的老师</li>
+<li>如果你卡住超过 15 分钟，展开解答，学习它，然后关闭它并从头再试一次</li>
+<li><a href="https://play.rust-lang.org/">Rust Playground</a> 让你无需本地安装即可运行代码</li>
+</ul>
+<p><strong>难度指示器：</strong></p>
+<ul>
+<li>🟢 <strong>初学者</strong> — 直接从 C# 概念转换</li>
+<li>🟡 <strong>中级</strong> — 需要理解所有权或 trait</li>
+<li>🔴 <strong>高级</strong> — 生命周期、async 内部或 unsafe 代码</li>
+</ul>
+<p><strong>当你遇到困难时：</strong></p>
+<ul>
+<li>仔细阅读编译器错误信息 — Rust 的错误非常有帮助</li>
+<li>重读相关章节；像所有权（第 7 章）这样的概念通常在第二遍时会豁然开朗</li>
+<li><a href="https://doc.rust-lang.org/std/">Rust 标准库文档</a> 非常出色 — 搜索任何类型或方法</li>
+<li>对于更深入的 async 模式，请参阅配套的 <a href="../async-book/">Async Rust 培训</a></li>
+</ul>
+<hr />
+<h1 id="目录"><a class="header" href="#目录">目录</a></h1>
+<h2 id="第一部分--基础"><a class="header" href="#第一部分--基础">第一部分 — 基础</a></h2>
+<h3 id="1-介绍与动机-"><a class="header" href="#1-介绍与动机-">1. 介绍与动机 🟢</a></h3>
+<ul>
+<li>[面向 C# 开发者的 Rust 理由](ch01-introduction-and-motivation.md#面向 c 开发者的 rust 理由)</li>
+<li>[Rust 解决的常见 C# 痛点](ch01-introduction-and-motivation.md#rust-解决的常见 c 痛点)</li>
+<li>[何时选择 Rust 而非 C#](ch01-introduction-and-motivation.md#何时选择 rust 而非 c)</li>
+<li><a href="ch01-introduction-and-motivation.html#%E8%AF%AD%E8%A8%80%E5%93%B2%E5%AD%A6%E5%AF%B9%E6%AF%94">语言哲学对比</a></li>
+<li>[快速参考：Rust vs C#](ch01-introduction-and-motivation.md#快速参考 rust-vs-c)</li>
+</ul>
+<h3 id="2-入门-"><a class="header" href="#2-入门-">2. 入门 🟢</a></h3>
+<ul>
+<li><a href="ch02-getting-started.html#%E5%AE%89%E8%A3%85%E5%92%8C%E8%AE%BE%E7%BD%AE">安装和设置</a></li>
+<li>[你的第一个 Rust 程序](ch02-getting-started.md#你的第一个 rust 程序)</li>
+<li><a href="ch02-getting-started.html#cargovs-nugetmsbuild">Cargo vs NuGet/MSBuild</a></li>
+<li>[读取输入和 CLI 参数](ch02-getting-started.md#读取输入和 cli 参数)</li>
+<li>[必备 Rust 关键词 <em>（可选参考 — 按需查阅）</em>](ch02-1-essential-keywords-reference.md#c 开发者的必备 rust 关键词)</li>
+</ul>
+<h3 id="3-内置类型与变量-"><a class="header" href="#3-内置类型与变量-">3. 内置类型与变量 🟢</a></h3>
+<ul>
+<li><a href="ch03-built-in-types-and-variables.html#%E5%8F%98%E9%87%8F%E4%B8%8E%E5%8F%AF%E5%8F%98%E6%80%A7">变量与可变性</a></li>
+<li><a href="ch03-built-in-types-and-variables.html#%E5%8E%9F%E5%A7%8B%E7%B1%BB%E5%9E%8B">原始类型对比</a></li>
+<li>[字符串类型：String vs &amp;str](ch03-built-in-types-and-variables.md#字符串类型 string-vs-str)</li>
+<li><a href="ch03-built-in-types-and-variables.html#%E6%89%93%E5%8D%B0%E5%92%8C%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%A0%BC%E5%BC%8F%E5%8C%96">打印和字符串格式化</a></li>
+<li><a href="ch03-built-in-types-and-variables.html#%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2">类型转换</a></li>
+<li>[真正的不可变性与 Record 的假象](ch03-1-true-immutability-vs-record-illusions.md#真正的不可变性与 record 的假象)</li>
+</ul>
+<h3 id="4-控制流-"><a class="header" href="#4-控制流-">4. 控制流 🟢</a></h3>
+<ul>
+<li><a href="ch04-control-flow.html#%E5%87%BD%E6%95%B0-vs-%E6%96%B9%E6%B3%95">函数 vs 方法</a></li>
+<li><a href="ch04-control-flow.html#%E8%A1%A8%E8%BE%BE%E5%BC%8F-vs-%E8%AF%AD%E5%8F%A5%E9%87%8D%E8%A6%81">表达式 vs 语句（重要！）</a></li>
+<li><a href="ch04-control-flow.html#%E6%9D%A1%E4%BB%B6%E8%AF%AD%E5%8F%A5">条件语句</a></li>
+<li><a href="ch04-control-flow.html#%E5%BE%AA%E7%8E%AF">循环与迭代</a></li>
+</ul>
+<h3 id="5-数据结构与集合-"><a class="header" href="#5-数据结构与集合-">5. 数据结构与集合 🟢</a></h3>
+<ul>
+<li><a href="ch05-data-structures-and-collections.html#%E5%85%83%E7%BB%84%E4%B8%8E%E8%A7%A3%E6%9E%84">元组与解构</a></li>
+<li><a href="ch05-data-structures-and-collections.html#%E6%95%B0%E7%BB%84%E4%B8%8E%E5%88%87%E7%89%87">数组与切片</a></li>
+<li><a href="ch05-data-structures-and-collections.html#struct-vs-class">Struct vs Class</a></li>
+<li><a href="ch05-1-constructor-patterns.html#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E6%A8%A1%E5%BC%8F">构造函数模式</a></li>
+<li><a href="ch05-2-collections-vec-hashmap-and-iterators.html#vect-vs-listt"><code>Vec&lt;T&gt;</code> vs <code>List&lt;T&gt;</code></a></li>
+<li><a href="ch05-2-collections-vec-hashmap-and-iterators.html#hashmap-vs-dictionary">HashMap vs Dictionary</a></li>
+</ul>
+<h3 id="6-enum-与模式匹配-"><a class="header" href="#6-enum-与模式匹配-">6. Enum 与模式匹配 🟡</a></h3>
+<ul>
+<li><a href="ch06-enums-and-pattern-matching.html#%E4%BB%A3%E6%95%B0%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-vs-c-%E8%81%94%E5%90%88%E7%B1%BB%E5%9E%8B">代数数据类型 vs C# 联合类型</a></li>
+<li><a href="ch06-1-exhaustive-matching-and-null-safety.html#%E7%A9%B7%E5%B0%BD%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D%E7%BC%96%E8%AF%91%E5%99%A8%E4%BF%9D%E8%AF%81-vs-%E8%BF%90%E8%A1%8C%E6%97%B6%E9%94%99%E8%AF%AF">穷尽模式匹配</a></li>
+<li>[<code>Option&lt;T&gt;</code> 实现空值安全](ch06-1-exhaustive-matching-and-null-safety.md#空值安全 nullablet-vs-optiont)</li>
+<li><a href="ch06-enums-and-pattern-matching.html#%E5%AE%88%E5%8D%AB%E5%92%8C%E9%AB%98%E7%BA%A7%E6%A8%A1%E5%BC%8F">守卫和高级模式</a></li>
+</ul>
+<h3 id="7-所有权与借用-"><a class="header" href="#7-所有权与借用-">7. 所有权与借用 🟡</a></h3>
+<ul>
+<li><a href="ch07-ownership-and-borrowing.html#%E7%90%86%E8%A7%A3%E6%89%80%E6%9C%89%E6%9D%83">理解所有权</a></li>
+<li><a href="ch07-ownership-and-borrowing.html#%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89">移动语义 vs 引用语义</a></li>
+<li><a href="ch07-ownership-and-borrowing.html#%E5%80%9F%E7%94%A8%E5%9F%BA%E7%A1%80">借用与引用</a></li>
+<li>[内存安全深入](ch07-1-memory-safety-deep-dive.md#引用 vs 指针)</li>
+<li><a href="ch07-2-lifetimes-deep-dive.html#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%91%8A%E8%AF%89%E7%BC%96%E8%AF%91%E5%99%A8%E5%BC%95%E7%94%A8%E5%AD%98%E6%B4%BB%E5%A4%9A%E4%B9%85">生命周期深入</a> 🔴</li>
+<li><a href="ch07-3-smart-pointers-beyond-single-ownership.html#%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E5%BD%93%E5%8D%95%E4%B8%80%E6%89%80%E6%9C%89%E6%9D%83%E4%B8%8D%E5%A4%9F%E6%97%B6">智能指针、Drop 和 Deref</a> 🔴</li>
+</ul>
+<h3 id="8-crate-与模块-"><a class="header" href="#8-crate-与模块-">8. Crate 与模块 🟢</a></h3>
+<ul>
+<li><a href="ch08-crates-and-modules.html#rust-%E6%A8%A1%E5%9D%97-vs-c-%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4">Rust 模块 vs C# 命名空间</a></li>
+<li><a href="ch08-crates-and-modules.html#crate-vs-net-%E7%A8%8B%E5%BA%8F%E9%9B%86">Crate vs .NET 程序集</a></li>
+<li>[包管理：Cargo vs NuGet](ch08-1-package-management-cargo-vs-nuget.md#包管理 cargo-vs-nuget)</li>
+</ul>
+<h3 id="9-错误处理-"><a class="header" href="#9-错误处理-">9. 错误处理 🟡</a></h3>
+<ul>
+<li><a href="ch09-error-handling.html#%E5%BC%82%E5%B8%B8-vs-resultt-e">异常 vs <code>Result&lt;T, E&gt;</code></a></li>
+<li><a href="ch09-error-handling.html#-%E8%BF%90%E7%AE%97%E7%AC%A6%E7%AE%80%E6%B4%81%E5%9C%B0%E4%BC%A0%E6%92%AD%E9%94%99%E8%AF%AF">? 运算符</a></li>
+<li><a href="ch06-1-exhaustive-matching-and-null-safety.html#%E8%87%AA%E5%AE%9A%E4%B9%89%E9%94%99%E8%AF%AF%E7%B1%BB%E5%9E%8B">自定义错误类型</a></li>
+<li>[Crate 级错误类型和 Result 别名](ch09-1-crate-level-error-types-and-result-alias.md#crate-级错误类型和 result-别名)</li>
+<li><a href="ch09-1-crate-level-error-types-and-result-alias.html#%E9%94%99%E8%AF%AF%E6%81%A2%E5%A4%8D%E6%A8%A1%E5%BC%8F">错误恢复模式</a></li>
+</ul>
+<h3 id="10-trait-与泛型-"><a class="header" href="#10-trait-与泛型-">10. Trait 与泛型 🟡</a></h3>
+<ul>
+<li>[Trait vs Interface](ch10-traits-and-generics.md#trait---rust 的 interface)</li>
+<li><a href="ch10-2-inheritance-vs-composition.html#%E7%BB%A7%E6%89%BF-vs-%E7%BB%84%E5%90%88">继承 vs 组合</a></li>
+<li>[泛型约束：where vs trait 约束](ch10-1-generic-constraints.md#泛型约束 where-vs-trait-约束)</li>
+<li>[常见标准库 Trait](ch10-traits-and-generics.md#常见标准库 trait)</li>
+</ul>
+<h3 id="11-from-和-into-trait-"><a class="header" href="#11-from-和-into-trait-">11. From 和 Into Trait 🟡</a></h3>
+<ul>
+<li>[Rust 中的类型转换](ch11-from-and-into-traits.md#rust 中的类型转换)</li>
+<li><a href="ch11-from-and-into-traits.html#rust-from-and-into">为自定义类型实现 From</a></li>
+</ul>
+<h3 id="12-闭包与迭代器-"><a class="header" href="#12-闭包与迭代器-">12. 闭包与迭代器 🟡</a></h3>
+<ul>
+<li>[Rust 闭包](ch12-closures-and-iterators.md#rust 闭包)</li>
+<li><a href="ch12-closures-and-iterators.html#linq-vs-rust-%E8%BF%AD%E4%BB%A3%E5%99%A8">LINQ vs Rust 迭代器</a></li>
+<li><a href="ch12-1-macros-primer.html#%E5%AE%8F%E7%BC%96%E5%86%99%E4%BB%A3%E7%A0%81%E7%9A%84%E4%BB%A3%E7%A0%81">宏入门</a></li>
+</ul>
+<hr />
+<h2 id="第二部分--并发与系统"><a class="header" href="#第二部分--并发与系统">第二部分 — 并发与系统</a></h2>
+<h3 id="13-并发-"><a class="header" href="#13-并发-">13. 并发 🔴</a></h3>
+<ul>
+<li><a href="ch13-concurrency.html#%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%BA%A6%E5%AE%9A-vs-%E7%B1%BB%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%BF%9D%E8%AF%81">线程安全：约定 vs 类型系统保证</a></li>
+<li>[async/await：C# Task vs Rust Future](ch13-1-asyncawait-deep-dive.md#async 编程 c-task-vs-rust-future)</li>
+<li>[取消模式](ch13-1-asyncawait-deep-dive.md#取消 cancellationtoken-vs-drop--select)</li>
+<li>[Pin 和 tokio::spawn](ch13-1-asyncawait-deep-dive.md#pin-为什么 rust-async 有 c 没有的概念)</li>
+</ul>
+<h3 id="14-unsafe-rustffi-和测试-"><a class="header" href="#14-unsafe-rustffi-和测试-">14. Unsafe Rust、FFI 和测试 🟡</a></h3>
+<ul>
+<li>[何时以及为何使用 Unsafe](ch14-unsafe-rust-and-ffi.md#何时需要 unsafe)</li>
+<li>[通过 FFI 与 C# 互操作](ch14-unsafe-rust-and-ffi.md#通过 ffi 与 c 互操作)</li>
+<li><a href="ch14-1-testing.html#rust-vs-c-%E4%B8%AD%E7%9A%84%E6%B5%8B%E8%AF%95">Rust vs C# 中的测试</a></li>
+<li><a href="ch14-1-testing.html#%E5%B1%9E%E6%80%A7%E6%B5%8B%E8%AF%95%E5%A4%A7%E8%A7%84%E6%A8%A1%E8%AF%81%E6%98%8E%E6%AD%A3%E7%A1%AE%E6%80%A7">属性测试和 Mocking</a></li>
+</ul>
+<hr />
+<h2 id="第三部分--迁移与最佳实践"><a class="header" href="#第三部分--迁移与最佳实践">第三部分 — 迁移与最佳实践</a></h2>
+<h3 id="15-迁移模式与案例研究-"><a class="header" href="#15-迁移模式与案例研究-">15. 迁移模式与案例研究 🟡</a></h3>
+<ul>
+<li>[Rust 中的常见 C# 模式](ch15-migration-patterns-and-case-studies.md#rust 中的常见 c 模式)</li>
+<li>[C# 开发者必备 Crate](ch15-1-essential-crates-for-c-developers.md#c 开发者必备 crate)</li>
+<li><a href="ch15-2-incremental-adoption-strategy.html#%E6%B8%90%E8%BF%9B%E5%BC%8F%E9%87%87%E7%94%A8%E7%AD%96%E7%95%A5">渐进式采用策略</a></li>
+</ul>
+<h3 id="16-最佳实践与参考-"><a class="header" href="#16-最佳实践与参考-">16. 最佳实践与参考 🟡</a></h3>
+<ul>
+<li>[面向 C# 开发者的惯用 Rust](ch16-best-practices.md#面向 c 开发者的最佳实践)</li>
+<li><a href="ch16-1-performance-comparison-and-migration.html#%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94%E6%89%98%E7%AE%A1-vs-%E5%8E%9F%E7%94%9F">性能对比：托管 vs 原生</a></li>
+<li>[常见陷阱与解决方案](ch16-2-learning-path-and-resources.md#c 开发者的常见陷阱)</li>
+<li><a href="ch16-2-learning-path-and-resources.html#%E5%AD%A6%E4%B9%A0%E8%B7%AF%E5%BE%84%E5%92%8C%E4%B8%8B%E4%B8%80%E6%AD%A5">学习路径和资源</a></li>
+<li>[Rust 工具链生态系统](ch16-3-rust-tooling-ecosystem.md#c 开发者的必备 rust 工具链)</li>
+</ul>
+<hr />
+<h2 id="综合项目"><a class="header" href="#综合项目">综合项目</a></h2>
+<h3 id="17-综合项目-"><a class="header" href="#17-综合项目-">17. 综合项目 🟡</a></h3>
+<ul>
+<li><a href="ch17-capstone-project.html#%E7%BB%BC%E5%90%88%E9%A1%B9%E7%9B%AE%E6%9E%84%E5%BB%BA-cli-%E5%A4%A9%E6%B0%94%E5%B7%A5%E5%85%B7">构建 CLI 天气工具</a> — 将 struct、trait、错误处理、async、模块、serde 和测试结合到一个可用的应用程序中</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+                            <a rel="next prefetch" href="ch01-introduction-and-motivation.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+                    <a rel="next prefetch" href="ch01-introduction-and-motivation.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

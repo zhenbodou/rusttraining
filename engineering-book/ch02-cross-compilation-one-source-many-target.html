@@ -1,0 +1,669 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>2. 交叉编译 — 一份源码，多个目标 - Rust Engineering Practices — Beyond cargo build</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust Engineering Practices — Beyond cargo build</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="交叉编译--一份源码多个目标-"><a class="header" href="#交叉编译--一份源码多个目标-">交叉编译 — 一份源码，多个目标 🟡</a></h1>
+<blockquote>
+<p><strong>你将学到：</strong></p>
+<ul>
+<li>Rust 目标三元组的工作原理以及如何使用 <code>rustup</code> 添加它们</li>
+<li>为容器/云部署构建静态 musl 二进制文件</li>
+<li>使用原生工具链、<code>cross</code> 和 <code>cargo-zigbuild</code> 交叉编译到 ARM（aarch64）</li>
+<li>设置 GitHub Actions 矩阵构建以实现多架构 CI</li>
+</ul>
+<p><strong>交叉引用：</strong> <a href="ch01-build-scripts-buildrs-in-depth.html">构建脚本</a> — build.rs 在交叉编译期间在 HOST 上运行 · <a href="ch07-release-profiles-and-binary-size.html">Release Profile</a> — 交叉编译 release 二进制的 LTO 和 strip 设置 · <a href="ch10-windows-and-conditional-compilation.html">Windows</a> — Windows 交叉编译和 <code>no_std</code> 目标</p>
+</blockquote>
+<p>交叉编译意味着在一台机器（<strong>主机</strong>）上构建可在不同机器（<strong>目标</strong>）上运行的可执行文件。
+主机可能是你的 x86_64 笔记本电脑；目标可能是 ARM 服务器、基于 musl 的容器，甚至是 Windows 机器。
+Rust 使这变得异常可行，因为 <code>rustc</code> 已经是一个交叉编译器 — 它只需要正确的目标库和兼容的链接器。</p>
+<h3 id="目标三元组详解"><a class="header" href="#目标三元组详解">目标三元组详解</a></h3>
+<p>Rust 编译的每个目标都由一个<strong>目标三元组</strong>（尽管名称如此，但通常有四部分）标识：</p>
+<pre><code class="language-text">&lt;arch&gt;-&lt;vendor&gt;-&lt;os&gt;-&lt;env&gt;
+
+示例：
+  x86_64  - unknown - linux  - gnu      ← 标准 Linux（glibc）
+  x86_64  - unknown - linux  - musl     ← 静态 Linux（musl libc）
+  aarch64 - unknown - linux  - gnu      ← ARM 64 位 Linux
+  x86_64  - pc      - windows- msvc     ← 使用 MSVC 的 Windows
+  aarch64 - apple   - darwin             ← Apple Silicon 上的 macOS
+  x86_64  - unknown - none              ← 裸机（无操作系统）
+</code></pre>
+<p>列出所有可用目标：</p>
+<pre><code class="language-bash"># 显示 rustc 可以编译的所有目标（约 250 个目标）
+rustc --print target-list | wc -l
+
+# 显示系统上已安装的目标
+rustup target list --installed
+
+# 显示当前默认目标
+rustc -vV | grep host
+</code></pre>
+<h3 id="使用-rustup-安装工具链"><a class="header" href="#使用-rustup-安装工具链">使用 rustup 安装工具链</a></h3>
+<pre><code class="language-bash"># 添加目标库（该目标的 Rust std）
+rustup target add x86_64-unknown-linux-musl
+rustup target add aarch64-unknown-linux-gnu
+
+# 现在你可以交叉编译：
+cargo build --target x86_64-unknown-linux-musl
+cargo build --target aarch64-unknown-linux-gnu  # 需要链接器 — 见下文
+</code></pre>
+<p><strong><code>rustup target add</code> 给你的内容</strong>：该目标的预编译 <code>std</code>、<code>core</code> 和 <code>alloc</code> 库。
+它<em>不</em>给你 C 链接器或 C 库。对于需要 C 工具链的目标（大多数 <code>gnu</code> 目标），
+你需要单独安装一个。</p>
+<pre><code class="language-bash"># Ubuntu/Debian — 安装 aarch64 的交叉链接器
+sudo apt install gcc-aarch64-linux-gnu
+
+# Ubuntu/Debian — 安装 musl 工具链用于静态构建
+sudo apt install musl-tools
+
+# Fedora
+sudo dnf install gcc-aarch64-linux-gnu
+</code></pre>
+<h3 id="cargoconfigtoml--每个目标的配置"><a class="header" href="#cargoconfigtoml--每个目标的配置"><code>.cargo/config.toml</code> — 每个目标的配置</a></h3>
+<p>与其在每条命令中传递 <code>--target</code>，不如在项目根目录或主目录的
+<code>.cargo/config.toml</code> 中配置默认值：</p>
+<pre><code class="language-toml"># .cargo/config.toml
+
+# 此项目的默认目标（可选 — 省略以保持原生默认）
+# [build]
+# target = "x86_64-unknown-linux-musl"
+
+# aarch64 交叉编译的链接器
+[target.aarch64-unknown-linux-gnu]
+linker = "aarch64-linux-gnu-gcc"
+rustflags = ["-C", "target-feature=+crc"]
+
+# musl 静态构建的链接器（通常系统 gcc 即可）
+[target.x86_64-unknown-linux-musl]
+linker = "musl-gcc"
+rustflags = ["-C", "target-feature=+crc,+aes"]
+
+# ARM 32 位（Raspberry Pi、嵌入式）
+[target.armv7-unknown-linux-gnueabihf]
+linker = "arm-linux-gnueabihf-gcc"
+
+# 所有目标的环境变量
+[env]
+# 示例：设置自定义 sysroot
+# SYSROOT = "/opt/cross/sysroot"
+</code></pre>
+<p><strong>配置文件搜索顺序</strong>（首个匹配获胜）：</p>
+<ol>
+<li><code>&lt;project&gt;/.cargo/config.toml</code></li>
+<li><code>&lt;project&gt;/../.cargo/config.toml</code>（父目录，向上遍历）</li>
+<li><code>$CARGO_HOME/config.toml</code>（通常是 <code>~/.cargo/config.toml</code>）</li>
+</ol>
+<h3 id="使用-musl-的静态二进制文件"><a class="header" href="#使用-musl-的静态二进制文件">使用 musl 的静态二进制文件</a></h3>
+<p>对于部署到最小容器（Alpine、scratch Docker 镜像）或你无法控制 glibc 版本的系统，
+使用 musl 构建：</p>
+<pre><code class="language-bash"># 安装 musl 目标
+rustup target add x86_64-unknown-linux-musl
+sudo apt install musl-tools  # 提供 musl-gcc
+
+# 构建完全静态的二进制文件
+cargo build --release --target x86_64-unknown-linux-musl
+
+# 验证它是静态的
+file target/x86_64-unknown-linux-musl/release/diag_tool
+# → ELF 64-bit LSB executable, x86-64, statically linked
+
+ldd target/x86_64-unknown-linux-musl/release/diag_tool
+# → not a dynamic executable
+</code></pre>
+<p><strong>静态与动态的权衡：</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>方面</th><th>glibc（动态）</th><th>musl（静态）</th></tr></thead><tbody>
+<tr><td>二进制大小</td><td>较小（共享库）</td><td>较大（增加约 5-15 MB）</td></tr>
+<tr><td>可移植性</td><td>需要匹配的 glibc 版本</td><td>在任何 Linux 上运行</td></tr>
+<tr><td>DNS 解析</td><td>完整的 <code>nsswitch</code> 支持</td><td>基础解析器（无 mDNS）</td></tr>
+<tr><td>部署</td><td>需要 sysroot 或容器</td><td>单个二进制文件，无依赖</td></tr>
+<tr><td>性能</td><td>稍快的 malloc</td><td>稍慢的 malloc</td></tr>
+<tr><td><code>dlopen()</code> 支持</td><td>是</td><td>否</td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p><strong>对于项目</strong>：静态 musl 构建非常适合部署到多样化的服务器硬件，
+因为你无法保证主机操作系统版本。单二进制部署模型消除了
+"在我机器上能工作"的问题。</p>
+</blockquote>
+<h3 id="交叉编译到-armaarch64"><a class="header" href="#交叉编译到-armaarch64">交叉编译到 ARM（aarch64）</a></h3>
+<p>ARM 服务器（AWS Graviton、Ampere Altra、Grace）在数据中心越来越常见。
+从 x86_64 主机交叉编译到 aarch64：</p>
+<pre><code class="language-bash"># 步骤 1：安装目标 + 交叉链接器
+rustup target add aarch64-unknown-linux-gnu
+sudo apt install gcc-aarch64-linux-gnu
+
+# 步骤 2：在 .cargo/config.toml 中配置链接器（见上文）
+
+# 步骤 3：构建
+cargo build --release --target aarch64-unknown-linux-gnu
+
+# 步骤 4：验证二进制文件
+file target/aarch64-unknown-linux-gnu/release/diag_tool
+# → ELF 64-bit LSB executable, ARM aarch64
+</code></pre>
+<p><strong>为目标架构运行测试</strong>需要：</p>
+<ul>
+<li>实际的 ARM 机器</li>
+<li>QEMU 用户模式模拟</li>
+</ul>
+<pre><code class="language-bash"># 安装 QEMU 用户模式（在 x86_64 上运行 ARM 二进制文件）
+sudo apt install qemu-user qemu-user-static binfmt-support
+
+# 现在 cargo test 可以通过 QEMU 运行交叉编译的测试
+cargo test --target aarch64-unknown-linux-gnu
+# （慢 — 每个测试二进制文件都被模拟。用于 CI 验证，而非日常开发。）
+</code></pre>
+<p>在 <code>.cargo/config.toml</code> 中将 QEMU 配置为测试运行器：</p>
+<pre><code class="language-toml">[target.aarch64-unknown-linux-gnu]
+linker = "aarch64-linux-gnu-gcc"
+runner = "qemu-aarch64-static -L /usr/aarch64-linux-gnu"
+</code></pre>
+<h3 id="cross-工具--基于-docker-的交叉编译"><a class="header" href="#cross-工具--基于-docker-的交叉编译"><code>cross</code> 工具 — 基于 Docker 的交叉编译</a></h3>
+<p><a href="https://github.com/cross-rs/cross"><code>cross</code></a> 工具使用预配置的 Docker 镜像
+提供零设置的交叉编译体验：</p>
+<pre><code class="language-bash"># 安装 cross（来自 crates.io — 稳定版本）
+cargo install cross
+# 或从 git 获取最新功能（较不稳定）：
+# cargo install cross --git https://github.com/cross-rs/cross
+
+# 交叉编译 — 无需工具链设置！
+cross build --release --target aarch64-unknown-linux-gnu
+cross build --release --target x86_64-unknown-linux-musl
+cross build --release --target armv7-unknown-linux-gnueabihf
+
+# 交叉测试 — Docker 镜像中包含 QEMU
+cross test --target aarch64-unknown-linux-gnu
+</code></pre>
+<p><strong>工作原理</strong>：<code>cross</code> 替换 <code>cargo</code> 并在具有正确交叉编译工具链
+预安装的 Docker 容器内运行构建。你的源代码被挂载到容器中，
+输出进入你正常的 <code>target/</code> 目录。</p>
+<p><strong>自定义 Docker 镜像</strong> 使用 <code>Cross.toml</code>：</p>
+<pre><code class="language-toml"># Cross.toml
+[target.aarch64-unknown-linux-gnu]
+# 使用带有额外系统库的自定义 Docker 镜像
+image = "my-registry/cross-aarch64:latest"
+
+# 预安装系统包
+pre-build = [
+    "dpkg --add-architecture arm64",
+    "apt-get update &amp;&amp; apt-get install -y libpci-dev:arm64"
+]
+
+[target.aarch64-unknown-linux-gnu.env]
+# 将环境变量传递到容器中
+passthrough = ["CI", "GITHUB_TOKEN"]
+</code></pre>
+<p><code>cross</code> 需要 Docker（或 Podman），但消除了手动安装交叉编译器、sysroot 和 QEMU 的需要。
+这是 CI 的推荐方法。</p>
+<h3 id="使用-zig-作为交叉编译链接器"><a class="header" href="#使用-zig-作为交叉编译链接器">使用 Zig 作为交叉编译链接器</a></h3>
+<p><a href="https://ziglang.org/">Zig</a> 在单个约 40 MB 的下载中为约 40 个目标捆绑了 C 编译器和交叉编译 sysroot。
+这使其成为 Rust 异常方便的交叉链接器：</p>
+<pre><code class="language-bash"># 安装 Zig（单个二进制文件，无需包管理器）
+# 从 https://ziglang.org/download/ 下载
+# 或通过包管理器：
+sudo snap install zig --classic --beta  # Ubuntu
+brew install zig                          # macOS
+
+# 安装 cargo-zigbuild
+cargo install cargo-zigbuild
+</code></pre>
+<p><strong>为什么选择 Zig？</strong> 关键优势是<strong>glibc 版本定位</strong>。Zig 允许你指定要链接的确切 glibc 版本，
+确保你的二进制文件在较旧的 Linux 发行版上运行：</p>
+<pre><code class="language-bash"># 为 glibc 2.17 构建（CentOS 7 / RHEL 7 兼容性）
+cargo zigbuild --release --target x86_64-unknown-linux-gnu.2.17
+
+# 为 aarch64 构建，使用 glibc 2.28（Ubuntu 18.04+）
+cargo zigbuild --release --target aarch64-unknown-linux-gnu.2.28
+
+# 为 musl 构建（完全静态）
+cargo zigbuild --release --target x86_64-unknown-linux-musl
+</code></pre>
+<p><code>.2.17</code> 后缀是 Zig 扩展 — 它告诉 Zig 的链接器使用 glibc 2.17 符号版本，
+因此生成的二进制文件在 CentOS 7 及更高版本上运行。无需 Docker、无需 sysroot 管理、
+无需交叉编译器安装。</p>
+<p><strong>比较：cross vs cargo-zigbuild vs 手动：</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>特性</th><th>手动</th><th>cross</th><th>cargo-zigbuild</th></tr></thead><tbody>
+<tr><td>设置工作量</td><td>高（每个目标安装工具链）</td><td>低（需要 Docker）</td><td>低（单个二进制文件）</td></tr>
+<tr><td>需要 Docker</td><td>否</td><td>是</td><td>否</td></tr>
+<tr><td>glibc 版本定位</td><td>否（使用主机 glibc）</td><td>否（使用容器 glibc）</td><td>是（确切版本）</td></tr>
+<tr><td>测试执行</td><td>需要 QEMU</td><td>包含</td><td>需要 QEMU</td></tr>
+<tr><td>macOS → Linux</td><td>困难</td><td>容易</td><td>容易</td></tr>
+<tr><td>Linux → macOS</td><td>非常困难</td><td>不支持</td><td>有限</td></tr>
+<tr><td>二进制大小开销</td><td>无</td><td>无</td><td>无</td></tr>
+</tbody></table>
+</div>
+<h3 id="ci-流水线github-actions-矩阵"><a class="header" href="#ci-流水线github-actions-矩阵">CI 流水线：GitHub Actions 矩阵</a></h3>
+<p>生产级 CI 工作流，为多个目标构建：</p>
+<pre><code class="language-yaml"># .github/workflows/cross-build.yml
+name: 跨平台构建
+
+on: [push, pull_request]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            name: linux-x86_64
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+            name: linux-x86_64-static
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-latest
+            name: linux-aarch64
+            use_cross: true
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            name: windows-x86_64
+
+    runs-on: ${{ matrix.os }}
+    name: 构建（${{ matrix.name }}）
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: 安装 musl 工具
+        if: matrix.target == 'x86_64-unknown-linux-musl'
+        run: sudo apt-get install -y musl-tools
+
+      - name: 安装 cross
+        if: matrix.use_cross
+        run: cargo install cross
+
+      - name: 构建（原生）
+        if: "!matrix.use_cross"
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: 构建（cross）
+        if: matrix.use_cross
+        run: cross build --release --target ${{ matrix.target }}
+
+      - name: 运行测试
+        if: "!matrix.use_cross"
+        run: cargo test --target ${{ matrix.target }}
+
+      - name: 上传产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: diag_tool-${{ matrix.name }}
+          path: target/${{ matrix.target }}/release/diag_tool*
+</code></pre>
+<h3 id="应用多架构服务器构建"><a class="header" href="#应用多架构服务器构建">应用：多架构服务器构建</a></h3>
+<p>二进制文件当前没有交叉编译设置。对于部署到多样化服务器群的硬件诊断工具，
+推荐添加：</p>
+<pre><code class="language-text">my_workspace/
+├── .cargo/
+│   └── config.toml          ← 每个目标的链接器配置
+├── Cross.toml                ← cross 工具配置
+└── .github/workflows/
+    └── cross-build.yml       ← 3 个目标的 CI 矩阵
+</code></pre>
+<p><strong>推荐的 <code>.cargo/config.toml</code>：</strong></p>
+<pre><code class="language-toml"># 项目的 .cargo/config.toml
+
+# Release profile 优化（已在 Cargo.toml 中，供参考）
+# [profile.release]
+# lto = true
+# codegen-units = 1
+# panic = "abort"
+# strip = true
+
+# aarch64 用于 ARM 服务器（Graviton、Ampere、Grace）
+[target.aarch64-unknown-linux-gnu]
+linker = "aarch64-linux-gnu-gcc"
+
+# musl 用于可移植静态二进制文件
+[target.x86_64-unknown-linux-musl]
+linker = "musl-gcc"
+</code></pre>
+<p><strong>推荐的构建目标：</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>目标</th><th>用例</th><th>部署到</th></tr></thead><tbody>
+<tr><td><code>x86_64-unknown-linux-gnu</code></td><td>默认原生构建</td><td>标准 x86 服务器</td></tr>
+<tr><td><code>x86_64-unknown-linux-musl</code></td><td>静态二进制文件，任何发行版</td><td>容器、最小主机</td></tr>
+<tr><td><code>aarch64-unknown-linux-gnu</code></td><td>ARM 服务器</td><td>Graviton、Ampere、Grace</td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p><strong>关键见解</strong>：工作空间根 <code>Cargo.toml</code> 中的 <code>[profile.release]</code> 已经有
+<code>lto = true</code>、<code>codegen-units = 1</code>、<code>panic = "abort"</code> 和 <code>strip = true</code> —
+交叉编译部署二进制文件的理想 release profile（参见 <a href="ch07-release-profiles-and-binary-size.html">Release Profile</a>
+了解完整的影响表）。与 musl 结合，这产生一个约 10 MB 的单个静态二进制文件，没有运行时依赖。</p>
+</blockquote>
+<h3 id="交叉编译故障排除"><a class="header" href="#交叉编译故障排除">交叉编译故障排除</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>症状</th><th>原因</th><th>修复</th></tr></thead><tbody>
+<tr><td><code>linker 'aarch64-linux-gnu-gcc' not found</code></td><td>缺少交叉链接器工具链</td><td><code>sudo apt install gcc-aarch64-linux-gnu</code></td></tr>
+<tr><td><code>cannot find -lssl</code>（musl 目标）</td><td>系统 OpenSSL 链接到 glibc</td><td>使用 <code>vendored</code> 特性：<code>openssl = { version = "0.10", features = ["vendored"] }</code></td></tr>
+<tr><td><code>build.rs</code> 运行错误的二进制文件</td><td>build.rs 在 HOST 上运行，而不是目标</td><td>在 build.rs 中检查 <code>CARGO_CFG_TARGET_OS</code>，而不是 <code>cfg!(target_os)</code></td></tr>
+<tr><td>测试在本地通过，在 <code>cross</code> 中失败</td><td>Docker 镜像缺少测试夹具</td><td>通过 <code>Cross.toml</code> 挂载测试数据：<code>[build.env] volumes = ["./TestArea:/TestArea"]</code></td></tr>
+<tr><td><code>undefined reference to __cxa_thread_atexit_impl</code></td><td>目标上的 glibc 过旧</td><td>使用 <code>cargo-zigbuild</code> 并指定 glibc 版本：<code>--target x86_64-unknown-linux-gnu.2.17</code></td></tr>
+<tr><td>二进制文件在 ARM 上段错误</td><td>为错误的 ARM 变体编译</td><td>验证目标三元组与硬件匹配：<code>aarch64-unknown-linux-gnu</code> 用于 64 位 ARM</td></tr>
+<tr><td>运行时 <code>GLIBC_2.XX not found</code></td><td>构建机器有更新的 glibc</td><td>使用 musl 进行静态构建，或使用 <code>cargo-zigbuild</code> 进行 glibc 版本固定</td></tr>
+</tbody></table>
+</div>
+<h3 id="交叉编译决策树"><a class="header" href="#交叉编译决策树">交叉编译决策树</a></h3>
+<pre class="mermaid">flowchart TD
+    START[&quot;需要交叉编译？&quot;] --&gt; STATIC{&quot;静态二进制文件？&quot;}
+
+    STATIC --&gt;|是 | MUSL[&quot;musl 目标\n--target x86_64-unknown-linux-musl&quot;]
+    STATIC --&gt;|否 | GLIBC{&quot;需要旧 glibc？&quot;}
+
+    GLIBC --&gt;|是 | ZIG[&quot;cargo-zigbuild\n--target x86_64-unknown-linux-gnu.2.17&quot;]
+    GLIBC --&gt;|否 | ARCH{&quot;目标架构？&quot;}
+
+    ARCH --&gt;|&quot;相同架构&quot;| NATIVE[&quot;原生工具链\nrustup target add + 链接器&quot;]
+    ARCH --&gt;|&quot;ARM/其他&quot;| DOCKER{&quot;有 Docker？&quot;}
+
+    DOCKER --&gt;|是 | CROSS[&quot;cross build\n基于 Docker，零设置&quot;]
+    DOCKER --&gt;|否 | MANUAL[&quot;手动 sysroot\napt install gcc-aarch64-linux-gnu&quot;]
+
+    style MUSL fill:#91e5a3,color:#000
+    style ZIG fill:#91e5a3,color:#000
+    style CROSS fill:#91e5a3,color:#000
+    style NATIVE fill:#e3f2fd,color:#000
+    style MANUAL fill:#ffd43b,color:#000
+</pre>
+<h3 id="-练习"><a class="header" href="#-练习">🏋️ 练习</a></h3>
+<h4 id="-练习-1静态-musl-二进制文件"><a class="header" href="#-练习-1静态-musl-二进制文件">🟢 练习 1：静态 musl 二进制文件</a></h4>
+<p>为 <code>x86_64-unknown-linux-musl</code> 构建任何 Rust 二进制文件。使用 <code>file</code> 和 <code>ldd</code> 验证它是静态链接的。</p>
+<details>
+<summary>解决方案</summary>
+<pre><code class="language-bash">rustup target add x86_64-unknown-linux-musl
+cargo new hello-static &amp;&amp; cd hello-static
+cargo build --release --target x86_64-unknown-linux-musl
+
+# 验证
+file target/x86_64-unknown-linux-musl/release/hello-static
+# 输出：... statically linked ...
+
+ldd target/x86_64-unknown-linux-musl/release/hello-static
+# 输出：not a dynamic executable
+</code></pre>
+</details>
+<h4 id="-练习-2github-actions-交叉构建矩阵"><a class="header" href="#-练习-2github-actions-交叉构建矩阵">🟡 练习 2：GitHub Actions 交叉构建矩阵</a></h4>
+<p>编写一个 GitHub Actions 工作流，为三个目标构建 Rust 项目：<code>x86_64-unknown-linux-gnu</code>、
+<code>x86_64-unknown-linux-musl</code> 和 <code>aarch64-unknown-linux-gnu</code>。使用矩阵策略。</p>
+<details>
+<summary>解决方案</summary>
+<pre><code class="language-yaml">name: 交叉构建
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target:
+          - x86_64-unknown-linux-gnu
+          - x86_64-unknown-linux-musl
+          - aarch64-unknown-linux-gnu
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - name: 安装 cross
+        run: cargo install cross --locked
+      - name: 构建
+        run: cross build --release --target ${{ matrix.target }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: binary-${{ matrix.target }}
+          path: target/${{ matrix.target }}/release/my-binary
+</code></pre>
+</details>
+<h3 id="关键要点"><a class="header" href="#关键要点">关键要点</a></h3>
+<ul>
+<li>Rust 的 <code>rustc</code> 已经是交叉编译器 — 你只需要正确的目标和链接器</li>
+<li><strong>musl</strong> 产生完全静态的二进制文件，零运行时依赖 — 容器的理想选择</li>
+<li><strong><code>cargo-zigbuild</code></strong> 解决企业 Linux 目标的"glibc 版本"问题</li>
+<li><strong><code>cross</code></strong> 是 ARM 和其他特殊目标的最简单路径 — Docker 处理 sysroot</li>
+<li>始终使用 <code>file</code> 和 <code>ldd</code> 测试以验证二进制文件与你的部署目标匹配</li>
+</ul>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch01-build-scripts-buildrs-in-depth.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch03-benchmarking-measuring-what-matters.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch01-build-scripts-buildrs-in-depth.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch03-benchmarking-measuring-what-matters.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

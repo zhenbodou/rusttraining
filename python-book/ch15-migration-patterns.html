@@ -1,0 +1,661 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>15. 迁移模式 - Rust for Python Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for Python Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="rust-中的常见-python-模式"><a class="header" href="#rust-中的常见-python-模式">Rust 中的常见 Python 模式</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> 如何转换 dict→struct、class→struct+impl、列表推导式→迭代器链、
+decorator→trait、以及 context manager→Drop/RAII。加上必备 crate 和渐进式采用策略。</p>
+<p><strong>难度：</strong> 🟡 中级</p>
+</blockquote>
+<h3 id="dictionary--struct"><a class="header" href="#dictionary--struct">Dictionary → Struct</a></h3>
+<pre><code class="language-python"># Python —— dict 作为数据容器（非常常见）
+user = {
+    "name": "Alice",
+    "age": 30,
+    "email": "alice@example.com",
+    "active": True,
+}
+print(user["name"])
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 带命名字段的 struct
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+struct User {
+    name: String,
+    age: i32,
+    email: String,
+    active: bool,
+}
+
+let user = User {
+    name: "Alice".into(),
+    age: 30,
+    email: "alice@example.com".into(),
+    active: true,
+};
+println!("{}", user.name);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="context-manager--raii-drop"><a class="header" href="#context-manager--raii-drop">Context Manager → RAII (Drop)</a></h3>
+<pre><code class="language-python"># Python —— 用于资源清理的 context manager
+class FileManager:
+    def __init__(self, path):
+        self.file = open(path, 'w')
+
+    def __enter__(self):
+        return self.file
+
+    def __exit__(self, *args):
+        self.file.close()
+
+with FileManager("output.txt") as f:
+    f.write("hello")
+# 退出 `with` 时文件自动关闭
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— RAII：Drop trait 在值超出作用域时运行
+use std::fs::File;
+use std::io::Write;
+
+fn write_file() -&gt; std::io::Result&lt;()&gt; {
+    let mut file = File::create("output.txt")?;
+    file.write_all(b"hello")?;
+    Ok(())
+<span class="boring">    `file` 超出作用域时文件自动关闭
+</span><span class="boring">    不需要 `with` —— RAII 处理它！
+</span>}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="decorator--高阶函数或宏"><a class="header" href="#decorator--高阶函数或宏">Decorator → 高阶函数或宏</a></h3>
+<pre><code class="language-python"># Python —— 用于计时的装饰器
+import functools, time
+
+def timed(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        result = func(*args, **kwargs)
+        elapsed = time.perf_counter() - start
+        print(f"{func.__name__} took {elapsed:.4f}s")
+        return result
+    return wrapper
+
+@timed
+def slow_function():
+    time.sleep(1)
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 无装饰器，使用包装函数或宏
+use std::time::Instant;
+
+fn timed&lt;F, R&gt;(name: &amp;str, f: F) -&gt; R
+where
+    F: FnOnce() -&gt; R,
+{
+    let start = Instant::now();
+    let result = f();
+    println!("{} took {:.4?}", name, start.elapsed());
+    result
+}
+
+<span class="boring">使用：
+</span>let result = timed("slow_function", || {
+    std::thread::sleep(std::time::Duration::from_secs(1));
+    42
+});
+<span class="boring">}</span></code></pre></pre>
+<h3 id="迭代器管道数据处理"><a class="header" href="#迭代器管道数据处理">迭代器管道（数据处理）</a></h3>
+<pre><code class="language-python"># Python —— 转换链
+import csv
+from collections import Counter
+
+def analyze_sales(filename):
+    with open(filename) as f:
+        reader = csv.DictReader(f)
+        sales = [
+            row for row in reader
+            if float(row["amount"]) &gt; 100
+        ]
+    by_region = Counter(sale["region"] for sale in sales)
+    top_regions = by_region.most_common(5)
+    return top_regions
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 带强类型的迭代器链
+use std::collections::HashMap;
+
+#[derive(Debug, serde::Deserialize)]
+struct Sale {
+    region: String,
+    amount: f64,
+}
+
+fn analyze_sales(filename: &amp;str) -&gt; Vec&lt;(String, usize)&gt; {
+    let data = std::fs::read_to_string(filename).unwrap();
+    let mut reader = csv::Reader::from_reader(data.as_bytes());
+
+    let mut by_region: HashMap&lt;String, usize&gt; = HashMap::new();
+    for sale in reader.deserialize::&lt;Sale&gt;().flatten() {
+        if sale.amount &gt; 100.0 {
+            *by_region.entry(sale.region).or_insert(0) += 1;
+        }
+    }
+
+    let mut top: Vec&lt;_&gt; = by_region.into_iter().collect();
+    top.sort_by(|a, b| b.1.cmp(&amp;a.1));
+    top.truncate(5);
+    top
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="全局配置--单例"><a class="header" href="#全局配置--单例">全局配置 / 单例</a></h3>
+<pre><code class="language-python"># Python —— 模块级单例（常见模式）
+# config.py
+import json
+
+class Config:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            with open("config.json") as f:
+                cls._instance.data = json.load(f)
+        return cls._instance
+
+config = Config()  # 模块级单例
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— OnceLock 用于惰性静态初始化（Rust 1.70+）
+use std::sync::OnceLock;
+use serde_json::Value;
+
+static CONFIG: OnceLock&lt;Value&gt; = OnceLock::new();
+
+fn get_config() -&gt; &amp;'static Value {
+    CONFIG.get_or_init(|| {
+        let data = std::fs::read_to_string("config.json")
+            .expect("Failed to read config");
+        serde_json::from_str(&amp;data)
+            .expect("Failed to parse config")
+    })
+}
+
+<span class="boring">任何地方使用：
+</span>let db_host = get_config()["database"]["host"].as_str().unwrap();
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="python-开发者必备-crate"><a class="header" href="#python-开发者必备-crate">Python 开发者必备 crate</a></h2>
+<h3 id="数据处理和序列化"><a class="header" href="#数据处理和序列化">数据处理和序列化</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>任务</th><th>Python</th><th>Rust crate</th><th>说明</th></tr></thead><tbody>
+<tr><td>JSON</td><td><code>json</code></td><td><code>serde_json</code></td><td>类型安全序列化</td></tr>
+<tr><td>CSV</td><td><code>csv</code>、<code>pandas</code></td><td><code>csv</code></td><td>流式，低内存</td></tr>
+<tr><td>YAML</td><td><code>pyyaml</code></td><td><code>serde_yaml</code></td><td>配置文件</td></tr>
+<tr><td>TOML</td><td><code>tomllib</code></td><td><code>toml</code></td><td>配置文件</td></tr>
+<tr><td>数据验证</td><td><code>pydantic</code></td><td><code>serde</code> + 自定义</td><td>编译时验证</td></tr>
+<tr><td>日期/时间</td><td><code>datetime</code></td><td><code>chrono</code></td><td>完整时区支持</td></tr>
+<tr><td>Regex</td><td><code>re</code></td><td><code>regex</code></td><td>非常快</td></tr>
+<tr><td>UUID</td><td><code>uuid</code></td><td><code>uuid</code></td><td>相同概念</td></tr>
+</tbody></table>
+</div>
+<h3 id="web-和网络"><a class="header" href="#web-和网络">Web 和网络</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>任务</th><th>Python</th><th>Rust crate</th><th>说明</th></tr></thead><tbody>
+<tr><td>HTTP 客户端</td><td><code>requests</code></td><td><code>reqwest</code></td><td>Async 优先</td></tr>
+<tr><td>Web 框架</td><td><code>FastAPI</code>/<code>Flask</code></td><td><code>axum</code> / <code>actix-web</code></td><td>非常快</td></tr>
+<tr><td>WebSocket</td><td><code>websockets</code></td><td><code>tokio-tungstenite</code></td><td>Async</td></tr>
+<tr><td>gRPC</td><td><code>grpcio</code></td><td><code>tonic</code></td><td>完整支持</td></tr>
+<tr><td>数据库（SQL）</td><td><code>sqlalchemy</code></td><td><code>sqlx</code> / <code>diesel</code></td><td>编译时检查 SQL</td></tr>
+<tr><td>Redis</td><td><code>redis-py</code></td><td><code>redis</code></td><td>Async 支持</td></tr>
+</tbody></table>
+</div>
+<h3 id="cli-和系统"><a class="header" href="#cli-和系统">CLI 和系统</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>任务</th><th>Python</th><th>Rust crate</th><th>说明</th></tr></thead><tbody>
+<tr><td>CLI 参数</td><td><code>argparse</code>/<code>click</code></td><td><code>clap</code></td><td>派生宏</td></tr>
+<tr><td>彩色输出</td><td><code>colorama</code></td><td><code>colored</code></td><td>终端颜色</td></tr>
+<tr><td>进度条</td><td><code>tqdm</code></td><td><code>indicatif</code></td><td>相同 UX</td></tr>
+<tr><td>文件监视</td><td><code>watchdog</code></td><td><code>notify</code></td><td>跨平台</td></tr>
+<tr><td>日志</td><td><code>logging</code></td><td><code>tracing</code></td><td>结构化，async 就绪</td></tr>
+<tr><td>环境变量</td><td><code>os.environ</code></td><td><code>std::env</code> + <code>dotenvy</code></td><td>.env 支持</td></tr>
+<tr><td>子进程</td><td><code>subprocess</code></td><td><code>std::process::Command</code></td><td>内置</td></tr>
+<tr><td>临时文件</td><td><code>tempfile</code></td><td><code>tempfile</code></td><td>同名！</td></tr>
+</tbody></table>
+</div>
+<h3 id="测试"><a class="header" href="#测试">测试</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>任务</th><th>Python</th><th>Rust crate</th><th>说明</th></tr></thead><tbody>
+<tr><td>测试框架</td><td><code>pytest</code></td><td>内置 + <code>rstest</code></td><td><code>cargo test</code></td></tr>
+<tr><td>模拟</td><td><code>unittest.mock</code></td><td><code>mockall</code></td><td>基于 trait</td></tr>
+<tr><td>属性测试</td><td><code>hypothesis</code></td><td><code>proptest</code></td><td>相似 API</td></tr>
+<tr><td>快照测试</td><td><code>syrupy</code></td><td><code>insta</code></td><td>快照批准</td></tr>
+<tr><td>基准测试</td><td><code>pytest-benchmark</code></td><td><code>criterion</code></td><td>统计</td></tr>
+<tr><td>代码覆盖</td><td><code>coverage.py</code></td><td><code>cargo-tarpaulin</code></td><td>LLVM 基础</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h2 id="渐进式采用策略"><a class="header" href="#渐进式采用策略">渐进式采用策略</a></h2>
+<pre class="mermaid">flowchart LR
+    A[&quot;1️⃣ Profile Python\n（找到热点）&quot;] --&gt; B[&quot;2️⃣ 编写 Rust 扩展\n（PyO3 + maturin）&quot;]
+    B --&gt; C[&quot;3️⃣ 替换 Python 调用\n（相同 API）&quot;]
+    C --&gt; D[&quot;4️⃣ 渐进扩展\n（更多函数）&quot;]
+    D --&gt; E{&quot;完全重写\n值得吗？&quot;}
+    E --&gt;|是 | F[&quot;纯 Rust🦀&quot;]
+    E --&gt;|否 | G[&quot;混合🐍+🦀&quot;]
+    style A fill:#ffeeba
+    style B fill:#fff3cd
+    style C fill:#d4edda
+    style D fill:#d4edda
+    style F fill:#c3e6cb
+    style G fill:#c3e6cb
+</pre>
+<blockquote>
+<p>📌 <strong>另见</strong>：<a href="ch14-unsafe-rust-and-ffi.html">第 14 章 — Unsafe Rust 和 FFI</a> 涵盖 PyO3 绑定所需的低级 FFI 细节。</p>
+</blockquote>
+<h3 id="步骤-1识别热点"><a class="header" href="#步骤-1识别热点">步骤 1：识别热点</a></h3>
+<pre><code class="language-python"># 首先 profile 你的 Python 代码
+import cProfile
+cProfile.run('main()')  # 找到 CPU 密集型函数
+
+# 或使用 py-spy 进行采样 profiler：
+# py-spy top --pid &lt;python-pid&gt;
+# py-spy record -o profile.svg -- python main.py
+</code></pre>
+<h3 id="步骤-2为热点编写-rust-扩展"><a class="header" href="#步骤-2为热点编写-rust-扩展">步骤 2：为热点编写 Rust 扩展</a></h3>
+<pre><code class="language-bash"># 用 maturin 创建 Rust 扩展
+cd my_python_project
+maturin init --bindings pyo3
+
+# 用 Rust 编写热点函数（见上方 PyO3 部分）
+# 构建并安装：
+maturin develop --release
+</code></pre>
+<h3 id="步骤-3用-rust-调用替换-python-调用"><a class="header" href="#步骤-3用-rust-调用替换-python-调用">步骤 3：用 Rust 调用替换 Python 调用</a></h3>
+<pre><code class="language-python"># 之前：
+result = python_hot_function(data)  # 慢
+
+# 之后：
+import my_rust_extension
+result = my_rust_extension.hot_function(data)  # 快！
+
+# 相同 API，相同测试，10-100 倍快
+</code></pre>
+<h3 id="步骤-4渐进扩展"><a class="header" href="#步骤-4渐进扩展">步骤 4：渐进扩展</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>第 1-2 周：用一个 Rust 函数替换一个 CPU 绑定函数
+第 3-4 周：替换数据解析/验证层
+第 2 个月：  替换核心数据管道
+第 3+ 个月： 如果好处证明合理，考虑完整 Rust 重写
+
+关键原则：Python 保持编排，Rust 用于计算。
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="-案例研究使用-pyo3-加速数据管道"><a class="header" href="#-案例研究使用-pyo3-加速数据管道">💼 案例研究：使用 PyO3 加速数据管道</a></h2>
+<p>一家金融科技公司有一个 Python 数据管道，每天处理 2GB 的交易 CSV 文件。关键瓶颈是验证 + 转换步骤：</p>
+<pre><code class="language-python"># Python —— 慢的部分（2GB 约 12 分钟）
+import csv
+from decimal import Decimal
+from datetime import datetime
+
+def validate_and_transform(filepath: str) -&gt; list[dict]:
+    results = []
+    with open(filepath) as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            # 解析和验证每个字段
+            amount = Decimal(row["amount"])
+            if amount &lt; 0:
+                raise ValueError(f"Negative amount: {amount}")
+            date = datetime.strptime(row["date"], "%Y-%m-%d")
+            category = categorize(row["merchant"])  # 字符串匹配，约 50 条规则
+
+            results.append({
+                "amount_cents": int(amount * 100),
+                "date": date.isoformat(),
+                "category": category,
+                "merchant": row["merchant"].strip().lower(),
+            })
+    return results
+# 15M 行约 12 分钟。尝试 pandas —— 到约 8 分钟但 6GB RAM。
+</code></pre>
+<p><strong>步骤 1</strong>：Profile 并识别热点（CSV 解析 + Decimal 转换 + 字符串匹配 = 95% 时间）。</p>
+<p><strong>步骤 2</strong>：编写 Rust 扩展：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// src/lib.rs —— PyO3 扩展
+use pyo3::prelude::*;
+use pyo3::types::PyList;
+use std::fs::File;
+use std::io::BufReader;
+
+#[derive(Debug)]
+struct Transaction {
+    amount_cents: i64,
+    date: String,
+    category: String,
+    merchant: String,
+}
+
+fn categorize(merchant: &amp;str) -&gt; &amp;'static str {
+<span class="boring">    Aho-Corasick 或简单规则 —— 编译一次，非常快
+</span>    if merchant.contains("amazon") { "shopping" }
+    else if merchant.contains("uber") || merchant.contains("lyft") { "transport" }
+    else if merchant.contains("starbucks") { "food" }
+    else { "other" }
+}
+
+#[pyfunction]
+fn process_transactions(path: &amp;str) -&gt; PyResult&lt;Vec&lt;(i64, String, String, String)&gt;&gt; {
+    let file = File::open(path).map_err(|e| pyo3::exceptions::PyIOError::new_err(e.to_string()))?;
+    let mut reader = csv::Reader::from_reader(BufReader::new(file));
+
+    let mut results = Vec::with_capacity(15_000_000); # 预分配
+
+    for record in reader.records() {
+        let record = record.map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))?;
+        let amount_str = &amp;record[0];
+        let amount_cents = parse_amount_cents(amount_str)?;  # 自定义解析器，无 Decimal
+        let date = &amp;record[1];  # 已是 ISO 格式，只验证
+        let merchant = record[2].trim().to_lowercase();
+        let category = categorize(&amp;merchant).to_string();
+
+        results.push((amount_cents, date.to_string(), category, merchant));
+    }
+    Ok(results)
+}
+
+#[pymodule]
+fn fast_pipeline(_py: Python, m: &amp;PyModule) -&gt; PyResult&lt;()&gt; {
+    m.add_function(wrap_pyfunction!(process_transactions, m)?)?;
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>步骤 3</strong>：在 Python 中替换一行：</p>
+<pre><code class="language-python"># 之前：
+results = validate_and_transform("transactions.csv")  # 12 分钟
+
+# 之后：
+import fast_pipeline
+results = fast_pipeline.process_transactions("transactions.csv")  # 45 秒
+
+# 相同 Python 编排，相同测试，相同部署
+# 只替换一个函数
+</code></pre>
+<p><strong>结果</strong>：</p>
+<div class="table-wrapper"><table><thead><tr><th>指标</th><th>Python (csv + Decimal)</th><th>Rust (PyO3 + csv crate)</th></tr></thead><tbody>
+<tr><td>时间（2GB / 15M 行）</td><td>12 分钟</td><td>45 秒</td></tr>
+<tr><td>峰值内存</td><td>6GB (pandas) / 2GB (csv)</td><td>200MB</td></tr>
+<tr><td>Python 中更改的行数</td><td>—</td><td>1（导入 + 调用）</td></tr>
+<tr><td>编写的 Rust 代码</td><td>—</td><td>约 60 行</td></tr>
+<tr><td>测试通过</td><td>47/47</td><td>47/47（不变）</td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p><strong>关键教训</strong>：你不需要重写整个应用。找到占 95% 时间的 5% 代码，用 PyO3 在 Rust 中重写那部分，其他保持 Python。团队从"我们需要添加更多服务器"到"一台服务器足够"。</p>
+</blockquote>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：迁移决策矩阵</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：你有一个 Python Web 应用，有以下组件。对于每个，决定：<strong>保持 Python</strong>、<strong>用 Rust 重写</strong>或<strong>PyO3 桥接</strong>。证明每个选择。</p>
+<ol>
+<li>Flask 路由处理器（请求解析、JSON 响应）</li>
+<li>图像缩略图生成（CPU 密集型，每天处理 10k 图像）</li>
+<li>数据库 ORM 查询（SQLAlchemy）</li>
+<li>2GB 财务文件的 CSV 解析器（每晚运行）</li>
+<li>管理仪表板（Jinja2 模板）</li>
+</ol>
+<details>
+<summary>🔑 解答</summary>
+<div class="table-wrapper"><table><thead><tr><th>组件</th><th>决定</th><th>理由</th></tr></thead><tbody>
+<tr><td>Flask 路由处理器</td><td>🐍 保持 Python</td><td>I/O 绑定，框架重，Rust 好处低</td></tr>
+<tr><td>图像缩略图生成</td><td>🦀 PyO3 桥接</td><td>CPU 绑定热点，保持 Python API，Rust 内部</td></tr>
+<tr><td>数据库 ORM 查询</td><td>🐍 保持 Python</td><td>SQLAlchemy 成熟，查询是 I/O 绑定</td></tr>
+<tr><td>CSV 解析器（2GB）</td><td>🦀 PyO3 桥接或完整 Rust</td><td>CPU + 内存绑定，Rust 的零拷贝解析闪耀</td></tr>
+<tr><td>管理仪表板</td><td>🐍 保持 Python</td><td>UI/模板代码，无性能问题</td></tr>
+</tbody></table>
+</div>
+<p><strong>关键要点</strong>：迁移最佳点是 CPU 绑定、性能关键且有清晰边界的代码。不要重写胶水代码或 I/O 绑定处理器 —— 好处不能证明成本合理。</p>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch14-unsafe-rust-and-ffi.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch16-best-practices.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch14-unsafe-rust-and-ffi.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch16-best-practices.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

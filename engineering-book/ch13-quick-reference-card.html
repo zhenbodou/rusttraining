@@ -1,0 +1,411 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>13. 快速参考卡 - Rust Engineering Practices — Beyond cargo build</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust Engineering Practices — Beyond cargo build</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="快速参考卡"><a class="header" href="#快速参考卡">快速参考卡</a></h1>
+<h3 id="速查表命令一览"><a class="header" href="#速查表命令一览">速查表：命令一览</a></h3>
+<pre><code class="language-bash"># ─── 构建脚本 ───
+cargo build                          # 先编译 build.rs，然后 crate
+cargo build -vv                      # 详细 — 显示 build.rs 输出
+
+# ─── 交叉编译 ───
+rustup target add x86_64-unknown-linux-musl
+cargo build --release --target x86_64-unknown-linux-musl
+cargo zigbuild --release --target x86_64-unknown-linux-gnu.2.17
+cross build --release --target aarch64-unknown-linux-gnu
+
+# ─── 基准测试 ───
+cargo bench                          # 运行所有基准测试
+cargo bench -- parse                 # 运行匹配 "parse" 的基准测试
+cargo flamegraph -- --args           # 从二进制文件生成火焰图
+perf record -g ./target/release/bin  # 记录 perf 数据
+perf report                          # 交互式查看 perf 数据
+
+# ─── 覆盖率 ───
+cargo llvm-cov --html                # HTML 报告
+cargo llvm-cov --lcov --output-path lcov.info
+cargo llvm-cov --workspace --fail-under-lines 80
+cargo tarpaulin --out Html           # 替代工具
+
+# ─── 安全验证 ───
+cargo +nightly miri test             # 在 Miri 下运行测试
+MIRIFLAGS="-Zmiri-disable-isolation" cargo +nightly miri test
+valgrind --leak-check=full ./target/debug/binary
+RUSTFLAGS="-Zsanitizer=address" cargo +nightly test -Zbuild-std --target x86_64-unknown-linux-gnu
+
+# ─── 审计与供应链 ───
+cargo audit                          # 已知漏洞扫描
+cargo audit --deny warnings          # 在任何咨询上使 CI 失败
+cargo deny check                     # 许可证 + 咨询 + 禁令 + 源检查
+cargo deny list                      # 列出依赖树中的所有许可证
+cargo vet                            # 供应链信任验证
+cargo outdated --workspace           # 查找过时的依赖
+cargo semver-checks                  # 检测破坏性 API 更改
+cargo geiger                         # 统计依赖树中的 unsafe
+
+# ─── 二进制优化 ───
+cargo bloat --release --crates       # 每个 crate 的大小贡献
+cargo bloat --release -n 20          # 20 个最大的函数
+cargo +nightly udeps --workspace     # 查找未使用的依赖
+cargo machete                        # 快速未使用依赖检测
+cargo expand --lib module::name      # 查看宏展开
+cargo msrv find                      # 发现最低 Rust 版本
+cargo clippy --fix --workspace --allow-dirty  # 自动修复 lint 警告
+
+# ─── 编译时优化 ───
+export RUSTC_WRAPPER=sccache         # 共享编译缓存
+sccache --show-stats                 # 缓存命中统计
+cargo nextest run                    # 更快的测试运行器
+cargo nextest run --retries 2        # 重试不稳定测试
+
+# ─── 平台工程 ───
+cargo check --target thumbv7em-none-eabihf   # 验证 no_std 构建
+cargo build --target x86_64-pc-windows-gnu   # 交叉编译到 Windows
+cargo xwin build --target x86_64-pc-windows-msvc  # MSVC ABI 交叉编译
+cfg!(target_os = "linux")                    # 编译时 cfg（计算为 bool）
+
+# ─── 发布 ───
+cargo release patch --dry-run        # 预览发布
+cargo release patch --execute        # 提升、提交、打标签、发布
+cargo dist plan                      # 预览分发生成
+</code></pre>
+<h3 id="决策表何时使用哪个工具"><a class="header" href="#决策表何时使用哪个工具">决策表：何时使用哪个工具</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>目标</th><th>工具</th><th>何时使用</th></tr></thead><tbody>
+<tr><td>嵌入 git 哈希 / 构建信息</td><td><code>build.rs</code></td><td>二进制需要可追溯性</td></tr>
+<tr><td>使用 Rust 编译 C 代码</td><td><code>build.rs</code> 中的 <code>cc</code> crate</td><td>FFI 到小型 C 库</td></tr>
+<tr><td>从模式生成代码</td><td><code>prost-build</code> / <code>tonic-build</code></td><td>Protobuf、gRPC、FlatBuffers</td></tr>
+<tr><td>链接系统库</td><td><code>build.rs</code> 中的 <code>pkg-config</code></td><td>OpenSSL、libpci、systemd</td></tr>
+<tr><td>静态 Linux 二进制文件</td><td><code>--target x86_64-unknown-linux-musl</code></td><td>容器/云部署</td></tr>
+<tr><td>针对旧 glibc</td><td><code>cargo-zigbuild</code></td><td>RHEL 7、CentOS 7 兼容性</td></tr>
+<tr><td>ARM 服务器二进制文件</td><td><code>cross</code> 或 <code>cargo-zigbuild</code></td><td>Graviton/Ampere 部署</td></tr>
+<tr><td>统计基准测试</td><td>Criterion.rs</td><td>性能回归检测</td></tr>
+<tr><td>快速性能检查</td><td>Divan</td><td>开发时分析</td></tr>
+<tr><td>查找热点</td><td><code>cargo flamegraph</code> / <code>perf</code></td><td>基准测试识别慢代码后</td></tr>
+<tr><td>行/分支覆盖率</td><td><code>cargo-llvm-cov</code></td><td>CI 覆盖率门禁、差距分析</td></tr>
+<tr><td>快速覆盖率检查</td><td><code>cargo-tarpaulin</code></td><td>本地开发</td></tr>
+<tr><td>Rust UB 检测</td><td>Miri</td><td>纯 Rust <code>unsafe</code> 代码</td></tr>
+<tr><td>C FFI 内存安全</td><td>Valgrind memcheck</td><td>混合 Rust/C 代码库</td></tr>
+<tr><td>数据竞争检测</td><td>TSan 或 Miri</td><td>并发 <code>unsafe</code> 代码</td></tr>
+<tr><td>缓冲区溢出检测</td><td>ASan</td><td><code>unsafe</code> 指针算术</td></tr>
+<tr><td>泄漏检测</td><td>Valgrind 或 LSan</td><td>长期运行的服务</td></tr>
+<tr><td>本地 CI 等效</td><td><code>cargo-make</code></td><td>开发者工作流自动化</td></tr>
+<tr><td>Pre-commit 检查</td><td><code>cargo-husky</code> 或 git 钩子</td><td>在推送前捕获问题</td></tr>
+<tr><td>自动发布</td><td><code>cargo-release</code> + <code>cargo-dist</code></td><td>版本管理 + 分发</td></tr>
+<tr><td>依赖审计</td><td><code>cargo-audit</code> / <code>cargo-deny</code></td><td>供应链安全</td></tr>
+<tr><td>许可证合规</td><td><code>cargo-deny</code>（许可证）</td><td>商业 / 企业项目</td></tr>
+<tr><td>供应链信任</td><td><code>cargo-vet</code></td><td>高安全环境</td></tr>
+<tr><td>查找过时依赖</td><td><code>cargo-outdated</code></td><td>计划维护</td></tr>
+<tr><td>检测破坏性更改</td><td><code>cargo-semver-checks</code></td><td>库 crate 发布</td></tr>
+<tr><td>依赖树分析</td><td><code>cargo tree --duplicates</code></td><td>去重和修剪依赖图</td></tr>
+<tr><td>二进制大小分析</td><td><code>cargo-bloat</code></td><td>大小受限的部署</td></tr>
+<tr><td>查找未使用依赖</td><td><code>cargo-udeps</code> / <code>cargo-machete</code></td><td>修剪编译时间和大小</td></tr>
+<tr><td>LTO 调整</td><td><code>lto = true</code> 或 <code>"thin"</code></td><td>Release 二进制优化</td></tr>
+<tr><td>大小优化二进制文件</td><td><code>opt-level = "z"</code> + <code>strip = true</code></td><td>嵌入式 / WASM / 容器</td></tr>
+<tr><td>Unsafe 使用审计</td><td><code>cargo-geiger</code></td><td>安全策略执行</td></tr>
+<tr><td>宏调试</td><td><code>cargo-expand</code></td><td>Derive / macro_rules 调试</td></tr>
+<tr><td>更快的链接</td><td><code>mold</code> 链接器</td><td>开发者内部循环</td></tr>
+<tr><td>编译缓存</td><td><code>sccache</code></td><td>CI 和本地构建速度</td></tr>
+<tr><td>更快的测试</td><td><code>cargo-nextest</code></td><td>CI 和本地测试速度</td></tr>
+<tr><td>MSRV 合规</td><td><code>cargo-msrv</code></td><td>库发布</td></tr>
+<tr><td><code>no_std</code> 库</td><td><code>#![no_std]</code> + <code>default-features = false</code></td><td>嵌入式、UEFI、WASM</td></tr>
+<tr><td>Windows 交叉编译</td><td><code>cargo-xwin</code> / MinGW</td><td>Linux → Windows 构建</td></tr>
+<tr><td>平台抽象</td><td><code>#[cfg]</code> + trait 模式</td><td>多 OS 代码库</td></tr>
+<tr><td>Windows API 调用</td><td><code>windows-sys</code> / <code>windows</code> crate</td><td>原生 Windows 功能</td></tr>
+<tr><td>端到端计时</td><td><code>hyperfine</code></td><td>整个二进制基准测试、前后比较</td></tr>
+<tr><td>基于属性的测试</td><td><code>proptest</code></td><td>边界情况发现、解析器鲁棒性</td></tr>
+<tr><td>快照测试</td><td><code>insta</code></td><td>大型结构化输出验证</td></tr>
+<tr><td>覆盖率引导 Fuzzing</td><td><code>cargo-fuzz</code></td><td>解析器中的崩溃发现</td></tr>
+<tr><td>并发模型检查</td><td><code>loom</code></td><td>无锁数据结构、原子排序</td></tr>
+<tr><td>特性组合测试</td><td><code>cargo-hack</code></td><td>具有多个 <code>#[cfg]</code> 特性的 crate</td></tr>
+<tr><td>快速 UB 检查（接近原生）</td><td><code>cargo-careful</code></td><td>CI 安全门控、比 Miri 更轻</td></tr>
+<tr><td>保存时自动重新构建</td><td><code>cargo-watch</code></td><td>开发者内部循环、紧密反馈</td></tr>
+<tr><td>工作空间文档</td><td><code>cargo doc</code> + rustdoc</td><td>API 发现、入职、文档链接 CI</td></tr>
+<tr><td>可重现构建</td><td><code>--locked</code> + <code>SOURCE_DATE_EPOCH</code></td><td>发布完整性验证</td></tr>
+<tr><td>CI 缓存调整</td><td><code>Swatinem/rust-cache@v2</code></td><td>构建时间减少（冷 → 缓存）</td></tr>
+<tr><td>工作空间 lint 策略</td><td>Cargo.toml 中的 <code>[workspace.lints]</code></td><td>所有 crate 一致的 Clippy/编译器 lints</td></tr>
+<tr><td>自动修复 lint 警告</td><td><code>cargo clippy --fix</code></td><td>琐碎问题的自动清理</td></tr>
+</tbody></table>
+</div>
+<h3 id="进一步阅读"><a class="header" href="#进一步阅读">进一步阅读</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>主题</th><th>资源</th></tr></thead><tbody>
+<tr><td>Cargo 构建脚本</td><td><a href="https://doc.rust-lang.org/cargo/reference/build-scripts.html">Cargo Book — Build Scripts</a></td></tr>
+<tr><td>交叉编译</td><td><a href="https://rust-lang.github.io/rustup/cross-compilation.html">Rust Cross-Compilation</a></td></tr>
+<tr><td><code>cross</code> 工具</td><td><a href="https://github.com/cross-rs/cross">cross-rs/cross</a></td></tr>
+<tr><td><code>cargo-zigbuild</code></td><td><a href="https://github.com/rust-cross/cargo-zigbuild">cargo-zigbuild docs</a></td></tr>
+<tr><td>Criterion.rs</td><td><a href="https://bheisler.github.io/criterion.rs/book/">Criterion User Guide</a></td></tr>
+<tr><td>Divan</td><td><a href="https://github.com/nvzqz/divan">Divan docs</a></td></tr>
+<tr><td><code>cargo-llvm-cov</code></td><td><a href="https://github.com/taiki-e/cargo-llvm-cov">cargo-llvm-cov</a></td></tr>
+<tr><td><code>cargo-tarpaulin</code></td><td><a href="https://github.com/xd009642/tarpaulin">tarpaulin docs</a></td></tr>
+<tr><td>Miri</td><td><a href="https://github.com/rust-lang/miri">Miri GitHub</a></td></tr>
+<tr><td>Rust 中的 Sanitizers</td><td><a href="https://doc.rust-lang.org/nightly/unstable-book/compiler-flags/sanitizer.html">rustc Sanitizer docs</a></td></tr>
+<tr><td><code>cargo-make</code></td><td><a href="https://sagiegurari.github.io/cargo-make/">cargo-make book</a></td></tr>
+<tr><td><code>cargo-release</code></td><td><a href="https://github.com/crate-ci/cargo-release">cargo-release docs</a></td></tr>
+<tr><td><code>cargo-dist</code></td><td><a href="https://axodotdev.github.io/cargo-dist/book/">cargo-dist docs</a></td></tr>
+<tr><td>Profile-guided optimization</td><td><a href="https://doc.rust-lang.org/rustc/profile-guided-optimization.html">Rust PGO guide</a></td></tr>
+<tr><td>火焰图</td><td><a href="https://github.com/flamegraph-rs/flamegraph">cargo-flamegraph</a></td></tr>
+<tr><td><code>cargo-deny</code></td><td><a href="https://embarkstudios.github.io/cargo-deny/">cargo-deny docs</a></td></tr>
+<tr><td><code>cargo-vet</code></td><td><a href="https://mozilla.github.io/cargo-vet/">cargo-vet docs</a></td></tr>
+<tr><td><code>cargo-audit</code></td><td><a href="https://github.com/rustsec/rustsec/tree/main/cargo-audit">cargo-audit</a></td></tr>
+<tr><td><code>cargo-bloat</code></td><td><a href="https://github.com/RazrFalcon/cargo-bloat">cargo-bloat</a></td></tr>
+<tr><td><code>cargo-udeps</code></td><td><a href="https://github.com/est31/cargo-udeps">cargo-udeps</a></td></tr>
+<tr><td><code>cargo-geiger</code></td><td><a href="https://github.com/geiger-rs/cargo-geiger">cargo-geiger</a></td></tr>
+<tr><td><code>cargo-semver-checks</code></td><td><a href="https://github.com/obi1kenobi/cargo-semver-checks">cargo-semver-checks</a></td></tr>
+<tr><td><code>cargo-nextest</code></td><td><a href="https://nexte.st/">nextest docs</a></td></tr>
+<tr><td><code>sccache</code></td><td><a href="https://github.com/mozilla/sccache">sccache</a></td></tr>
+<tr><td><code>mold</code> 链接器</td><td><a href="https://github.com/rui314/mold">mold</a></td></tr>
+<tr><td><code>cargo-msrv</code></td><td><a href="https://github.com/foresterre/cargo-msrv">cargo-msrv</a></td></tr>
+<tr><td>LTO</td><td><a href="https://doc.rust-lang.org/rustc/codegen-options/index.html">rustc Codegen Options</a></td></tr>
+<tr><td>Cargo Profiles</td><td><a href="https://doc.rust-lang.org/cargo/reference/profiles.html">Cargo Book — Profiles</a></td></tr>
+<tr><td><code>no_std</code></td><td><a href="https://docs.rust-embedded.org/book/">Rust Embedded Book</a></td></tr>
+<tr><td><code>windows-sys</code> crate</td><td><a href="https://github.com/microsoft/windows-rs">windows-rs</a></td></tr>
+<tr><td><code>cargo-xwin</code></td><td><a href="https://github.com/rust-cross/cargo-xwin">cargo-xwin docs</a></td></tr>
+<tr><td><code>cargo-hack</code></td><td><a href="https://github.com/taiki-e/cargo-hack">cargo-hack</a></td></tr>
+<tr><td><code>cargo-careful</code></td><td><a href="https://github.com/RalfJung/cargo-careful">cargo-careful</a></td></tr>
+<tr><td><code>cargo-watch</code></td><td><a href="https://github.com/watchexec/cargo-watch">cargo-watch</a></td></tr>
+<tr><td>Rust CI 缓存</td><td><a href="https://github.com/Swatinem/rust-cache">Swatinem/rust-cache</a></td></tr>
+<tr><td>Rustdoc book</td><td><a href="https://doc.rust-lang.org/rustdoc/">Rustdoc Book</a></td></tr>
+<tr><td>条件编译</td><td><a href="https://doc.rust-lang.org/reference/conditional-compilation.html">Rust Reference — cfg</a></td></tr>
+<tr><td>嵌入式 Rust</td><td><a href="https://github.com/rust-embedded/awesome-embedded-rust">Awesome Embedded Rust</a></td></tr>
+<tr><td><code>hyperfine</code></td><td><a href="https://github.com/sharkdp/hyperfine">hyperfine</a></td></tr>
+<tr><td><code>proptest</code></td><td><a href="https://github.com/proptest-rs/proptest">proptest</a></td></tr>
+<tr><td><code>insta</code></td><td><a href="https://insta.rs/">insta snapshot testing</a></td></tr>
+<tr><td><code>cargo-fuzz</code></td><td><a href="https://github.com/rust-fuzz/cargo-fuzz">cargo-fuzz</a></td></tr>
+<tr><td><code>loom</code></td><td><a href="https://github.com/tokio-rs/loom">loom concurrency testing</a></td></tr>
+</tbody></table>
+</div>
+<hr />
+<p><em>生成为配套参考 — Rust Patterns 和 Type-Driven Correctness 的配套。</em></p>
+<p><em>版本 1.3 — 添加了 cargo-hack、cargo-careful、cargo-watch、cargo doc、可重现构建、CI 缓存策略、综合练习和章节依赖关系图以完整。</em></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch12-tricks-from-the-trenches.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch12-tricks-from-the-trenches.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

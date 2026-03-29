@@ -1,0 +1,637 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>3. 内置类型和变量 - Rust for Python Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for Python Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="变量和可变性"><a class="header" href="#变量和可变性">变量和可变性</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> 默认不可变变量、显式 <code>mut</code>、原始数值类型 vs Python 的任意精度 <code>int</code>、
+<code>String</code> vs <code>&amp;str</code>（早期最难的概念）、字符串格式化，以及 Rust 要求的类型注解。</p>
+<p><strong>难度：</strong> 🟢 初学者</p>
+</blockquote>
+<h3 id="python-变量声明"><a class="header" href="#python-变量声明">Python 变量声明</a></h3>
+<pre><code class="language-python"># Python —— 一切可变，动态类型
+count = 0          # 可变，类型推断为 int
+count = 5          # ✅ 可以
+count = "hello"    # ✅ 可以 —— 类型可以改变！（动态类型）
+
+# "常量" 只是约定：
+MAX_SIZE = 1024    # 没有什么能阻止 MAX_SIZE = 999 以后
+</code></pre>
+<h3 id="rust-变量声明"><a class="header" href="#rust-变量声明">Rust 变量声明</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 默认不可变，静态类型
+let count = 0;           # 不可变，类型推断为 i32
+<span class="boring">count = 5;            # ❌ 编译错误：不能两次赋值给不可变变量
+</span><span class="boring">count = "hello";      # ❌ 编译错误：期望整数，找到 &amp;str
+</span>
+let mut count = 0;       # 显式可变
+count = 5;               # ✅ 可以
+<span class="boring">count = "hello";      # ❌ 仍然不能改变类型
+</span>
+const MAX_SIZE: usize = 1024; # 真常量 —— 由编译器强制执行
+<span class="boring">}</span></code></pre></pre>
+<h3 id="python-开发者的心智转变"><a class="header" href="#python-开发者的心智转变">Python 开发者的心智转变</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Python：变量是指向对象的标签
+// Rust：变量是命名存储位置，OWN 它们的值
+
+// 变量遮蔽 —— Rust 特有，非常有用
+let input = "42";              # &amp;str
+let input = input.parse::&lt;i32&gt;().unwrap();  # 现在是 i32 —— 新变量，同名
+let input = input * 2;         # 现在是 84 —— 另一个新变量
+
+// 在 Python 中，你只需重新赋值并丢失旧类型：
+<span class="boring">input = "42"
+</span><span class="boring">input = int(input)   # 同名，不同类型 —— Python 也允许这个
+</span><span class="boring">但在 Rust 中，每个 `let` 创建一个真正的新绑定。旧的消失了。
+</span><span class="boring">}</span></code></pre></pre>
+<h3 id="实用示例计数器"><a class="header" href="#实用示例计数器">实用示例：计数器</a></h3>
+<pre><code class="language-python"># Python 版本
+class Counter:
+    def __init__(self):
+        self.value = 0
+
+    def increment(self):
+        self.value += 1
+
+    def get_value(self):
+        return self.value
+
+c = Counter()
+c.increment()
+print(c.get_value())  # 1
+</code></pre>
+<pre><pre class="playground"><code class="language-rust">// Rust 版本
+struct Counter {
+    value: i64,
+}
+
+impl Counter {
+    fn new() -&gt; Self {
+        Counter { value: 0 }
+    }
+
+    fn increment(&amp;mut self) {     # &amp;mut self = 我将修改这个
+        self.value += 1;
+    }
+
+    fn get_value(&amp;self) -&gt; i64 {  # &amp;self = 我只读取这个
+        self.value
+    }
+}
+
+fn main() {
+    let mut c = Counter::new();   # 必须是 `mut` 才能调用 increment()
+    c.increment();
+    println!("{}", c.get_value()); # 1
+}</code></pre></pre>
+<blockquote>
+<p><strong>关键差异</strong>：在 Rust 中，方法签名中的 <code>&amp;mut self</code> 告诉你（和编译器）
+<code>increment</code> 修改计数器。在 Python 中，任何方法都可以修改
+任何东西 —— 你必须阅读代码才知道。</p>
+</blockquote>
+<hr />
+<h2 id="原始类型比较"><a class="header" href="#原始类型比较">原始类型比较</a></h2>
+<pre class="mermaid">flowchart LR
+    subgraph Python [&quot;Python 类型&quot;]
+        PI[&quot;int\n（任意精度）&quot;]
+        PF[&quot;float\n（仅 64 位）&quot;]
+        PB[&quot;bool&quot;]
+        PS[&quot;str\n（Unicode）&quot;]
+    end
+    subgraph Rust [&quot;Rust 类型&quot;]
+        RI[&quot;i8 / i16 / i32 / i64 / i128\nu8 / u16 / u32 / u64 / u128&quot;]
+        RF[&quot;f32 / f64&quot;]
+        RB[&quot;bool&quot;]
+        RS[&quot;String / &amp;str&quot;]
+    end
+    PI --&gt;|&quot;固定大小&quot;| RI
+    PF --&gt;|&quot;选择精度&quot;| RF
+    PB --&gt;|&quot;相同&quot;| RB
+    PS --&gt;|&quot;owned vs borrowed&quot;| RS
+    style Python fill:#ffeeba
+    style Rust fill:#d4edda
+</pre>
+<h3 id="数值类型"><a class="header" href="#数值类型">数值类型</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Python</th><th>Rust</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>int</code>（任意精度）</td><td><code>i8</code>, <code>i16</code>, <code>i32</code>, <code>i64</code>, <code>i128</code>, <code>isize</code></td><td>Rust 整数有固定大小</td></tr>
+<tr><td><code>int</code>（无符号：无单独类型）</td><td><code>u8</code>, <code>u16</code>, <code>u32</code>, <code>u64</code>, <code>u128</code>, <code>usize</code></td><td>显式无符号类型</td></tr>
+<tr><td><code>float</code>（64 位 IEEE 754）</td><td><code>f32</code>, <code>f64</code></td><td>Python 只有 64 位 float</td></tr>
+<tr><td><code>bool</code></td><td><code>bool</code></td><td>相同概念</td></tr>
+<tr><td><code>complex</code></td><td>无内置（使用 <code>num</code> crate）</td><td>系统代码中罕见</td></tr>
+</tbody></table>
+</div>
+<pre><code class="language-python"># Python —— 一种整数类型，任意精度
+x = 42                     # int —— 可以增长到任意大小
+big = 2 ** 1000            # 仍然可以 —— 数千位
+y = 3.14                   # float —— 始终 64 位
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 显式大小，溢出是编译时/运行时错误
+let x: i32 = 42;           # 32 位有符号整数
+let y: f64 = 3.14;         # 64 位 float（Python 的 float 等价物）
+let big: i128 = 2_i128.pow(100); # 128 位最大 —— 无任意精度
+<span class="boring">对于任意精度：使用 `num-bigint` crate
+</span>
+<span class="boring">下划线提高可读性（如 Python 的 1_000_000）：
+</span>let million = 1_000_000;   # 与 Python 相同的语法！
+
+<span class="boring">类型后缀语法：
+</span>let a = 42u8;              # u8
+let b = 3.14f32;           # f32
+<span class="boring">}</span></code></pre></pre>
+<h3 id="大小类型重要"><a class="header" href="#大小类型重要">大小类型（重要！）</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// usize 和 isize —— 指针大小整数，用于索引
+let length: usize = vec![1, 2, 3].len();  # .len() 返回 usize
+let index: usize = 0;                     # 数组索引始终是 usize
+
+<span class="boring">在 Python 中，len() 返回 int，索引是 int —— 无区别。
+</span><span class="boring">在 Rust 中，混合 i32 和 usize 需要显式转换：
+</span>let i: i32 = 5;
+<span class="boring">let item = vec[i];    # ❌ 错误：期望 usize，找到 i32
+</span>let item = vec[i as usize]; # ✅ 显式转换
+<span class="boring">}</span></code></pre></pre>
+<h3 id="类型推断"><a class="header" href="#类型推断">类型推断</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust 推断类型但它们是固定的 —— 不是动态的
+let x = 42;          # 编译器推断为 i32（默认整数类型）
+let y = 3.14;        # 编译器推断为 f64（默认 float 类型）
+let s = "hello";     # 编译器推断为 &amp;str（字符串切片）
+let v = vec![1, 2];  # 编译器推断为 Vec&lt;i32&gt;
+
+<span class="boring">你始终可以显式：
+</span>let x: i64 = 42;
+let y: f32 = 3.14;
+
+<span class="boring">与 Python 不同，类型在推断后永远不能改变：
+</span>let x = 42;
+<span class="boring">x = "hello";      # ❌ 错误：期望整数，找到 &amp;str
+</span><span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="string-类型string-vs-str"><a class="header" href="#string-类型string-vs-str">String 类型：String vs &amp;str</a></h2>
+<p>这是 Python 开发者最大的惊喜之一。Rust 有<strong>两种</strong>主要
+字符串类型，而 Python 只有一种。</p>
+<h3 id="python-字符串处理"><a class="header" href="#python-字符串处理">Python 字符串处理</a></h3>
+<pre><code class="language-python"># Python —— 一种字符串类型，不可变，引用计数
+name = "Alice"          # str —— 不可变，堆分配
+greeting = f"Hello, {name}!"  # f-string 格式化
+chars = list(name)      # 转换为字符列表
+upper = name.upper()    # 返回新字符串（不可变）
+</code></pre>
+<h3 id="rust-字符串类型"><a class="header" href="#rust-字符串类型">Rust 字符串类型</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust 有两种字符串类型：
+
+// 1. &amp;str（字符串切片） —— 借用，不可变，如字符串数据的"视图"
+let name: &amp;str = "Alice";           # 指向二进制文件中的字符串数据
+<span class="boring">                                     最接近 Python 的 str，但它是引用
+</span>
+// 2. String（owned string） —— 堆分配，可增长，拥有
+let mut greeting = String::from("Hello, ");  # 拥有，可以修改
+greeting.push_str(name);
+greeting.push('!');
+<span class="boring">greeting 现在是 "Hello, Alice!"
+</span><span class="boring">}</span></code></pre></pre>
+<h3 id="何时使用哪个"><a class="header" href="#何时使用哪个">何时使用哪个？</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 这样想：
+<span class="boring">&amp;str  = "我在看别人拥有的字符串"  （只读视图）
+</span><span class="boring">String = "我拥有这个字符串并可以修改它"        （拥有数据）
+</span>
+<span class="boring">函数参数：优先使用 &amp;str（接受两种类型）
+</span>fn greet(name: &amp;str) -&gt; String {          # 接受 &amp;str 和 &amp;String
+    format!("Hello, {}!", name)           # format! 创建新 String
+}
+
+let s1 = "world";                         # &amp;str 字面量
+let s2 = String::from("Rust");            # String
+
+greet(s1);      # ✅ &amp;str 直接工作
+greet(&amp;s2);     # ✅ &amp;String 自动转换为 &amp;str（Deref 强制）
+<span class="boring">}</span></code></pre></pre>
+<h3 id="实用示例"><a class="header" href="#实用示例">实用示例</a></h3>
+<pre><code class="language-python"># Python 字符串操作
+name = "alice"
+upper = name.upper()               # "ALICE"
+contains = "lic" in name           # True
+parts = "a,b,c".split(",")         # ["a", "b", "c"]
+joined = "-".join(["a", "b", "c"]) # "a-b-c"
+stripped = "  hello  ".strip()     # "hello"
+replaced = name.replace("a", "A") # "Alice"
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust 等价物
+let name = "alice";
+let upper = name.to_uppercase();           # String —— 新分配
+let contains = name.contains("lic");       # bool
+let parts: Vec&lt;&amp;str&gt; = "a,b,c".split(',').collect();  # Vec&lt;&amp;str&gt;
+let joined = ["a", "b", "c"].join("-");    # String
+let stripped = "  hello  ".trim();         # &amp;str —— 无分配！
+let replaced = name.replace("a", "A");     # String
+
+<span class="boring">关键见解：一些操作返回 &amp;str（无分配），其他返回 String。
+</span><span class="boring">.trim() 返回原始数据的切片 —— 高效！
+</span><span class="boring">.to_uppercase() 必须创建新 String —— 需要分配。
+</span><span class="boring">}</span></code></pre></pre>
+<h3 id="python-开发者这样想"><a class="header" href="#python-开发者这样想">Python 开发者：这样想</a></h3>
+<pre><code class="language-text">Python str     ≈ Rust &amp;str     （你通常读取字符串）
+Python str     ≈ Rust String   （当你需要拥有/修改时）
+
+经验法则：
+- 函数参数 → 使用 &amp;str（最灵活）
+- struct 字段       → 使用 String（struct 拥有其数据）
+- 返回值       → 使用 String（调用者需要拥有它）
+- 字符串字面量     → 自动 &amp;str
+</code></pre>
+<hr />
+<h2 id="打印和字符串格式化"><a class="header" href="#打印和字符串格式化">打印和字符串格式化</a></h2>
+<h3 id="基本输出"><a class="header" href="#基本输出">基本输出</a></h3>
+<pre><code class="language-python"># Python
+print("Hello, World!")
+print("Name:", name, "Age:", age)    # 空格分隔
+print(f"Name: {name}, Age: {age}")   # f-string
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust
+println!("Hello, World!");
+println!("Name: {} Age: {}", name, age);    # 位置 {}
+println!("Name: {name}, Age: {age}");       # 内联变量（Rust 1.58+，如 f-string！）
+<span class="boring">}</span></code></pre></pre>
+<h3 id="格式化说明符"><a class="header" href="#格式化说明符">格式化说明符</a></h3>
+<pre><code class="language-python"># Python 格式化
+print(f"{3.14159:.2f}")          # "3.14" —— 2 位小数
+print(f"{42:05d}")               # "00042" —— 零填充
+print(f"{255:#x}")               # "0xff" —— 十六进制
+print(f"{42:&gt;10}")               # "        42" —— 右对齐
+print(f"{'left':&lt;10}|")          # "left      |" —— 左对齐
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust 格式化（与 Python 非常相似！）
+println!("{:.2}", 3.14159);         # "3.14" —— 2 位小数
+println!("{:05}", 42);              # "00042" —— 零填充
+println!("{:#x}", 255);             # "0xff" —— 十六进制
+println!("{:&gt;10}", 42);             # "        42" —— 右对齐
+println!("{:&lt;10}|", "left");        # "left      |" —— 左对齐
+<span class="boring">}</span></code></pre></pre>
+<h3 id="调试打印"><a class="header" href="#调试打印">调试打印</a></h3>
+<pre><code class="language-python"># Python —— repr() 和 pprint
+print(repr([1, 2, 3]))             # "[1, 2, 3]"
+from pprint import pprint
+pprint({"key": [1, 2, 3]})         # 漂亮打印
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— {:?} 和 {:#?}
+println!("{:?}", vec![1, 2, 3]);       # "[1, 2, 3]" —— Debug 格式
+println!("{:#?}", vec![1, 2, 3]);      # 漂亮打印 Debug 格式
+
+<span class="boring">要使你的类型可打印，派生 Debug：
+</span>#[derive(Debug)]
+struct Point { x: f64, y: f64 }
+
+let p = Point { x: 1.0, y: 2.0 };
+println!("{:?}", p);                   # "Point { x: 1.0, y: 2.0 }"
+println!("{p:?}");                     # 相同，内联语法
+<span class="boring">}</span></code></pre></pre>
+<h3 id="快速参考"><a class="header" href="#快速参考">快速参考</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Python</th><th>Rust</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>print(x)</code></td><td><code>println!("{}", x)</code> 或 <code>println!("{x}")</code></td><td>Display 格式</td></tr>
+<tr><td><code>print(repr(x))</code></td><td><code>println!("{:?}", x)</code></td><td>Debug 格式</td></tr>
+<tr><td><code>f"Hello {name}"</code></td><td><code>format!("Hello {name}")</code></td><td>返回 String</td></tr>
+<tr><td><code>print(x, end="")</code></td><td><code>print!("{x}")</code></td><td>无换行（<code>print!</code> vs <code>println!</code>）</td></tr>
+<tr><td><code>print(x, file=sys.stderr)</code></td><td><code>eprintln!("{x}")</code></td><td>打印到 stderr</td></tr>
+<tr><td><code>sys.stdout.write(s)</code></td><td><code>print!("{s}")</code></td><td>无换行</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h2 id="类型注解可选-vs-必需"><a class="header" href="#类型注解可选-vs-必需">类型注解：可选 vs 必需</a></h2>
+<h3 id="python-类型提示可选不强制执行"><a class="header" href="#python-类型提示可选不强制执行">Python 类型提示（可选，不强制执行）</a></h3>
+<pre><code class="language-python"># Python —— 类型提示是文档，不强制执行
+def add(a: int, b: int) -&gt; int:
+    return a + b
+
+add(1, 2)         # ✅
+add("a", "b")     # ✅ Python 不在乎 —— 返回 "ab"
+add(1, "2")       # ✅ 直到运行时崩溃：TypeError
+
+# Union 类型，Optional
+def find(key: str) -&gt; int | None:
+    ...
+
+# 泛型类型
+def first(items: list[int]) -&gt; int | None:
+    return items[0] if items else None
+
+# 类型别名
+UserId = int
+Mapping = dict[str, list[int]]
+</code></pre>
+<h3 id="rust-类型声明必需编译器强制执行"><a class="header" href="#rust-类型声明必需编译器强制执行">Rust 类型声明（必需，编译器强制执行）</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 类型强制执行。始终。无例外。
+fn add(a: i32, b: i32) -&gt; i32 {
+    a + b
+}
+
+add(1, 2);         # ✅
+<span class="boring">add("a", "b");  # ❌ 编译错误：期望 i32，找到 &amp;str
+</span>
+<span class="boring">可选值使用 Option&lt;T&gt;
+</span>fn find(key: &amp;str) -&gt; Option&lt;i32&gt; {
+<span class="boring">    返回 Some(value) 或 None
+</span>    Some(42)
+}
+
+<span class="boring">泛型类型
+</span>fn first(items: &amp;[i32]) -&gt; Option&lt;i32&gt; {
+    items.first().copied()
+}
+
+<span class="boring">类型别名
+</span>type UserId = i64;
+type Mapping = HashMap&lt;String, Vec&lt;i32&gt;&gt;;
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>关键见解</strong>：在 Python 中，类型提示帮助你的 IDE 和 mypy 但不影响运行时。
+在 Rust 中，类型就是程序 —— 编译器使用它们保证内存安全，
+防止数据竞争，并消除空指针错误。</p>
+<p>📌 <strong>另见</strong>：<a href="ch06-enums-and-pattern-matching.html">第 6 章 — Enum 和模式匹配</a> 展示 Rust 的类型系统如何替换 Python 的 <code>Union</code> 类型和 <code>isinstance()</code> 检查。</p>
+</blockquote>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：温度转换器</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：编写一个函数 <code>celsius_to_fahrenheit(c: f64) -&gt; f64</code> 和一个函数 <code>classify(temp_f: f64) -&gt; &amp;'static str</code>，根据阈值返回 "cold"、"mild" 或 "hot"。打印 0、20 和 35 摄氏度的结果。使用字符串格式化。</p>
+<details>
+<summary>🔑 解答</summary>
+<pre><pre class="playground"><code class="language-rust">fn celsius_to_fahrenheit(c: f64) -&gt; f64 {
+    c * 9.0 / 5.0 + 32.0
+}
+
+fn classify(temp_f: f64) -&gt; &amp;'static str {
+    if temp_f &lt; 50.0 { "cold" }
+    else if temp_f &lt; 77.0 { "mild" }
+    else { "hot" }
+}
+
+fn main() {
+    for c in [0.0, 20.0, 35.0] {
+        let f = celsius_to_fahrenheit(c);
+        println!("{c:.1}°C = {f:.1}°F — {}", classify(f));
+    }
+}</code></pre></pre>
+<p><strong>关键要点</strong>：Rust 需要显式 <code>f64</code>（无隐式 int→float），<code>for</code> 直接迭代数组（无 <code>range()</code>），<code>if/else</code> 块是表达式。</p>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch02-getting-started.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch04-control-flow.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch02-getting-started.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch04-control-flow.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

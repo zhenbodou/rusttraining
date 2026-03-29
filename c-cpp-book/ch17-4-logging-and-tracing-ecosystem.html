@@ -1,0 +1,393 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>日志记录和追踪生态系统 - Rust for C/C++ Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C/C++ Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="日志和追踪syslogprintf--log--tracing"><a class="header" href="#日志和追踪syslogprintf--log--tracing">日志和追踪：syslog/printf → <code>log</code> + <code>tracing</code></a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> Rust 的双层日志架构（外观 + 后端）、<code>log</code> 和 <code>tracing</code> crate、带 span 的结构化日志，以及这如何替换 <code>printf</code>/<code>syslog</code> 调试。</p>
+</blockquote>
+<p>C++ 诊断代码通常使用 <code>printf</code>、<code>syslog</code> 或自定义日志框架。
+Rust 有标准化的双层日志架构：<strong>外观</strong> crate（<code>log</code> 或
+<code>tracing</code>）和<strong>后端</strong>（实际的日志记录器实现）。</p>
+<h3 id="log-外观rust-的通用日志-api"><a class="header" href="#log-外观rust-的通用日志-api"><code>log</code> 外观——Rust 的通用日志 API</a></h3>
+<p><code>log</code> crate 提供镜像 syslog 严重性级别的宏。库使用
+<code>log</code> 宏；二进制文件选择后端：</p>
+<pre><pre class="playground"><code class="language-rust">// Cargo.toml
+// [dependencies]
+// log = "0.4"
+// env_logger = "0.11"    # 众多后端之一
+
+use log::{info, warn, error, debug, trace};
+
+fn check_sensor(id: u32, temp: f64) {
+    trace!("读取传感器 {id}");           // 最细粒度
+    debug!("传感器 {id} 原始值：{temp}"); // 开发时详情
+
+    if temp &gt; 85.0 {
+        warn!("传感器 {id} 高温：{temp}°C");
+    }
+    if temp &gt; 95.0 {
+        error!("传感器 {id} 严重：{temp}°C——正在启动关闭");
+    }
+    info!("传感器 {id} 检查完成");     // 正常操作
+}
+
+fn main() {
+    // 初始化后端——通常在 main() 中完成一次
+    env_logger::init();  // 由 RUST_LOG 环境变量控制
+
+    check_sensor(0, 72.5);
+    check_sensor(1, 91.0);
+}</code></pre></pre>
+<pre><code class="language-bash"># 通过环境变量控制日志级别
+RUST_LOG=debug cargo run          # 显示 debug 及以上
+RUST_LOG=warn cargo run           # 仅显示 warn 和 error
+RUST_LOG=my_crate=trace cargo run # 每模块过滤
+RUST_LOG=my_crate::gpu=debug,warn cargo run  # 混合级别
+</code></pre>
+<h3 id="c-比较"><a class="header" href="#c-比较">C++ 比较</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>C++</th><th>Rust (<code>log</code>)</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>printf("DEBUG: %s\n", msg)</code></td><td><code>debug!("{msg}")</code></td><td>编译时格式检查</td></tr>
+<tr><td><code>syslog(LOG_ERR, "...")</code></td><td><code>error!("...")</code></td><td>后端决定输出位置</td></tr>
+<tr><td><code>#ifdef DEBUG</code> 围绕日志调用</td><td><code>trace!</code> / <code>debug!</code> 在 max_level 时编译掉</td><td>禁用时零成本</td></tr>
+<tr><td>自定义 <code>Logger::log(level, msg)</code></td><td><code>log::info!("...")</code>——所有 crate 使用相同 API</td><td>通用外观，可交换后端</td></tr>
+<tr><td>每文件日志详细程度</td><td><code>RUST_LOG=crate::module=level</code></td><td>基于环境，无需重新编译</td></tr>
+</tbody></table>
+</div>
+<h3 id="tracing-crate带-span-的结构化日志"><a class="header" href="#tracing-crate带-span-的结构化日志"><code>tracing</code> crate——带 span 的结构化日志</a></h3>
+<p><code>tracing</code> 扩展 <code>log</code> 具有<strong>结构化字段</strong>和<strong>span</strong>（计时作用域）。
+这对于诊断代码特别有用，当你想要跟踪上下文时：</p>
+<pre><pre class="playground"><code class="language-rust">// Cargo.toml
+// [dependencies]
+// tracing = "0.1"
+// tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+use tracing::{info, warn, error, instrument, info_span};
+
+#[instrument(skip(data), fields(gpu_id = gpu_id, data_len = data.len()))]
+fn run_gpu_test(gpu_id: u32, data: &amp;[u8]) -&gt; Result&lt;(), String&gt; {
+    info!("开始 GPU 测试");
+
+    let span = info_span!("ecc_check", gpu_id);
+    let _guard = span.enter();  // 此作用域内的所有日志都包含 gpu_id
+
+    if data.is_empty() {
+        error!(gpu_id, "未提供测试数据");
+        return Err("空数据".to_string());
+    }
+
+    // 结构化字段——机器可解析，不仅是字符串插值
+    info!(
+        gpu_id,
+        temp_celsius = 72.5,
+        ecc_errors = 0,
+        "ECC 检查通过"
+    );
+
+    Ok(())
+}
+
+fn main() {
+    // 初始化 tracing subscriber
+    tracing_subscriber::fmt()
+        .with_env_filter("debug")  // 或使用 RUST_LOG 环境变量
+        .with_target(true)          // 显示模块路径
+        .with_thread_ids(true)      // 显示线程 ID
+        .init();
+
+    let _ = run_gpu_test(0, &amp;[1, 2, 3]);
+}</code></pre></pre>
+<p>带 <code>tracing-subscriber</code> 的输出：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>2026-02-15T10:30:00.123Z DEBUG ThreadId(01) run_gpu_test{gpu_id=0 data_len=3}: my_crate: 开始 GPU 测试
+2026-02-15T10:30:00.124Z  INFO ThreadId(01) run_gpu_test{gpu_id=0 data_len=3}:ecc_check{gpu_id=0}: my_crate: ECC 检查通过 gpu_id=0 temp_celsius=72.5 ecc_errors=0
+<span class="boring">}</span></code></pre></pre>
+<h3 id="instrument自动-span-创建"><a class="header" href="#instrument自动-span-创建"><code>#[instrument]</code>——自动 span 创建</a></h3>
+<p><code>#[instrument]</code> 属性自动用函数名
+及其参数创建 span：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use tracing::instrument;
+
+#[instrument]
+fn parse_sel_record(record_id: u16, sensor_type: u8, data: &amp;[u8]) -&gt; Result&lt;(), String&gt; {
+    // 此函数内的每个日志自动包含：
+    // record_id、sensor_type 和 data（如果 Debug）
+    tracing::debug!("解析 SEL 记录");
+    Ok(())
+}
+
+// skip：排除大型/敏感参数
+// fields：添加计算字段
+#[instrument(skip(raw_buffer), fields(buf_len = raw_buffer.len()))]
+fn decode_ipmi_response(raw_buffer: &amp;[u8]) -&gt; Result&lt;Vec&lt;u8&gt;, String&gt; {
+    tracing::trace!("解码 {} 字节", raw_buffer.len());
+    Ok(raw_buffer.to_vec())
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="log-vs-tracing使用哪个"><a class="header" href="#log-vs-tracing使用哪个"><code>log</code> vs <code>tracing</code>——使用哪个</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>方面</th><th><code>log</code></th><th><code>tracing</code></th></tr></thead><tbody>
+<tr><td><strong>复杂性</strong></td><td>简单——5 个宏</td><td>更丰富——span、字段、instrument</td></tr>
+<tr><td><strong>结构化数据</strong></td><td>仅字符串插值</td><td>键值字段：<code>info!(gpu_id = 0, "msg")</code></td></tr>
+<tr><td><strong>计时/span</strong></td><td>否</td><td>是——<code>#[instrument]</code>、<code>span.enter()</code></td></tr>
+<tr><td><strong>异步支持</strong></td><td>基本</td><td>一流——span 跨 <code>.await</code> 传播</td></tr>
+<tr><td><strong>兼容性</strong></td><td>通用外观</td><td>与 <code>log</code> 兼容（有 <code>log</code> 桥）</td></tr>
+<tr><td><strong>何时使用</strong></td><td>简单应用、库</td><td>诊断工具、异步代码、可观察性</td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p><strong>建议</strong>：对生产诊断风格项目（带结构化输出的诊断工具）使用 <code>tracing</code>。对想要最小
+依赖的简单库使用 <code>log</code>。<code>tracing</code> 包括兼容层，因此使用 <code>log</code>
+宏的库仍然可以与 <code>tracing</code> subscriber 一起工作。</p>
+</blockquote>
+<h3 id="后端选项"><a class="header" href="#后端选项">后端选项</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>后端 Crate</th><th>输出</th><th>用例</th></tr></thead><tbody>
+<tr><td><code>env_logger</code></td><td>stderr，彩色</td><td>开发、简单 CLI 工具</td></tr>
+<tr><td><code>tracing-subscriber</code></td><td>stderr，格式化</td><td>带 <code>tracing</code> 的生产</td></tr>
+<tr><td><code>syslog</code></td><td>系统 syslog</td><td>Linux 系统服务</td></tr>
+<tr><td><code>tracing-journald</code></td><td>systemd journal</td><td>systemd 管理的服务</td></tr>
+<tr><td><code>tracing-appender</code></td><td>轮换日志文件</td><td>长期运行的守护进程</td></tr>
+<tr><td><code>tracing-opentelemetry</code></td><td>OpenTelemetry 收集器</td><td>分布式追踪</td></tr>
+</tbody></table>
+</div>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch17-3-collapsing-assignment-pyramids.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch18-cpp-rust-semantic-deep-dives.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch17-3-collapsing-assignment-pyramids.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch18-cpp-rust-semantic-deep-dives.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

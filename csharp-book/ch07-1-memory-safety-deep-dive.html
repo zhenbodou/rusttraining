@@ -1,0 +1,514 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>内存安全深入 - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="引用-vs-指针"><a class="header" href="#引用-vs-指针">引用 vs 指针</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> Rust 引用 vs C# 指针和 unsafe 上下文，生命周期基础，
+以及为什么编译时安全证明比 C# 的运行时检查更强（边界检查、空守卫）。</p>
+<p><strong>难度：</strong> 🟡 中级</p>
+</blockquote>
+<h3 id="c-指针unsafe-上下文"><a class="header" href="#c-指针unsafe-上下文">C# 指针（Unsafe 上下文）</a></h3>
+<pre><code class="language-csharp">// C# unsafe 指针（很少使用）
+unsafe void UnsafeExample()
+{
+    int value = 42;
+    int* ptr = &amp;value;  // 指向值的指针
+    *ptr = 100;         // 解引用并修改
+    Console.WriteLine(value);  // 100
+}
+</code></pre>
+<h3 id="rust-引用默认安全"><a class="header" href="#rust-引用默认安全">Rust 引用（默认安全）</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust 引用（总是安全）
+fn safe_example() {
+    let mut value = 42;
+    let ptr = &amp;mut value;  // 可变引用
+    *ptr = 100;           // 解引用并修改
+    println!("{}", value); // 100
+}
+
+// 不需要 "unsafe" 关键字 - 借用检查器确保安全性
+<span class="boring">}</span></code></pre></pre>
+<h3 id="c-开发者的生命周期基础"><a class="header" href="#c-开发者的生命周期基础">C# 开发者的生命周期基础</a></h3>
+<pre><code class="language-csharp">// C# - 可能返回变得无效的引用
+public class LifetimeIssues
+{
+    public string GetFirstWord(string input)
+    {
+        return input.Split(' ')[0];  // 返回新字符串（安全）
+    }
+
+    public unsafe char* GetFirstChar(string input)
+    {
+        // 这会很危险——返回托管内存的指针
+        fixed (char* ptr = input)
+            return ptr;  // ❌ 糟糕：方法结束后 ptr 变得无效
+    }
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust - 生命周期检查防止悬空引用
+fn get_first_word(input: &amp;str) -&gt; &amp;str {
+    input.split_whitespace().next().unwrap_or("")
+    // ✅ 安全：返回的引用与输入有相同的生命周期
+}
+
+fn invalid_reference() -&gt; &amp;str {
+    let temp = String::from("hello");
+    &amp;temp  // ❌ 编译错误：temp 活得不够长
+    // temp 会在函数结束时被丢弃
+}
+
+fn valid_reference() -&gt; String {
+    let temp = String::from("hello");
+    temp  // ✅ 工作：所有权转移给调用者
+}
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="内存安全运行时检查-vs-编译时证明"><a class="header" href="#内存安全运行时检查-vs-编译时证明">内存安全：运行时检查 vs 编译时证明</a></h2>
+<h3 id="c---运行时安全网"><a class="header" href="#c---运行时安全网">C# - 运行时安全网</a></h3>
+<pre><code class="language-csharp">// C# 依赖运行时检查和 GC
+public class Buffer
+{
+    private byte[] data;
+
+    public Buffer(int size)
+    {
+        data = new byte[size];
+    }
+
+    public void ProcessData(int index)
+    {
+        // 运行时边界检查
+        if (index &gt;= data.Length)
+            throw new IndexOutOfRangeException();
+
+        data[index] = 42;  // 安全，但在运行时检查
+    }
+
+    // 带有事件/静态引用的内存泄漏仍然可能
+    public static event Action&lt;string&gt; GlobalEvent;
+
+    public void Subscribe()
+    {
+        GlobalEvent += HandleEvent;  // 可能造成内存泄漏
+        // 忘记取消订阅 - 对象不会被收集
+    }
+
+    private void HandleEvent(string message) { /* ... */ }
+
+    // 空引用异常仍然可能
+    public void ProcessUser(User user)
+    {
+        Console.WriteLine(user.Name.ToUpper());  // 如果 user.Name 为 null 则为 NullReferenceException
+    }
+
+    // 数组访问可能在运行时失败
+    public int GetValue(int[] array, int index)
+    {
+        return array[index];  // 可能的 IndexOutOfRangeException
+    }
+}
+</code></pre>
+<h3 id="rust---编译时保证"><a class="header" href="#rust---编译时保证">Rust - 编译时保证</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct Buffer {
+    data: Vec&lt;u8&gt;,
+}
+
+impl Buffer {
+    fn new(size: usize) -&gt; Self {
+        Buffer {
+            data: vec![0; size],
+        }
+    }
+
+    fn process_data(&amp;mut self, index: usize) {
+        // 当证明安全时，边界检查可以被编译器优化掉
+        if let Some(item) = self.data.get_mut(index) {
+            *item = 42;  // 安全访问，编译时证明
+        }
+        // 或使用带显式边界检查的索引：
+        // self.data[index] = 42;  // 在 debug 中 panic，但内存安全
+    }
+
+    // 内存泄漏不可能 - 所有权系统防止它们
+    fn process_with_closure&lt;F&gt;(&amp;mut self, processor: F)
+    where F: FnOnce(&amp;mut Vec&lt;u8&gt;)
+    {
+        processor(&amp;mut self.data);
+        // 当 processor 超出作用域时，它自动被清理
+        // 无法创建悬空引用或内存泄漏
+    }
+
+    // 空指针解引用不可能 - 没有空指针！
+    fn process_user(&amp;self, user: &amp;User) {
+        println!("{}", user.name.to_uppercase());  // user.name 不能为 null
+    }
+
+    // 数组访问是边界检查的或显式 unsafe
+    fn get_value(array: &amp;[i32], index: usize) -&gt; Option&lt;i32&gt; {
+        array.get(index).copied()  // 如果越界则返回 None
+    }
+
+    // 或者如果你知道你在做什么则显式 unsafe：
+    /// # 安全
+    /// `index` 必须小于 `array.len()`。
+    unsafe fn get_value_unchecked(array: &amp;[i32], index: usize) -&gt; i32 {
+        *array.get_unchecked(index)  // 快但必须手动证明边界
+    }
+}
+
+struct User {
+    name: String,  // String 在 Rust 中不能为 null
+}
+
+// 所有权防止使用后释放
+fn ownership_example() {
+    let data = vec![1, 2, 3, 4, 5];
+    let reference = &amp;data[0];  // 借用 data
+
+    // drop(data);  // 错误：借用时不能丢弃
+    println!("{}", reference);  // 这保证安全
+}
+
+// 借用防止数据竞争
+fn borrowing_example(data: &amp;mut Vec&lt;i32&gt;) {
+    let first = &amp;data[0];  // 不可变借用
+    // data.push(6);  // 错误：不可变借用时不能可变借用
+    println!("{}", first);  // 保证无数据竞争
+}
+<span class="boring">}</span></code></pre></pre>
+<pre class="mermaid">graph TD
+    subgraph &quot;C# 运行时安全&quot;
+        CS_RUNTIME[&quot;运行时检查&quot;]
+        CS_GC[&quot;垃圾回收器&quot;]
+        CS_EXCEPTIONS[&quot;异常处理&quot;]
+        CS_BOUNDS[&quot;运行时边界检查&quot;]
+        CS_NULL[&quot;空引用异常&quot;]
+        CS_LEAKS[&quot;可能的内存泄漏&quot;]
+        CS_OVERHEAD[&quot;性能开销&quot;]
+
+        CS_RUNTIME --&gt; CS_BOUNDS
+        CS_RUNTIME --&gt; CS_NULL
+        CS_GC --&gt; CS_LEAKS
+        CS_EXCEPTIONS --&gt; CS_OVERHEAD
+    end
+
+    subgraph &quot;Rust 编译时安全&quot;
+        RUST_OWNERSHIP[&quot;所有权系统&quot;]
+        RUST_BORROWING[&quot;借用检查器&quot;]
+        RUST_TYPES[&quot;类型系统&quot;]
+        RUST_ZERO_COST[&quot;零成本抽象&quot;]
+        RUST_NO_NULL[&quot;无空指针&quot;]
+        RUST_NO_LEAKS[&quot;无内存泄漏&quot;]
+        RUST_FAST[&quot;最佳性能&quot;]
+
+        RUST_OWNERSHIP --&gt; RUST_NO_LEAKS
+        RUST_BORROWING --&gt; RUST_NO_NULL
+        RUST_TYPES --&gt; RUST_ZERO_COST
+        RUST_ZERO_COST --&gt; RUST_FAST
+    end
+
+    style CS_NULL fill:#ffcdd2,color:#000
+    style CS_LEAKS fill:#ffcdd2,color:#000
+    style CS_OVERHEAD fill:#fff3e0,color:#000
+    style RUST_NO_NULL fill:#c8e6c9,color:#000
+    style RUST_NO_LEAKS fill:#c8e6c9,color:#000
+    style RUST_FAST fill:#c8e6c9,color:#000
+</pre>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：发现安全 Bug</strong>（点击展开）</summary>
+<p>这段 C# 代码有一个微妙的安全 bug。识别它，然后编写 Rust 等价物并解释为什么 Rust 版本<strong>不会编译</strong>：</p>
+<pre><code class="language-csharp">public List&lt;int&gt; GetEvenNumbers(List&lt;int&gt; numbers)
+{
+    var result = new List&lt;int&gt;();
+    foreach (var n in numbers)
+    {
+        if (n % 2 == 0)
+        {
+            result.Add(n);
+            numbers.Remove(n);  // Bug：迭代时修改集合
+        }
+    }
+    return result;
+}
+</code></pre>
+<details>
+<summary>🔑 解决方案</summary>
+<p><strong>C# bug</strong>：迭代时修改 <code>numbers</code> 在<em>运行时</em>抛出 <code>InvalidOperationException</code>。在代码审查中容易遗漏。</p>
+<pre><pre class="playground"><code class="language-rust">fn get_even_numbers(numbers: &amp;mut Vec&lt;i32&gt;) -&gt; Vec&lt;i32&gt; {
+    let mut result = Vec::new();
+    for &amp;n in numbers.iter() {
+        if n % 2 == 0 {
+            result.push(n);
+            // numbers.retain(|&amp;x| x != n);
+            // ❌ 错误：无法可变借用 `*numbers` 因为
+            //    它也被不可变借用（由迭代器）
+        }
+    }
+    result
+}
+
+// 惯用 Rust：使用 partition 或 retain
+fn get_even_numbers_idiomatic(numbers: &amp;mut Vec&lt;i32&gt;) -&gt; Vec&lt;i32&gt; {
+    let evens: Vec&lt;i32&gt; = numbers.iter().copied().filter(|n| n % 2 == 0).collect();
+    numbers.retain(|n| n % 2 != 0); // 迭代后移除偶数
+    evens
+}
+
+fn main() {
+    let mut nums = vec![1, 2, 3, 4, 5, 6];
+    let evens = get_even_numbers_idiomatic(&amp;mut nums);
+    assert_eq!(evens, vec![2, 4, 6]);
+    assert_eq!(nums, vec![1, 3, 5]);
+}</code></pre></pre>
+<p><strong>关键见解</strong>：Rust 的借用检查器在编译时防止整个"迭代时变异"bug <em>类别</em>。C# 在运行时捕获它；许多语言根本不捕获它。</p>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch07-ownership-and-borrowing.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch07-2-lifetimes-deep-dive.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch07-ownership-and-borrowing.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch07-2-lifetimes-deep-dive.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

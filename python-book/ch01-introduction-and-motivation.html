@@ -1,0 +1,678 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>1. 介绍与动机 - Rust for Python Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for Python Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="演讲者介绍和总体方法"><a class="header" href="#演讲者介绍和总体方法">演讲者介绍和总体方法</a></h2>
+<ul>
+<li>演讲者介绍
+<ul>
+<li>Microsoft SCHIE（Silicon and Cloud Hardware Infrastructure Engineering）团队首席固件架构师</li>
+<li>行业资深专家，专长于安全、系统编程（固件、操作系统、hypervisor）、CPU 和平台架构以及 C++ 系统</li>
+<li>2017 年开始使用 Rust 编程（@AWS EC2），从此爱上了这门语言</li>
+</ul>
+</li>
+<li>本课程尽可能保持互动性
+<ul>
+<li>假设：你了解 Python 及其生态系统</li>
+<li>示例刻意将 Python 概念映射到 Rust 等价物</li>
+<li><strong>请随时在任何时候提出澄清问题</strong></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="python-开发者选择-rust-的理由"><a class="header" href="#python-开发者选择-rust-的理由">Python 开发者选择 Rust 的理由</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> 为什么 Python 开发者正在采用 Rust，真实的性能提升案例（Dropbox、Discord、Pydantic），
+何时 Rust 是正确的选择 vs 坚持使用 Python，以及两种语言之间的核心哲学差异。</p>
+<p><strong>难度：</strong> 🟢 初学者</p>
+</blockquote>
+<h3 id="性能从几分钟到几毫秒"><a class="header" href="#性能从几分钟到几毫秒">性能：从几分钟到几毫秒</a></h3>
+<p>Python 在 CPU 密集型工作上 notoriously 慢。Rust 提供 C 级别的性能，同时具有高级语言的感觉。</p>
+<pre><code class="language-python"># Python — 1000 万次调用约需 2 秒
+import time
+
+def fibonacci(n: int) -&gt; int:
+    if n &lt;= 1:
+        return n
+    a, b = 0, 1
+    for _ in range(2, n + 1):
+        a, b = b, a + b
+    return b
+
+start = time.perf_counter()
+results = [fibonacci(n % 30) for n in range(10_000_000)]
+elapsed = time.perf_counter() - start
+print(f"Elapsed: {elapsed:.2f}s")  # 在典型硬件上约 2 秒
+</code></pre>
+<pre><pre class="playground"><code class="language-rust">// Rust — 同样的 1000 万次调用约需 0.07 秒
+use std::time::Instant;
+
+fn fibonacci(n: u64) -&gt; u64 {
+    if n &lt;= 1 {
+        return n;
+    }
+    let (mut a, mut b) = (0u64, 1u64);
+    for _ in 2..=n {
+        let temp = b;
+        b = a + b;
+        a = temp;
+    }
+    b
+}
+
+fn main() {
+    let start = Instant::now();
+    let results: Vec&lt;u64&gt; = (0..10_000_000).map(|n| fibonacci(n % 30)).collect();
+    println!("Elapsed: {:.2?}", start.elapsed());  // 约 0.07 秒
+}</code></pre></pre>
+<blockquote>
+<p>注意：Rust 应该以 release 模式运行（<code>cargo run --release</code>）以进行公平的性能比较。
+<strong>为什么有这种差异？</strong> Python 通过字典查找调度每个 <code>+</code> 操作，
+从堆对象中解包整数，并在每个操作中检查类型。Rust 将
+<code>fibonacci</code> 直接编译为少数 x86 <code>add</code>/<code>mov</code> 指令 —— 与
+C 编译器生成的代码相同。</p>
+</blockquote>
+<h3 id="无需垃圾回收器的内存安全"><a class="header" href="#无需垃圾回收器的内存安全">无需垃圾回收器的内存安全</a></h3>
+<p>Python 的引用计数 GC 存在已知问题：循环引用、不可预测的
+<code>__del__</code> 时机和内存碎片。Rust 在编译时消除这些问题。</p>
+<pre><code class="language-python"># Python — 循环引用，CPython 的引用计数器无法释放
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.parent = None
+        self.children = []
+
+    def add_child(self, child):
+        self.children.append(child)
+        child.parent = self  # 循环引用！
+
+# 这两个节点相互引用 —— 引用计数永远不会达到 0。
+# CPython 的循环检测器 *最终* 会清理它们，
+# 但你无法控制何时清理，而且它会增加 GC 暂停开销。
+root = Node("root")
+child = Node("child")
+root.add_child(child)
+</code></pre>
+<pre><pre class="playground"><code class="language-rust">// Rust — 所有权通过设计防止循环引用
+struct Node {
+    value: String,
+    children: Vec&lt;Node&gt;,  // 子节点被 OWNED —— 不可能有循环
+}
+
+impl Node {
+    fn new(value: &amp;str) -&gt; Self {
+        Node {
+            value: value.to_string(),
+            children: Vec::new(),
+        }
+    }
+
+    fn add_child(&amp;mut self, child: Node) {
+        self.children.push(child);  // 所有权在此转移
+    }
+}
+
+fn main() {
+    let mut root = Node::new("root");
+    let child = Node::new("child");
+    root.add_child(child);
+    // 当 root 被 drop 时，所有子节点也被 drop。
+    // 确定性的，零开销，无 GC。
+}</code></pre></pre>
+<blockquote>
+<p><strong>关键见解</strong>：在 Rust 中，子节点不持有对父节点的引用。
+如果你确实需要交叉引用（如图），你使用显式机制
+如 <code>Rc&lt;RefCell&lt;T&gt;&gt;</code> 或索引 —— 使复杂性可见且有意为之。</p>
+</blockquote>
+<hr />
+<h2 id="rust-解决的常见-python-痛点"><a class="header" href="#rust-解决的常见-python-痛点">Rust 解决的常见 Python 痛点</a></h2>
+<h3 id="1-运行时类型错误"><a class="header" href="#1-运行时类型错误">1. 运行时类型错误</a></h3>
+<p>Python 生产环境中最常见的 bug：向函数传递错误的类型。
+类型提示有帮助，但它们不被强制执行。</p>
+<pre><code class="language-python"># Python — 类型提示是建议，不是规则
+def process_user(user_id: int, name: str) -&gt; dict:
+    return {"id": user_id, "name": name.upper()}
+
+# 这些在调用处都"可以工作" —— 在运行时失败
+process_user("not-a-number", 42)        # 在 .upper() 处 TypeError
+process_user(None, "Alice")             # 直到你将 user_id 作为 int 使用时才出错
+
+# 即使使用 mypy，你仍然可以绕过类型：
+data = json.loads('{"id": "oops"}')     # 总是返回 Any
+process_user(data["id"], data["name"])  # mypy 无法捕获这个
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 编译器在程序运行之前捕获所有这些错误
+fn process_user(user_id: i64, name: &amp;str) -&gt; User {
+    User {
+        id: user_id,
+        name: name.to_uppercase(),
+    }
+}
+
+// process_user("not-a-number", 42);     // ❌ 编译错误：期望 i64，找到 &amp;str
+// process_user(None, "Alice");           // ❌ 编译错误：期望 i64，找到 Option
+// 多余的参数总是编译错误。
+
+// 反序列化 JSON 也是类型安全的：
+#[derive(Deserialize)]
+struct UserInput {
+    id: i64,     // JSON 中必须是数字
+    name: String, // JSON 中必须是字符串
+}
+let input: UserInput = serde_json::from_str(json_str)?; // 如果类型不匹配则返回 Err
+process_user(input.id, &amp;input.name); // ✅ 保证正确的类型
+<span class="boring">}</span></code></pre></pre>
+<h3 id="2-none十亿美元的错误python-版"><a class="header" href="#2-none十亿美元的错误python-版">2. None：十亿美元的错误（Python 版）</a></h3>
+<p><code>None</code> 可以出现在任何期望值的地方。Python 没有编译时方法来
+防止 <code>AttributeError: 'NoneType' object has no attribute ...</code>。</p>
+<pre><code class="language-python"># Python — None 无处不在
+def find_user(user_id: int) -&gt; dict | None:
+    users = {1: {"name": "Alice"}, 2: {"name": "Bob"}}
+    return users.get(user_id)
+
+user = find_user(999)         # 返回 None
+print(user["name"])           # 💥 TypeError: 'NoneType' object is not subscriptable
+
+# 即使有 Optional 类型提示，也没有强制执行检查：
+from typing import Optional
+def get_name(user_id: int) -&gt; Optional[str]:
+    return None
+
+name: Optional[str] = get_name(1)
+print(name.upper())          # 💥 AttributeError —— mypy 警告，运行时不在乎
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— None 不可能出现，除非显式处理
+fn find_user(user_id: i64) -&gt; Option&lt;User&gt; {
+    let users = HashMap::from([
+        (1, User { name: "Alice".into() }),
+        (2, User { name: "Bob".into() }),
+    ]);
+    users.get(&amp;user_id).cloned()
+}
+
+let user = find_user(999);  // 返回 Option&lt;User&gt; 的 None 变体
+// println!("{}", user.name);  // ❌ 编译错误：Option&lt;User&gt; 没有字段 `name`
+
+// 你 MUST 处理 None 情况：
+match find_user(999) {
+    Some(user) =&gt; println!("{}", user.name),
+    None =&gt; println!("User not found"),
+}
+
+// 或使用组合器：
+let name = find_user(999)
+    .map(|u| u.name)
+    .unwrap_or_else(|| "Unknown".to_string());
+<span class="boring">}</span></code></pre></pre>
+<h3 id="3-gilpython-的并发天花板"><a class="header" href="#3-gilpython-的并发天花板">3. GIL：Python 的并发天花板</a></h3>
+<p>Python 的全局解释器锁意味着线程不能并行运行 Python 代码。
+<code>threading</code> 仅对 I/O 密集型工作有用；CPU 密集型工作需要 <code>multiprocessing</code>
+（带有其序列化开销）或 C 扩展。</p>
+<pre><code class="language-python"># Python —— 由于 GIL，线程不能加速 CPU 工作
+import threading
+import time
+
+def cpu_work(n):
+    total = 0
+    for i in range(n):
+        total += i * i
+    return total
+
+start = time.perf_counter()
+threads = [threading.Thread(target=cpu_work, args=(10_000_000,)) for _ in range(4)]
+for t in threads:
+    t.start()
+for t in threads:
+    t.join()
+elapsed = time.perf_counter() - start
+print(f"4 threads: {elapsed:.2f}s")  # 与 1 个线程差不多！GIL 阻止并行。
+
+# multiprocessing"可以工作"，但在进程之间序列化数据：
+from multiprocessing import Pool
+with Pool(4) as p:
+    results = p.map(cpu_work, [10_000_000] * 4)  # 约 4 倍快，但有 pickle 开销
+</code></pre>
+<pre><pre class="playground"><code class="language-rust">// Rust —— 真正的并行，无 GIL，无序列化开销
+use std::thread;
+
+fn cpu_work(n: u64) -&gt; u64 {
+    (0..n).map(|i| i * i).sum()
+}
+
+fn main() {
+    let start = std::time::Instant::now();
+    let handles: Vec&lt;_&gt; = (0..4)
+        .map(|_| thread::spawn(|| cpu_work(10_000_000)))
+        .collect();
+
+    let results: Vec&lt;u64&gt; = handles.into_iter()
+        .map(|h| h.join().unwrap())
+        .collect();
+
+    println!("4 threads: {:.2?}", start.elapsed());  // 比单线程快约 4 倍
+}</code></pre></pre>
+<blockquote>
+<p><strong>使用 Rayon</strong>（Rust 的并行迭代器库），并行性更简单：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use rayon::prelude::*;
+let results: Vec&lt;u64&gt; = inputs.par_iter().map(|&amp;n| cpu_work(n)).collect();
+<span class="boring">}</span></code></pre></pre>
+</blockquote>
+<h3 id="4-部署和分发的痛苦"><a class="header" href="#4-部署和分发的痛苦">4. 部署和分发的痛苦</a></h3>
+<p>Python 部署 notoriously 困难：venv、系统 Python 冲突、
+<code>pip install</code> 失败、C 扩展 wheel、带有完整 Python 运行时的 Docker 镜像。</p>
+<pre><code class="language-python"># Python 部署清单：
+# 1. 哪个 Python 版本？3.9？3.10？3.11？3.12？
+# 2. 虚拟环境：venv、conda、poetry、pipenv？
+# 3. C 扩展：需要编译器？manylinux wheel？
+# 4. 系统依赖：libssl、libffi 等？
+# 5. Docker：完整的 python:3.12 镜像为 1.0 GB
+# 6. 启动时间：import 繁重的应用需要 200-500ms
+
+# Docker 镜像：约 1 GB
+# FROM python:3.12-slim
+# COPY requirements.txt .
+# RUN pip install -r requirements.txt
+# COPY . .
+# CMD ["python", "app.py"]
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust 部署：单个静态二进制文件，无需运行时
+// cargo build --release → 一个二进制文件，约 5-20 MB
+// 复制到任何地方 —— 无需 Python、无需 venv、无需依赖
+
+// Docker 镜像：约 5 MB（from scratch 或 distroless）
+// FROM scratch
+// COPY target/release/my_app /my_app
+// CMD ["/my_app"]
+
+// 启动时间：&lt;1ms
+// 交叉编译：cargo build --target x86_64-unknown-linux-musl
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="何时选择-rust-而非-python"><a class="header" href="#何时选择-rust-而非-python">何时选择 Rust 而非 Python</a></h2>
+<h3 id="选择-rust-当"><a class="header" href="#选择-rust-当">选择 Rust 当：</a></h3>
+<ul>
+<li><strong>性能至关重要</strong>：数据管道、实时处理、计算密集型服务</li>
+<li><strong>正确性很重要</strong>：金融系统、安全关键代码、协议实现</li>
+<li><strong>部署简单</strong>：单个二进制文件，无运行时依赖</li>
+<li><strong>低级控制</strong>：硬件交互、OS 集成、嵌入式系统</li>
+<li><strong>真正的并发</strong>：CPU 密集型并行，无需 GIL 变通方法</li>
+<li><strong>内存效率</strong>：降低内存密集型服务的云成本</li>
+<li><strong>长时间运行的服务</strong>：可预测的延迟很重要（无 GC 暂停）</li>
+</ul>
+<h3 id="坚持使用-python-当"><a class="header" href="#坚持使用-python-当">坚持使用 Python 当：</a></h3>
+<ul>
+<li><strong>快速原型设计</strong>：探索性数据分析、脚本、一次性工具</li>
+<li><strong>ML/AI 工作流</strong>：PyTorch、TensorFlow、scikit-learn 生态系统</li>
+<li><strong>胶水代码</strong>：连接 API、数据转换脚本</li>
+<li><strong>团队专业知识</strong>：当 Rust 学习曲线不能证明其好处合理时</li>
+<li><strong>上市时间</strong>：当开发速度胜过执行速度时</li>
+<li><strong>交互式工作</strong>：Jupyter notebooks、REPL 驱动的开发</li>
+<li><strong>脚本</strong>：自动化、系统管理任务、快速实用程序</li>
+</ul>
+<h3 id="考虑两者使用-pyo3-的混合方法"><a class="header" href="#考虑两者使用-pyo3-的混合方法">考虑两者（使用 PyO3 的混合方法）：</a></h3>
+<ul>
+<li><strong>Rust 中的计算密集型代码</strong>：通过 PyO3/maturin 从 Python 调用</li>
+<li><strong>Python 中的业务逻辑和编排</strong>：熟悉、高效</li>
+<li><strong>渐进式迁移</strong>：识别热点，用 Rust 扩展替换</li>
+<li><strong>两全其美</strong>：Python 的生态系统 + Rust 的性能</li>
+</ul>
+<hr />
+<h2 id="现实世界的影响为什么公司选择-rust"><a class="header" href="#现实世界的影响为什么公司选择-rust">现实世界的影响：为什么公司选择 Rust</a></h2>
+<h3 id="dropbox存储基础设施"><a class="header" href="#dropbox存储基础设施">Dropbox：存储基础设施</a></h3>
+<ul>
+<li><strong>之前（Python）</strong>：同步引擎中 CPU 使用率高，内存开销大</li>
+<li><strong>之后（Rust）</strong>：性能提升 10 倍，内存减少 50%</li>
+<li><strong>结果</strong>：节省数百万基础设施成本</li>
+</ul>
+<h3 id="discord语音视频后端"><a class="header" href="#discord语音视频后端">Discord：语音/视频后端</a></h3>
+<ul>
+<li><strong>之前（Python → Go）</strong>：GC 暂停导致音频丢失</li>
+<li><strong>之后（Rust）</strong>：一致的低延迟性能</li>
+<li><strong>结果</strong>：更好的用户体验，降低服务器成本</li>
+</ul>
+<h3 id="cloudflareedge-workers"><a class="header" href="#cloudflareedge-workers">Cloudflare：Edge Workers</a></h3>
+<ul>
+<li><strong>为什么 Rust</strong>：WebAssembly 编译，边缘可预测的性能</li>
+<li><strong>结果</strong>：Workers 以微秒级冷启动运行</li>
+</ul>
+<h3 id="pydantic-v2"><a class="header" href="#pydantic-v2">Pydantic V2</a></h3>
+<ul>
+<li><strong>之前</strong>：纯 Python 验证 —— 大负载慢</li>
+<li><strong>之后</strong>：Rust 核心（通过 PyO3）—— 验证速度<strong>快 5-50 倍</strong></li>
+<li><strong>结果</strong>：相同的 Python API，执行速度显著加快</li>
+</ul>
+<h3 id="为什么这对-python-开发者很重要"><a class="header" href="#为什么这对-python-开发者很重要">为什么这对 Python 开发者很重要：</a></h3>
+<ol>
+<li><strong>互补技能</strong>：Rust 和 Python 解决不同的问题</li>
+<li><strong>PyO3 桥接</strong>：编写可从 Python 调用的 Rust 扩展</li>
+<li><strong>性能理解</strong>：了解 Python 为什么慢以及如何修复热点</li>
+<li><strong>职业发展</strong>：系统编程专业知识越来越有价值</li>
+<li><strong>云成本</strong>：快 10 倍的代码 = 显著降低基础设施支出</li>
+</ol>
+<hr />
+<h2 id="语言哲学比较"><a class="header" href="#语言哲学比较">语言哲学比较</a></h2>
+<h3 id="python-哲学"><a class="header" href="#python-哲学">Python 哲学</a></h3>
+<ul>
+<li><strong>可读性很重要</strong>：简洁的语法，"一种明显的方法"</li>
+<li><strong>电池 included</strong>：广泛的标准库，快速原型设计</li>
+<li><strong>鸭子类型</strong>："如果它像鸭子一样走路并且像鸭子一样叫……"</li>
+<li><strong>开发者速度</strong>：优化编写速度，而不是执行速度</li>
+<li><strong>动态一切</strong>：在运行时修改类、monkey-patching、metaclass</li>
+</ul>
+<h3 id="rust-哲学"><a class="header" href="#rust-哲学">Rust 哲学</a></h3>
+<ul>
+<li><strong>无牺牲的性能</strong>：零成本抽象，无运行时开销</li>
+<li><strong>正确性优先</strong>：如果编译通过，整类 bug 是不可能的</li>
+<li><strong>显式优于隐式</strong>：无隐藏行为，无隐式转换</li>
+<li><strong>所有权</strong>：资源恰好有一个所有者 —— 内存、文件、socket</li>
+<li><strong>无畏并发</strong>：类型系统在编译时防止数据竞争</li>
+</ul>
+<pre class="mermaid">graph LR
+    subgraph PY[&quot;🐍 Python&quot;]
+        direction TB
+        PY_CODE[&quot;你的代码&quot;] --&gt; PY_INTERP[&quot;解释器 —— CPython VM&quot;]
+        PY_INTERP --&gt; PY_GC[&quot;垃圾回收器 —— 引用计数 + GC&quot;]
+        PY_GC --&gt; PY_GIL[&quot;GIL —— 无真正并行&quot;]
+        PY_GIL --&gt; PY_OS[&quot;OS / 硬件&quot;]
+    end
+
+    subgraph RS[&quot;🦀 Rust&quot;]
+        direction TB
+        RS_CODE[&quot;你的代码&quot;] --&gt; RS_NONE[&quot;无运行时开销&quot;]
+        RS_NONE --&gt; RS_OWN[&quot;所有权 —— 编译时，零成本&quot;]
+        RS_OWN --&gt; RS_THR[&quot;原生线程 —— 真正并行&quot;]
+        RS_THR --&gt; RS_OS[&quot;OS / 硬件&quot;]
+    end
+
+    style PY_INTERP fill:#fff3e0,color:#000,stroke:#e65100
+    style PY_GC fill:#fff3e0,color:#000,stroke:#e65100
+    style PY_GIL fill:#ffcdd2,color:#000,stroke:#c62828
+    style RS_NONE fill:#c8e6c9,color:#000,stroke:#2e7d32
+    style RS_OWN fill:#c8e6c9,color:#000,stroke:#2e7d32
+    style RS_THR fill:#c8e6c9,color:#000,stroke:#2e7d32
+</pre>
+<hr />
+<h2 id="快速参考rust-vs-python"><a class="header" href="#快速参考rust-vs-python">快速参考：Rust vs Python</a></h2>
+<div class="table-wrapper"><table><thead><tr><th><strong>概念</strong></th><th><strong>Python</strong></th><th><strong>Rust</strong></th><th><strong>关键差异</strong></th></tr></thead><tbody>
+<tr><td>类型系统</td><td>动态（<code>鸭子类型</code>）</td><td>静态（编译时）</td><td>错误在运行前捕获</td></tr>
+<tr><td>内存</td><td>垃圾回收（引用计数 + 循环 GC）</td><td>所有权系统</td><td>零成本，确定性清理</td></tr>
+<tr><td>None/null</td><td><code>None</code> 在任何地方</td><td><code>Option&lt;T&gt;</code></td><td>编译时 None 安全</td></tr>
+<tr><td>错误处理</td><td><code>raise</code>/<code>try</code>/<code>except</code></td><td><code>Result&lt;T, E&gt;</code></td><td>显式，无隐藏控制流</td></tr>
+<tr><td>可变性</td><td>一切可变</td><td>默认不可变</td><td>选择加入可变性</td></tr>
+<tr><td>速度</td><td>解释型（慢约 10-100 倍）</td><td>编译型（C/C++ 速度）</td><td>数量级更快</td></tr>
+<tr><td>并发</td><td>GIL 限制线程</td><td>无 GIL，<code>Send</code>/<code>Sync</code> trait</td><td>默认真正并行</td></tr>
+<tr><td>依赖</td><td><code>pip install</code> / <code>poetry add</code></td><td><code>cargo add</code></td><td>内置依赖管理</td></tr>
+<tr><td>构建系统</td><td>setuptools/poetry/hatch</td><td>Cargo</td><td>单一统一工具</td></tr>
+<tr><td>打包</td><td><code>pyproject.toml</code></td><td><code>Cargo.toml</code></td><td>类似的声明式配置</td></tr>
+<tr><td>REPL</td><td><code>python</code> 交互式</td><td>无 REPL（使用测试/<code>cargo run</code>）</td><td>编译优先工作流</td></tr>
+<tr><td>类型提示</td><td>可选，不强制执行</td><td>必需，编译器强制执行</td><td>类型不是装饰性的</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：心智模型检查</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：对于每个 Python 代码片段，预测 Rust 会有什么不同的要求。不要写代码 —— 只需描述约束。</p>
+<ol>
+<li><code>x = [1, 2, 3]; y = x; x.append(4)</code> —— Rust 中会发生什么？</li>
+<li><code>data = None; print(data.upper())</code> —— Rust 如何防止这个？</li>
+<li><code>import threading; shared = []; threading.Thread(target=shared.append, args=(1,)).start()</code> —— Rust 要求什么？</li>
+</ol>
+<details>
+<summary>🔑 解答</summary>
+<ol>
+<li><strong>所有权 move</strong>：<code>let y = x;</code> move <code>x</code> —— <code>x.push(4)</code> 是编译错误。你需要 <code>let y = x.clone();</code> 或用 <code>let y = &amp;x;</code> 借用。</li>
+<li><strong>无 null</strong>：<code>data</code> 不能是 <code>None</code>，除非它是 <code>Option&lt;String&gt;</code>。你必须 <code>match</code> 或使用 <code>.unwrap()</code> / <code>if let</code> —— 没有意外的 <code>NoneType</code> 错误。</li>
+<li><strong>Send + Sync</strong>：编译器要求 <code>shared</code> 包装在 <code>Arc&lt;Mutex&lt;Vec&lt;i32&gt;&gt;&gt;</code> 中。忘记锁 = 编译错误，而不是竞争条件。</li>
+</ol>
+<p><strong>关键要点</strong>：Rust 将运行时失败转变为编译时错误。你感受到的"摩擦"是编译器在捕获真正的 bug。</p>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch00-introduction.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch02-getting-started.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch00-introduction.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch02-getting-started.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

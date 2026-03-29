@@ -1,0 +1,693 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>13. 生产模式 - Async Rust: From Futures to Production</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Async Rust: From Futures to Production</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="13-生产模式-"><a class="header" href="#13-生产模式-">13. 生产模式 🔴</a></h1>
+<blockquote>
+<p><strong>你将学到什么：</strong></p>
+<ul>
+<li>使用 <code>watch</code> channel 和 <code>select!</code> 的优雅关闭</li>
+<li>背压：有界 channel 防止 OOM</li>
+<li>结构化并发：<code>JoinSet</code> 和 <code>TaskTracker</code></li>
+<li>超时、重试和指数退避</li>
+<li>错误处理：<code>thiserror</code> vs <code>anyhow</code>、双重 <code>?</code> 模式</li>
+<li>Tower：axum、tonic 和 hyper 使用的中间件模式</li>
+</ul>
+</blockquote>
+<h2 id="优雅关闭"><a class="header" href="#优雅关闭">优雅关闭</a></h2>
+<p>生产服务器必须干净地关闭——完成进行中的请求、刷新缓冲区、关闭连接：</p>
+<pre><pre class="playground"><code class="language-rust">use tokio::signal;
+use tokio::sync::watch;
+
+async fn main_server() {
+    // 创建关闭信号 channel
+    let (shutdown_tx, shutdown_rx) = watch::channel(false);
+
+    // 生成服务器
+    let server_handle = tokio::spawn(run_server(shutdown_rx.clone()));
+
+    // 等待 Ctrl+C
+    signal::ctrl_c().await.expect("Failed to listen for Ctrl+C");
+    println!("Shutdown signal received, finishing in-flight requests...");
+
+    // 通知所有任务关闭
+    // 注意：为了简洁使用了 .unwrap()。生产代码应该处理
+    // 所有接收者都被 drop 的情况。
+    shutdown_tx.send(true).unwrap();
+
+    // 等待服务器完成（带超时）
+    match tokio::time::timeout(
+        std::time::Duration::from_secs(30),
+        server_handle,
+    ).await {
+        Ok(Ok(())) =&gt; println!("Server shut down gracefully"),
+        Ok(Err(e)) =&gt; eprintln!("Server error: {e}"),
+        Err(_) =&gt; eprintln!("Server shutdown timed out — forcing exit"),
+    }
+}
+
+async fn run_server(mut shutdown: watch::Receiver&lt;bool&gt;) {
+    loop {
+        tokio::select! {
+            // 接受新连接
+            conn = accept_connection() =&gt; {
+                let shutdown = shutdown.clone();
+                tokio::spawn(handle_connection(conn, shutdown));
+            }
+            // 关闭信号
+            _ = shutdown.changed() =&gt; {
+                if *shutdown.borrow() {
+                    println!("Stopping accepting new connections");
+                    break;
+                }
+            }
+        }
+    }
+    // 进行中的连接将自己完成
+    // 因为它们有自己的 shutdown_rx clone
+}
+
+async fn handle_connection(conn: Connection, mut shutdown: watch::Receiver&lt;bool&gt;) {
+    loop {
+        tokio::select! {
+            request = conn.next_request() =&gt; {
+                // 完整处理请求——不要在中途放弃
+                process_request(request).await;
+            }
+            _ = shutdown.changed() =&gt; {
+                if *shutdown.borrow() {
+                    // 完成当前请求，然后退出
+                    break;
+                }
+            }
+        }
+    }
+}</code></pre></pre>
+<pre class="mermaid">sequenceDiagram
+    participant OS as OS 信号
+    participant Main as 主任务
+    participant WCH as watch Channel
+    participant W1 as 工作器 1
+    participant W2 as 工作器 2
+
+    OS-&gt;&gt;Main: SIGINT (Ctrl+C)
+    Main-&gt;&gt;WCH: send(true)
+    WCH--&gt;&gt;W1: changed()
+    WCH--&gt;&gt;W2: changed()
+
+    Note over W1: 完成当前请求
+    Note over W2: 完成当前请求
+
+    W1--&gt;&gt;Main: 任务完成
+    W2--&gt;&gt;Main: 任务完成
+    Main-&gt;&gt;Main: 所有工作器完成 → 退出
+</pre>
+<h3 id="使用有界-channel-的背压"><a class="header" href="#使用有界-channel-的背压">使用有界 Channel 的背压</a></h3>
+<p>如果生产者比消费者快，无界 channel 可能导致 OOM。在生产中始终使用有界 channel：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use tokio::sync::mpsc;
+
+async fn backpressure_example() {
+    // 有界 channel：最多 100 个项目缓冲
+    let (tx, mut rx) = mpsc::channel::&lt;WorkItem&gt;(100);
+
+    // 生产者：当缓冲区满时自然减速
+    let producer = tokio::spawn(async move {
+        for i in 0..1_000_000 {
+            // send() 是异步的——如果缓冲区满则等待
+            这创造了自然背压！
+            tx.send(WorkItem { id: i }).await.unwrap();
+        }
+    });
+
+    // 消费者：以自己的节奏处理项目
+    let consumer = tokio::spawn(async move {
+        while let Some(item) = rx.recv().await {
+            process(item).await; // 慢处理没问题——生产者等待
+        }
+    });
+
+    let _ = tokio::join!(producer, consumer);
+}
+
+// 与无界比较——危险：
+// let (tx, rx) = mpsc::unbounded_channel(); // 没有背压！
+// 生产者可以无限填充内存
+<span class="boring">}</span></code></pre></pre>
+<h3 id="结构化并发joinset-和-tasktracker"><a class="header" href="#结构化并发joinset-和-tasktracker">结构化并发：JoinSet 和 TaskTracker</a></h3>
+<p><code>JoinSet</code> 分组相关任务并确保它们都完成：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use tokio::task::JoinSet;
+use tokio::time::{sleep, Duration};
+
+async fn structured_concurrency() {
+    let mut set = JoinSet::new();
+
+    // 生成一批任务
+    for url in get_urls() {
+        set.spawn(async move {
+            fetch_and_process(url).await
+        });
+    }
+
+    // 收集所有结果（顺序不保证）
+    let mut results = Vec::new();
+    while let Some(result) = set.join_next().await {
+        match result {
+            Ok(Ok(data)) =&gt; results.push(data),
+            Ok(Err(e)) =&gt; eprintln!("Task error: {e}"),
+            Err(e) =&gt; eprintln!("Task panicked: {e}"),
+        }
+    }
+
+    // 所有任务都在这里完成——没有悬空的后台工作
+    println!("Processed {} items", results.len());
+}
+
+// TaskTracker（tokio-util 0.7.9+）——等待所有生成的任务
+use tokio_util::task::TaskTracker;
+
+async fn with_tracker() {
+    let tracker = TaskTracker::new();
+
+    for i in 0..10 {
+        tracker.spawn(async move {
+            sleep(Duration::from_millis(100 * i)).await;
+            println!("Task {i} done");
+        });
+    }
+
+    tracker.close(); // 不再添加任务
+    tracker.wait().await; // 等待所有跟踪的任务
+    println!("All tasks finished");
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="超时和重试"><a class="header" href="#超时和重试">超时和重试</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use tokio::time::{timeout, sleep, Duration};
+
+// 简单超时
+async fn with_timeout() -&gt; Result&lt;Response, Error&gt; {
+    match timeout(Duration::from_secs(5), fetch_data()).await {
+        Ok(Ok(response)) =&gt; Ok(response),
+        Ok(Err(e)) =&gt; Err(Error::Fetch(e)),
+        Err(_) =&gt; Err(Error::Timeout),
+    }
+}
+
+// 指数退避重试
+async fn retry_with_backoff&lt;F, Fut, T, E&gt;(
+    max_attempts: u32,
+    base_delay_ms: u64,
+    operation: F,
+) -&gt; Result&lt;T, E&gt;
+where
+    F: Fn() -&gt; Fut,
+    Fut: std::future::Future&lt;Output = Result&lt;T, E&gt;&gt;,
+    E: std::fmt::Display,
+{
+    let mut delay = Duration::from_millis(base_delay_ms);
+
+    for attempt in 1..=max_attempts {
+        match operation().await {
+            Ok(result) =&gt; return Ok(result),
+            Err(e) =&gt; {
+                if attempt == max_attempts {
+                    eprintln!("Final attempt {attempt} failed: {e}");
+                    return Err(e);
+                }
+                eprintln!("Attempt {attempt} failed: {e}, retrying in {delay:?}");
+                sleep(delay).await;
+                delay *= 2; // 指数退避
+            }
+        }
+    }
+    unreachable!()
+}
+
+// 用法：
+// let result = retry_with_backoff(3, 100, || async {
+//     reqwest::get("https://api.example.com/data").await
+// }).await?;
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>生产提示——添加抖动</strong>：上面的函数使用纯指数退避，但在
+生产中许多客户端同时失败将都以相同的间隔重试（惊群）。
+添加随机<em>抖动</em>——例如 <code>sleep(delay + rand_jitter)</code>，其中 <code>rand_jitter</code> 是
+<code>0..delay/4</code>——以便重试在时间上分散。</p>
+</blockquote>
+<h3 id="异步代码中的错误处理"><a class="header" href="#异步代码中的错误处理">异步代码中的错误处理</a></h3>
+<p>异步引入了独特的错误传播挑战——生成的任务创建错误边界，超时错误包装内部错误，当 future 跨任务边界时 <code>?</code> 的交互方式不同。</p>
+<p><strong><code>thiserror</code> vs <code>anyhow</code></strong> —— 选择正确的工具：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// thiserror：为库和公共 API 定义类型化错误
+// 每个变体都是显式的——调用者可以匹配特定错误
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+enum DiagError {
+    #[error("IPMI command failed: {0}")]
+    Ipmi(#[from] IpmiError),
+
+    #[error("Sensor {sensor} out of range: {value}°C (max {max}°C)")]
+    OverTemp { sensor: String, value: f64, max: f64 },
+
+    #[error("Operation timed out after {0:?}")]
+    Timeout(std::time::Duration),
+
+    #[error("Task panicked: {0}")]
+    TaskPanic(#[from] tokio::task::JoinError),
+}
+
+// anyhow：用于应用和原型快速错误处理
+// 包装任何错误——不需要为每个情况定义类型
+use anyhow::{Context, Result};
+
+async fn run_diagnostics() -&gt; Result&lt;()&gt; {
+    let config = load_config()
+        .await
+        .context("Failed to load diagnostic config")?;  // 添加上下文
+
+    let result = run_gpu_test(&amp;config)
+        .await
+        .context("GPU diagnostic failed")?;              // 链接上下文
+
+    Ok(())
+}
+// anyhow 打印："GPU diagnostic failed: IPMI command failed: timeout"
+<span class="boring">}</span></code></pre></pre>
+<div class="table-wrapper"><table><thead><tr><th>Crate</th><th>何时使用</th><th>错误类型</th><th>匹配</th></tr></thead><tbody>
+<tr><td><code>thiserror</code></td><td>库代码，公共 API</td><td><code>enum MyError { ... }</code></td><td><code>match err { MyError::Timeout =&gt; ... }</code></td></tr>
+<tr><td><code>anyhow</code></td><td>应用，CLI 工具，脚本</td><td><code>anyhow::Error</code>（类型擦除）</td><td><code>err.downcast_ref::&lt;MyError&gt;()</code></td></tr>
+<tr><td>两者一起</td><td>库暴露 <code>thiserror</code>，应用用 <code>anyhow</code> 包装</td><td>两者最佳</td><td>库错误是类型化的，应用不在乎</td></tr>
+</tbody></table>
+</div>
+<p><strong>双重 <code>?</code> 模式</strong> 与 <code>tokio::spawn</code>：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use thiserror::Error;
+use tokio::task::JoinError;
+
+#[derive(Error, Debug)]
+enum AppError {
+    #[error("HTTP error: {0}")]
+    Http(#[from] reqwest::Error),
+
+    #[error("Task panicked: {0}")]
+    TaskPanic(#[from] JoinError),
+}
+
+async fn spawn_with_errors() -&gt; Result&lt;String, AppError&gt; {
+    let handle = tokio::spawn(async {
+        let resp = reqwest::get("https://example.com").await?;
+        Ok::&lt;_, reqwest::Error&gt;(resp.text().await?)
+    });
+
+    // 双重 ?：第一个 ? 解包 JoinError（任务 panic），第二个 ? 解包内部 Result
+    let result = handle.await??;
+    Ok(result)
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>错误边界问题</strong> —— <code>tokio::spawn</code> 擦除上下文：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// ❌ 错误上下文在 spawn 边界丢失：
+async fn bad_error_handling() -&gt; Result&lt;()&gt; {
+    let handle = tokio::spawn(async {
+        some_fallible_work().await  // 返回 Result&lt;T, SomeError&gt;
+    });
+
+    // handle.await 返回 Result&lt;Result&lt;T, SomeError&gt;, JoinError&gt;
+    // 内部错误没有关于什么任务失败的上下文
+    let result = handle.await??;
+    Ok(())
+}
+
+// ✅ 在 spawn 边界添加上下文：
+async fn good_error_handling() -&gt; Result&lt;()&gt; {
+    let handle = tokio::spawn(async {
+        some_fallible_work()
+            .await
+            .context("worker task failed")  // 在跨越边界之前的上下文
+    });
+
+    let result = handle.await
+        .context("worker task panicked")??;  // JoinError 的上下文
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>超时错误</strong> —— 包装 vs 替换：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use tokio::time::{timeout, Duration};
+
+async fn with_timeout_context() -&gt; Result&lt;String, DiagError&gt; {
+    let dur = Duration::from_secs(30);
+    match timeout(dur, fetch_sensor_data()).await {
+        Ok(Ok(data)) =&gt; Ok(data),
+        Ok(Err(e)) =&gt; Err(e),                      // 保留内部错误
+        Err(_) =&gt; Err(DiagError::Timeout(dur)),     // 超时 → 类型化错误
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="tower中间件模式"><a class="header" href="#tower中间件模式">Tower：中间件模式</a></h3>
+<p><a href="https://docs.rs/tower">Tower</a> crate 定义可组合的 <code>Service</code> trait——Rust 异步中间件的支柱（被 <code>axum</code>、<code>tonic</code>、<code>hyper</code> 使用）：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Tower 的核心 trait（简化）：
+pub trait Service&lt;Request&gt; {
+    type Response;
+    type Error;
+    type Future: Future&lt;Output = Result&lt;Self::Response, Self::Error&gt;&gt;;
+
+    fn poll_ready(&amp;mut self, cx: &amp;mut Context&lt;'_&gt;) -&gt; Poll&lt;Result&lt;(), Self::Error&gt;&gt;;
+    fn call(&amp;mut self, req: Request) -&gt; Self::Future;
+}
+<span class="boring">}</span></code></pre></pre>
+<p>中间件包装 <code>Service</code> 以添加横切关注点——日志、超时、速率限制——而不修改内部逻辑：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use tower::{ServiceBuilder, timeout::TimeoutLayer, limit::RateLimitLayer};
+use std::time::Duration;
+
+let service = ServiceBuilder::new()
+    .layer(TimeoutLayer::new(Duration::from_secs(10)))       // 最外层：超时
+    .layer(RateLimitLayer::new(100, Duration::from_secs(1))) // 然后：速率限制
+    .service(my_handler);                                     // 最内层：你的代码
+<span class="boring">}</span></code></pre></pre>
+<p><strong>为什么这很重要</strong>：如果你使用过 ASP.NET 中间件或 Express.js 中间件，Tower 是 Rust 等价物。这是生产 Rust 服务添加横切关注点而无代码重复的方式。</p>
+<h3 id="练习带工作器池的优雅关闭"><a class="header" href="#练习带工作器池的优雅关闭">练习：带工作器池的优雅关闭</a></h3>
+<details>
+<summary>🏋️ 练习（点击展开）</summary>
+<p><strong>挑战</strong>：构建一个带有基于 channel 的工作队列、N 个工作器任务和 Ctrl+C 时优雅关闭的任务处理器。工作器应该在退出前完成进行中的工作。</p>
+<details>
+<summary>🔑 答案</summary>
+<pre><pre class="playground"><code class="language-rust">use tokio::sync::{mpsc, watch};
+use tokio::time::{sleep, Duration};
+
+struct WorkItem { id: u64, payload: String }
+
+#[tokio::main]
+async fn main() {
+    let (work_tx, work_rx) = mpsc::channel::&lt;WorkItem&gt;(100);
+    let (shutdown_tx, shutdown_rx) = watch::channel(false);
+    let work_rx = std::sync::Arc::new(tokio::sync::Mutex::new(work_rx));
+
+    let mut handles = Vec::new();
+    for id in 0..4 {
+        let rx = work_rx.clone();
+        let mut shutdown = shutdown_rx.clone();
+        handles.push(tokio::spawn(async move {
+            loop {
+                let item = {
+                    let mut rx = rx.lock().await;
+                    tokio::select! {
+                        item = rx.recv() =&gt; item,
+                        _ = shutdown.changed() =&gt; {
+                            if *shutdown.borrow() { None } else { continue }
+                        }
+                    }
+                };
+                match item {
+                    Some(work) =&gt; {
+                        println!("Worker {id}: processing {}", work.id);
+                        sleep(Duration::from_millis(200)).await;
+                    }
+                    None =&gt; break,
+                }
+            }
+        }));
+    }
+
+    // 提交工作
+    for i in 0..20 {
+        let _ = work_tx.send(WorkItem { id: i, payload: format!("task-{i}") }).await;
+        sleep(Duration::from_millis(50)).await;
+    }
+
+    // 在 Ctrl+C 时：信号关闭，等待工作器
+    // 注意：为了简洁使用了 .unwrap()——在生产中处理错误。
+    tokio::signal::ctrl_c().await.unwrap();
+    shutdown_tx.send(true).unwrap();
+    for h in handles { let _ = h.await; }
+    println!("Shut down cleanly.");
+}</code></pre></pre>
+</details>
+</details>
+<blockquote>
+<p><strong>关键要点 — 生产模式</strong></p>
+<ul>
+<li>使用 <code>watch</code> channel + <code>select!</code> 进行协调的优雅关闭</li>
+<li>有界 channel（<code>mpsc::channel(N)</code>）提供<strong>背压</strong>——当缓冲区满时发送者阻塞</li>
+<li><code>JoinSet</code> 和 <code>TaskTracker</code> 提供<strong>结构化并发</strong>：跟踪、中止和 await 任务组</li>
+<li>始终为网络操作添加超时——<code>tokio::time::timeout(dur, fut)</code></li>
+<li>Tower 的 <code>Service</code> trait 是生产 Rust 服务的标准中间件模式</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>另见：</strong> <a href="ch08-tokio-deep-dive.html">第 8 章 — Tokio 深度解析</a> 了解 channel 和同步原语，<a href="ch12-common-pitfalls.html">第 12 章 — 常见陷阱</a> 了解关闭期间的取消隐患</p>
+</blockquote>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch12-common-pitfalls.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch14-exercises.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch12-common-pitfalls.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch14-exercises.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,936 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>嵌入式深入探讨 - Rust for C/C++ Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C/C++ Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="mmio-和易失性寄存器访问"><a class="header" href="#mmio-和易失性寄存器访问">MMIO 和易失性寄存器访问</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> 嵌入式 Rust 中的类型安全硬件寄存器访问——易失性 MMIO 模式、寄存器抽象 crate，以及 Rust 的类型系统如何编码 C 的 <code>volatile</code> 关键字无法做到的寄存器权限。</p>
+</blockquote>
+<p>在 C 固件中，你通过 <code>volatile</code> 指针访问特定
+内存地址的硬件寄存器。Rust 有等效机制——但具有类型安全。</p>
+<h3 id="c-volatile-vs-rust-volatile"><a class="header" href="#c-volatile-vs-rust-volatile">C volatile vs Rust volatile</a></h3>
+<pre><code class="language-c">// C——典型的 MMIO 寄存器访问
+#define GPIO_BASE     0x40020000
+#define GPIO_MODER    (*(volatile uint32_t*)(GPIO_BASE + 0x00))
+#define GPIO_ODR      (*(volatile uint32_t*)(GPIO_BASE + 0x14))
+
+void toggle_led(void) {
+    GPIO_ODR ^= (1 &lt;&lt; 5);  // 切换引脚 5
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust——原始易失性（低级，很少直接使用）
+use core::ptr;
+
+const GPIO_BASE: usize = 0x4002_0000;
+const GPIO_ODR: *mut u32 = (GPIO_BASE + 0x14) as *mut u32;
+
+/// # 安全
+/// 调用者必须确保 GPIO_BASE 是有效的映射外设地址。
+unsafe fn toggle_led() {
+    // 安全：GPIO_ODR 是有效的内存映射寄存器地址。
+    let current = unsafe { ptr::read_volatile(GPIO_ODR) };
+    unsafe { ptr::write_volatile(GPIO_ODR, current ^ (1 &lt;&lt; 5)) };
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="svd2rust类型安全寄存器访问rust-方式"><a class="header" href="#svd2rust类型安全寄存器访问rust-方式">svd2rust——类型安全寄存器访问（Rust 方式）</a></h3>
+<p>在实践中，你<strong>从不</strong>编写原始易失性指针。相反，<code>svd2rust</code> 从芯片的 SVD 文件（与你的 IDE 调试视图使用的相同 XML 文件）生成
+<strong>外设访问 crate (PAC)</strong>：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 生成的 PAC 代码（你不编写这个——svd2rust 做）
+// PAC 使无效的寄存器访问成为编译错误
+
+// 使用 PAC：
+use stm32f4::stm32f401;  // 你的芯片的 PAC crate
+
+fn configure_gpio(dp: stm32f401::Peripherals) {
+    // 启用 GPIOA 时钟——类型安全，无魔术数字
+    dp.RCC.ahb1enr.modify(|_, w| w.gpioaen().enabled());
+
+    // 设置引脚 5 为输出——不能意外写入只读字段
+    dp.GPIOA.moder.modify(|_, w| w.moder5().output());
+
+    // 切换引脚 5——类型检查的字段访问
+    dp.GPIOA.odr.modify(|r, w| {
+        // 安全：在有效的寄存器字段中切换单个位。
+        unsafe { w.bits(r.bits() ^ (1 &lt;&lt; 5)) }
+    });
+}
+<span class="boring">}</span></code></pre></pre>
+<div class="table-wrapper"><table><thead><tr><th>C 寄存器访问</th><th>Rust PAC 等效</th></tr></thead><tbody>
+<tr><td><code>#define REG (*(volatile uint32_t*)ADDR)</code></td><td><code>svd2rust</code> 生成的 PAC crate</td></tr>
+<tr><td>`REG</td><td>= BITMASK;`</td></tr>
+<tr><td><code>value = REG;</code></td><td><code>let val = periph.reg.read().field().bits()</code></td></tr>
+<tr><td>错误的寄存器字段→静默 UB</td><td>编译错误——字段不存在</td></tr>
+<tr><td>错误的寄存器宽度→静默 UB</td><td>类型检查——u8 vs u16 vs u32</td></tr>
+</tbody></table>
+</div>
+<h2 id="中断处理和临界区"><a class="header" href="#中断处理和临界区">中断处理和临界区</a></h2>
+<p>C 固件使用 <code>__disable_irq()</code> / <code>__enable_irq()</code> 和 <code>void</code>
+签名的 ISR 函数。Rust 提供类型安全的等效物。</p>
+<h3 id="c-vs-rust-中断模式"><a class="header" href="#c-vs-rust-中断模式">C vs Rust 中断模式</a></h3>
+<pre><code class="language-c">// C——传统中断处理程序
+volatile uint32_t tick_count = 0;
+
+void SysTick_Handler(void) {   // 命名约定至关重要——弄错→HardFault
+    tick_count++;
+}
+
+uint32_t get_ticks(void) {
+    __disable_irq();
+    uint32_t t = tick_count;   // 在临界区内读取
+    __enable_irq();
+    return t;
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust——使用 cortex-m 和临界区
+use core::cell::Cell;
+use cortex_m::interrupt::{self, Mutex};
+
+// 由临界区 Mutex 保护的共享状态
+static TICK_COUNT: Mutex&lt;Cell&lt;u32&gt;&gt; = Mutex::new(Cell::new(0));
+
+#[cortex_m_rt::exception]     // 属性确保正确的向量表放置
+fn SysTick() {                // 如果名称与有效异常不匹配则编译错误
+    interrupt::free(|cs| {    // cs = 临界区令牌（证明 IRQ 已禁用）
+        let count = TICK_COUNT.borrow(cs).get();
+        TICK_COUNT.borrow(cs).set(count + 1);
+    });
+}
+
+fn get_ticks() -&gt; u32 {
+    interrupt::free(|cs| TICK_COUNT.borrow(cs).get())
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="rtic实时中断驱动并发"><a class="header" href="#rtic实时中断驱动并发">RTIC——实时中断驱动并发</a></h3>
+<p>对于具有多个中断优先级的复杂固件，RTIC（以前称为 RTFM）提供
+<strong>编译时任务调度，零开销</strong>：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[rtic::app(device = stm32f4xx_hal::pac, dispatchers = [USART1])]
+mod app {
+    use stm32f4xx_hal::prelude::*;
+
+    #[shared]
+    struct Shared {
+        temperature: f32,   // 在任务之间共享——RTIC 管理锁定
+    }
+
+    #[local]
+    struct Local {
+        led: stm32f4xx_hal::gpio::Pin&lt;'A', 5, stm32f4xx_hal::gpio::Output&gt;,
+    }
+
+    #[init]
+    fn init(cx: init::Context) -&gt; (Shared, Local) {
+        let dp = cx.device;
+        let gpioa = dp.GPIOA.split();
+        let led = gpioa.pa5.into_push_pull_output();
+        (Shared { temperature: 25.0 }, Local { led })
+    }
+
+    // 硬件任务：在 SysTick 中断上运行
+    #[task(binds = SysTick, shared = [temperature], local = [led])]
+    fn tick(mut cx: tick::Context) {
+        cx.local.led.toggle();
+        cx.shared.temperature.lock(|temp| {
+            // RTIC 保证此处独占访问——无需手动锁定
+            *temp += 0.1;
+        });
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>为什么 RTIC 对 C 固件开发者重要：</strong></p>
+<ul>
+<li><code>#[shared]</code> 注解替换手动互斥锁管理</li>
+<li>基于优先级的抢占在编译时配置——无运行时开销</li>
+<li>通过构造无死锁（框架在编译时证明）</li>
+<li>ISR 命名错误是编译错误，而不是运行时 HardFault</li>
+</ul>
+<h2 id="panic-处理程序策略"><a class="header" href="#panic-处理程序策略">Panic 处理程序策略</a></h2>
+<p>在 C 中，当固件出现问题时，你通常复位或闪烁 LED。
+Rust 的 panic 处理程序给你结构化控制：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 策略 1：挂起（用于调试——附加调试器，检查状态）
+use panic_halt as _;  // panic 时无限循环
+
+// 策略 2：复位 MCU
+use panic_reset as _;  // 触发系统复位
+
+// 策略 3：通过 probe 日志（开发）
+use panic_probe as _;  // 通过调试 probe 发送 panic 信息（带 defmt）
+
+// 策略 4：通过 defmt 日志然后挂起
+use defmt_panic as _;  // 通过 ITM/RTT 的丰富 panic 消息
+
+// 策略 5：自定义处理程序（生产固件）
+use core::panic::PanicInfo;
+
+#[panic_handler]
+fn panic(info: &amp;PanicInfo) -&gt; ! {
+    // 1. 禁用中断以防止进一步损坏
+    cortex_m::interrupt::disable();
+
+    // 2. 将 panic 信息写入保留的 RAM 区域（复位后保留）
+    // 安全：PANIC_LOG 是链接器脚本中定义的保留内存区域。
+    unsafe {
+        let log = 0x2000_0000 as *mut [u8; 256];
+        // 写入截断的 panic 消息
+        use core::fmt::Write;
+        let mut writer = FixedWriter::new(&amp;mut *log);
+        let _ = write!(writer, "{}", info);
+    }
+
+    // 3. 触发看门狗复位（或闪烁错误 LED）
+    loop {
+        cortex_m::asm::wfi();  // 等待中断（挂起时低功耗）
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="链接器脚本和内存布局"><a class="header" href="#链接器脚本和内存布局">链接器脚本和内存布局</a></h2>
+<p>C 固件开发者编写链接器脚本来定义 FLASH/RAM 区域。Rust 嵌入式
+通过 <code>memory.x</code> 使用相同的概念：</p>
+<pre><code class="language-ld">/* memory.x——放在 crate 根部，由 cortex-m-rt 消费 */
+MEMORY
+{
+  /* 为你的 MCU 调整——这些是 STM32F401 值 */
+  FLASH : ORIGIN = 0x08000000, LENGTH = 512K
+  RAM   : ORIGIN = 0x20000000, LENGTH = 96K
+}
+
+/* 可选：为 panic 日志保留空间（参见上面的 panic 处理程序） */
+_panic_log_start = ORIGIN(RAM);
+_panic_log_size  = 256;
+</code></pre>
+<pre><code class="language-toml"># .cargo/config.toml——设置目标和链接器标志
+[target.thumbv7em-none-eabihf]
+runner = "probe-rs run --chip STM32F401RE"  # 通过调试 probe 烧录和运行
+rustflags = [
+    "-C", "link-arg=-Tlink.x",              # cortex-m-rt 链接器脚本
+]
+
+[build]
+target = "thumbv7em-none-eabihf"            # 带硬件 FPU 的 Cortex-M4F
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>C 链接器脚本</th><th>Rust 等效</th></tr></thead><tbody>
+<tr><td><code>MEMORY { FLASH ..., RAM ... }</code></td><td>crate 根部的 <code>memory.x</code></td></tr>
+<tr><td><code>__attribute__((section(".data")))</code></td><td><code>#[link_section = ".data"]</code></td></tr>
+<tr><td>Makefile 中的 <code>-T linker.ld</code></td><td><code>.cargo/config.toml</code> 中的 <code>-C link-arg=-Tlink.x</code></td></tr>
+<tr><td><code>__bss_start__</code>、<code>__bss_end__</code></td><td>由 <code>cortex-m-rt</code> 自动处理</td></tr>
+<tr><td>启动汇编（<code>startup.s</code>）</td><td><code>cortex-m-rt</code> <code>#[entry]</code> 宏</td></tr>
+</tbody></table>
+</div>
+<h2 id="编写-embedded-hal-驱动程序"><a class="header" href="#编写-embedded-hal-驱动程序">编写 <code>embedded-hal</code> 驱动程序</a></h2>
+<p><code>embedded-hal</code> crate 为 SPI、I2C、GPIO、UART 等定义 trait。针对
+这些 trait 编写的驱动程序可在<strong>任何 MCU</strong> 上工作——这是 Rust 的杀手级功能
+用于嵌入式重用。</p>
+<h3 id="c-vs-rust温度传感器驱动程序"><a class="header" href="#c-vs-rust温度传感器驱动程序">C vs Rust：温度传感器驱动程序</a></h3>
+<pre><code class="language-c">// C——驱动程序紧密耦合到 STM32 HAL
+#include "stm32f4xx_hal.h"
+
+float read_temperature(I2C_HandleTypeDef* hi2c, uint8_t addr) {
+    uint8_t buf[2];
+    HAL_I2C_Mem_Read(hi2c, addr &lt;&lt; 1, 0x00, I2C_MEMADD_SIZE_8BIT,
+                     buf, 2, HAL_MAX_DELAY);
+    int16_t raw = ((int16_t)buf[0] &lt;&lt; 4) | (buf[1] &gt;&gt; 4);
+    return raw * 0.0625;
+}
+// 问题：此驱动程序仅适用于 STM32 HAL。移植到 Nordic = 重写。
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust——驱动程序在任何实现 embedded-hal 的 MCU 上工作
+use embedded_hal::i2c::I2c;
+
+pub struct Tmp102&lt;I2C&gt; {
+    i2c: I2C,
+    address: u8,
+}
+
+impl&lt;I2C: I2c&gt; Tmp102&lt;I2C&gt; {
+    pub fn new(i2c: I2C, address: u8) -&gt; Self {
+        Self { i2c, address }
+    }
+
+    pub fn read_temperature(&amp;mut self) -&gt; Result&lt;f32, I2C::Error&gt; {
+        let mut buf = [0u8; 2];
+        self.i2c.write_read(self.address, &amp;[0x00], &amp;mut buf)?;
+        let raw = ((buf[0] as i16) &lt;&lt; 4) | ((buf[1] as i16) &gt;&gt; 4);
+        Ok(raw as f32 * 0.0625)
+    }
+}
+
+// 适用于 STM32、Nordic nRF、ESP32、RP2040——任何带 embedded-hal I2C 实现的芯片
+<span class="boring">}</span></code></pre></pre>
+<pre class="mermaid">graph TD
+    subgraph &quot;C 驱动程序架构&quot;
+        CD[&quot;温度驱动程序&quot;]
+        CD --&gt; STM[&quot;STM32 HAL&quot;]
+        CD -.-&gt;|&quot;移植 = 重写&quot;| NRF[&quot;Nordic HAL&quot;]
+        CD -.-&gt;|&quot;移植 = 重写&quot;| ESP[&quot;ESP-IDF&quot;]
+    end
+
+    subgraph &quot;Rust embedded-hal 架构&quot;
+        RD[&quot;温度驱动程序&lt;br/&gt;impl&amp;lt;I2C: I2c&amp;gt;&quot;]
+        RD --&gt; EHAL[&quot;embedded-hal::I2c trait&quot;]
+        EHAL --&gt; STM2[&quot;stm32f4xx-hal&quot;]
+        EHAL --&gt; NRF2[&quot;nrf52-hal&quot;]
+        EHAL --&gt; ESP2[&quot;esp-hal&quot;]
+        EHAL --&gt; RP2[&quot;rp2040-hal&quot;]
+        NOTE[&quot;编写驱动程序一次，&lt;br/&gt;在所有芯片上运行&quot;]
+    end
+
+    style CD fill:#ffa07a,color:#000
+    style RD fill:#91e5a3,color:#000
+    style EHAL fill:#91e5a3,color:#000
+    style NOTE fill:#91e5a3,color:#000
+</pre>
+<h2 id="全局分配器设置"><a class="header" href="#全局分配器设置">全局分配器设置</a></h2>
+<p><code>alloc</code> crate 给你 <code>Vec</code>、<code>String</code>、<code>Box</code>——但你需要告诉 Rust
+堆内存来自哪里。这相当于为你的平台实现 <code>malloc()</code>：</p>
+<pre><pre class="playground"><code class="language-rust">#![no_std]
+extern crate alloc;
+
+use alloc::vec::Vec;
+use alloc::string::String;
+use embedded_alloc::LlffHeap as Heap;
+
+#[global_allocator]
+static HEAP: Heap = Heap::empty();
+
+#[cortex_m_rt::entry]
+fn main() -&gt; ! {
+    // 用内存区域初始化分配器
+    // （通常是堆栈或静态数据未使用的部分 RAM）
+    {
+        const HEAP_SIZE: usize = 4096;
+        static mut HEAP_MEM: [u8; HEAP_SIZE] = [0; HEAP_SIZE];
+        // 安全：HEAP_MEM 仅在初始化期间在此处访问，在任何分配之前。
+        unsafe { HEAP.init(HEAP_MEM.as_ptr() as usize, HEAP_SIZE) }
+    }
+
+    // 现在你可以使用堆类型！
+    let mut log_buffer: Vec&lt;u8&gt; = Vec::with_capacity(256);
+    let name: String = String::from("sensor_01");
+    // ...
+
+    loop {}
+}</code></pre></pre>
+<div class="table-wrapper"><table><thead><tr><th>C 堆设置</th><th>Rust 等效</th></tr></thead><tbody>
+<tr><td><code>_sbrk()</code> / 自定义 <code>malloc()</code></td><td><code>#[global_allocator]</code> + <code>Heap::init()</code></td></tr>
+<tr><td><code>configTOTAL_HEAP_SIZE</code> (FreeRTOS)</td><td><code>HEAP_SIZE</code> 常量</td></tr>
+<tr><td><code>pvPortMalloc()</code></td><td><code>alloc::vec::Vec::new()</code>——自动</td></tr>
+<tr><td>堆耗尽→未定义行为</td><td><code>alloc_error_handler</code>→受控 panic</td></tr>
+</tbody></table>
+</div>
+<h2 id="混合-no_std--std-工作空间"><a class="header" href="#混合-no_std--std-工作空间">混合 <code>no_std</code> + <code>std</code> 工作空间</a></h2>
+<p>真实项目（如大型 Rust 工作空间）通常有：</p>
+<ul>
+<li>用于硬件可移植逻辑的 <code>no_std</code> 库 crate</li>
+<li>用于 Linux 应用层的 <code>std</code> 二进制 crate</li>
+</ul>
+<pre><code class="language-text">workspace_root/
+├── Cargo.toml              # [workspace] members = [...]
+├── protocol/               # no_std——线协议，解析
+│   ├── Cargo.toml          # 无默认功能，无 std
+│   └── src/lib.rs          # #![no_std]
+├── driver/                 # no_std——硬件抽象
+│   ├── Cargo.toml
+│   └── src/lib.rs          # #![no_std]，使用 embedded-hal trait
+├── firmware/               # no_std——MCU 二进制
+│   ├── Cargo.toml          # 依赖 protocol、driver
+│   └── src/main.rs         # #![no_std] #![no_main]
+└── host_tool/              # std——Linux CLI 工具
+    ├── Cargo.toml          # 依赖 protocol（相同的 crate！）
+    └── src/main.rs         # 使用 std::fs、std::net 等
+</code></pre>
+<p>关键模式：<code>protocol</code> crate 使用 <code>#![no_std]</code> 因此它可以为<strong>两者</strong>编译
+MCU 固件和 Linux 主机工具。共享代码，零重复。</p>
+<pre><code class="language-toml"># protocol/Cargo.toml
+[package]
+name = "protocol"
+
+[features]
+default = []
+std = []  # 可选：为主机构建时启用特定于 std 的功能
+
+[dependencies]
+serde = { version = "1", default-features = false, features = ["derive"] }
+# 注意：default-features = false 删除 serde 的 std 依赖
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// protocol/src/lib.rs
+#![cfg_attr(not(feature = "std"), no_std)]
+
+#[cfg(feature = "std")]
+extern crate std;
+
+extern crate alloc;
+use alloc::vec::Vec;
+use serde::{Serialize, Deserialize};
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DiagPacket {
+    pub sensor_id: u16,
+    pub value: i32,
+    pub fault_code: u16,
+}
+
+// 此函数在 no_std 和 std 上下文中都有效
+pub fn parse_packet(data: &amp;[u8]) -&gt; Result&lt;DiagPacket, &amp;'static str&gt; {
+    if data.len() &lt; 8 {
+        return Err("数据包太短");
+    }
+    Ok(DiagPacket {
+        sensor_id: u16::from_le_bytes([data[0], data[1]]),
+        value: i32::from_le_bytes([data[2], data[3], data[4], data[5]]),
+        fault_code: u16::from_le_bytes([data[6], data[7]]),
+    })
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="练习硬件抽象层驱动程序"><a class="header" href="#练习硬件抽象层驱动程序">练习：硬件抽象层驱动程序</a></h2>
+<p>为通过 SPI 通信的假设 LED 控制器编写 <code>no_std</code> 驱动程序。
+驱动程序应该使用 <code>embedded-hal</code> 对任何 SPI 实现泛型。</p>
+<p><strong>要求：</strong></p>
+<ol>
+<li>定义 <code>LedController&lt;SPI&gt;</code> 结构</li>
+<li>实现 <code>new()</code>、<code>set_brightness(led: u8, brightness: u8)</code> 和 <code>all_off()</code></li>
+<li>SPI 协议：发送 <code>[led_index, brightness_value]</code> 作为 2 字节事务</li>
+<li>使用 mock SPI 实现编写测试</li>
+</ol>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 起始代码
+#![no_std]
+use embedded_hal::spi::SpiDevice;
+
+pub struct LedController&lt;SPI&gt; {
+    spi: SPI,
+    num_leds: u8,
+}
+
+// 待办：实现 new()、set_brightness()、all_off()
+// 待办：创建 MockSpi 用于测试
+<span class="boring">}</span></code></pre></pre>
+<details><summary>解决方案（点击展开）</summary>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span>#![no_std]
+<span class="boring">fn main() {
+</span>use embedded_hal::spi::SpiDevice;
+
+pub struct LedController&lt;SPI&gt; {
+    spi: SPI,
+    num_leds: u8,
+}
+
+impl&lt;SPI: SpiDevice&gt; LedController&lt;SPI&gt; {
+    pub fn new(spi: SPI, num_leds: u8) -&gt; Self {
+        Self { spi, num_leds }
+    }
+
+    pub fn set_brightness(&amp;mut self, led: u8, brightness: u8) -&gt; Result&lt;(), SPI::Error&gt; {
+        if led &gt;= self.num_leds {
+            return Ok(()); // 静默忽略超出范围的 LED
+        }
+        self.spi.write(&amp;[led, brightness])
+    }
+
+    pub fn all_off(&amp;mut self) -&gt; Result&lt;(), SPI::Error&gt; {
+        for led in 0..self.num_leds {
+            self.spi.write(&amp;[led, 0])?;
+        }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // 记录所有事务的 Mock SPI
+    struct MockSpi {
+        transactions: Vec&lt;Vec&lt;u8&gt;&gt;,
+    }
+
+    // mock 的最小错误类型
+    #[derive(Debug)]
+    struct MockError;
+    impl embedded_hal::spi::Error for MockError {
+        fn kind(&amp;self) -&gt; embedded_hal::spi::ErrorKind {
+            embedded_hal::spi::ErrorKind::Other
+        }
+    }
+
+    impl embedded_hal::spi::ErrorType for MockSpi {
+        type Error = MockError;
+    }
+
+    impl SpiDevice for MockSpi {
+        fn write(&amp;mut self, buf: &amp;[u8]) -&gt; Result&lt;(), Self::Error&gt; {
+            self.transactions.push(buf.to_vec());
+            Ok(())
+        }
+        fn read(&amp;mut self, _buf: &amp;mut [u8]) -&gt; Result&lt;(), Self::Error&gt; { Ok(()) }
+        fn transfer(&amp;mut self, _r: &amp;mut [u8], _w: &amp;[u8]) -&gt; Result&lt;(), Self::Error&gt; { Ok(()) }
+        fn transfer_in_place(&amp;mut self, _buf: &amp;mut [u8]) -&gt; Result&lt;(), Self::Error&gt; { Ok(()) }
+        fn transaction(&amp;mut self, _ops: &amp;mut [embedded_hal::spi::Operation&lt;'_, u8&gt;]) -&gt; Result&lt;(), Self::Error&gt; { Ok(()) }
+    }
+
+    #[test]
+    fn test_set_brightness() {
+        let mock = MockSpi { transactions: vec![] };
+        let mut ctrl = LedController::new(mock, 4);
+        ctrl.set_brightness(2, 128).unwrap();
+        assert_eq!(ctrl.spi.transactions, vec![vec![2, 128]]);
+    }
+
+    #[test]
+    fn test_all_off() {
+        let mock = MockSpi { transactions: vec![] };
+        let mut ctrl = LedController::new(mock, 3);
+        ctrl.all_off().unwrap();
+        assert_eq!(ctrl.spi.transactions, vec![
+            vec![0, 0], vec![1, 0], vec![2, 0],
+        ]);
+    }
+
+    #[test]
+    fn test_out_of_range_led() {
+        let mock = MockSpi { transactions: vec![] };
+        let mut ctrl = LedController::new(mock, 2);
+        ctrl.set_brightness(5, 255).unwrap(); // 超出范围——忽略
+        assert!(ctrl.spi.transactions.is_empty());
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+</details>
+<h2 id="调试嵌入式-rustprobe-rsdefmt-和-vs-code"><a class="header" href="#调试嵌入式-rustprobe-rsdefmt-和-vs-code">调试嵌入式 Rust——probe-rs、defmt 和 VS Code</a></h2>
+<p>C 固件开发者通常使用 OpenOCD + GDB 或供应商特定 IDE
+（Keil、IAR、Segger Ozone）进行调试。Rust 的嵌入式生态系统已融合到 <strong>probe-rs</strong>
+作为统一的调试 probe 接口，用单个、Rust 原生工具替换 OpenOCD + GDB 栈。</p>
+<h3 id="probe-rs多合一调试-probe-工具"><a class="header" href="#probe-rs多合一调试-probe-工具">probe-rs——多合一调试 probe 工具</a></h3>
+<p><code>probe-rs</code> 替换 OpenOCD + GDB 组合。它支持 CMSIS-DAP、
+ST-Link、J-Link 和其他调试 probe：</p>
+<pre><code class="language-bash"># 安装 probe-rs（包括 cargo-flash 和 cargo-embed）
+cargo install probe-rs-tools
+
+# 烧录并运行固件
+cargo flash --chip STM32F401RE --release
+
+# 烧录、运行并打开 RTT（实时传输）控制台
+cargo embed --chip STM32F401RE
+</code></pre>
+<p><strong>probe-rs vs OpenOCD + GDB</strong>：</p>
+<div class="table-wrapper"><table><thead><tr><th>方面</th><th>OpenOCD + GDB</th><th>probe-rs</th></tr></thead><tbody>
+<tr><td>安装</td><td>2 个单独的包 + 脚本</td><td><code>cargo install probe-rs-tools</code></td></tr>
+<tr><td>配置</td><td>每个开发板/probe 的 <code>.cfg</code> 文件</td><td><code>--chip</code> 标志或 <code>Embed.toml</code></td></tr>
+<tr><td>控制台输出</td><td>Semihosting（非常慢）</td><td>RTT（~10×更快）</td></tr>
+<tr><td>日志框架</td><td><code>printf</code></td><td><code>defmt</code>（结构化，零成本）</td></tr>
+<tr><td>闪存算法</td><td>XML 包文件</td><td>1000+ 芯片内置</td></tr>
+<tr><td>GDB 支持</td><td>本机</td><td><code>probe-rs gdb</code> 适配器</td></tr>
+</tbody></table>
+</div>
+<h3 id="embedtoml项目配置"><a class="header" href="#embedtoml项目配置"><code>Embed.toml</code>——项目配置</a></h3>
+<p><code>probe-rs</code> 使用单个配置，而不是摆弄 <code>.cfg</code> 和 <code>.gdbinit</code> 文件：</p>
+<pre><code class="language-toml"># Embed.toml——放在项目根部
+[default.general]
+chip = "STM32F401RETx"
+
+[default.rtt]
+enabled = true           # 启用实时传输控制台
+channels = [
+    { up = 0, mode = "BlockIfFull", name = "Terminal" },
+]
+
+[default.flashing]
+enabled = true           # 运行前烧录
+restore_unwritten_bytes = false
+
+[default.reset]
+halt_afterwards = false  # 烧录 + 复位后开始运行
+
+[default.gdb]
+enabled = false          # 设置 true 以在 :1337 上公开 GDB 服务器
+gdb_connection_string = "127.0.0.1:1337"
+</code></pre>
+<pre><code class="language-bash"># 使用 Embed.toml，只需运行：
+cargo embed              # 烧录 + RTT 控制台——零标志
+cargo embed --release    # Release 构建
+</code></pre>
+<h3 id="defmt嵌入式日志的延迟格式化"><a class="header" href="#defmt嵌入式日志的延迟格式化">defmt——嵌入式日志的延迟格式化</a></h3>
+<p><code>defmt</code>（延迟格式化）替换 <code>printf</code> 调试。格式字符串存储在
+ELF 文件中，而不是闪存中——因此目标上的日志调用仅发送
+索引 + 参数字节。这使得日志比 <code>printf</code><strong>快 10-100 倍</strong>
+并使用一小部分闪存空间：</p>
+<pre><pre class="playground"><code class="language-rust">#![no_std]
+#![no_main]
+
+use defmt::{info, warn, error, debug, trace};
+use defmt_rtt as _; // RTT 传输——将 defmt 输出链接到 probe-rs
+
+#[cortex_m_rt::entry]
+fn main() -&gt; ! {
+    info!("启动完成，固件 v{}", env!("CARGO_PKG_VERSION"));
+
+    let sensor_id: u16 = 0x4A;
+    let temperature: f32 = 23.5;
+
+    // 格式字符串保留在 ELF 中，而不是闪存——几乎零开销
+    debug!("传感器 {:#06X}: {:.1}°C", sensor_id, temperature);
+
+    if temperature &gt; 80.0 {
+        warn!("传感器 {:#06X} 过热：{:.1}°C", sensor_id, temperature);
+    }
+
+    loop {
+        cortex_m::asm::wfi(); // 等待中断
+    }
+}
+
+// 自定义类型——派生 defmt::Format 而不是 Debug
+#[derive(defmt::Format)]
+struct SensorReading {
+    id: u16,
+    value: i32,
+    status: SensorStatus,
+}
+
+#[derive(defmt::Format)]
+enum SensorStatus {
+    Ok,
+    Warning,
+    Fault(u8),
+}
+
+// 用法：
+// info!("读数：{:?}", reading);  // &lt;-- 使用 defmt::Format，而不是 std Debug</code></pre></pre>
+<p><strong>defmt vs <code>printf</code> vs <code>log</code></strong>：</p>
+<div class="table-wrapper"><table><thead><tr><th>功能</th><th>C <code>printf</code>（semihosting）</th><th>Rust <code>log</code> crate</th><th><code>defmt</code></th></tr></thead><tbody>
+<tr><td>速度</td><td>每次调用 ~100ms</td><td>N/A（需要 <code>std</code>）</td><td>每次调用 ~1μs</td></tr>
+<tr><td>闪存使用</td><td>完整格式字符串</td><td>完整格式字符串</td><td>仅索引（字节）</td></tr>
+<tr><td>传输</td><td>Semihosting（停止 CPU）</td><td>串口/UART</td><td>RTT（非阻塞）</td></tr>
+<tr><td>结构化输出</td><td>否</td><td>仅文本</td><td>类型化，二进制编码</td></tr>
+<tr><td><code>no_std</code></td><td>通过 semihosting</td><td>仅外观（后端需要 <code>std</code>）</td><td>✅ 本机</td></tr>
+<tr><td>过滤级别</td><td>手动 <code>#ifdef</code></td><td><code>RUST_LOG=debug</code></td><td><code>defmt::println</code> + 功能</td></tr>
+</tbody></table>
+</div>
+<h3 id="vs-code-调试配置"><a class="header" href="#vs-code-调试配置">VS Code 调试配置</a></h3>
+<p>使用 <code>probe-rs</code> VS Code 扩展，你获得完整的图形调试——
+断点、变量检查、调用堆栈和寄存器视图：</p>
+<pre><code class="language-jsonc">// .vscode/launch.json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "probe-rs-debug",
+            "request": "launch",
+            "name": "烧录和调试 (probe-rs)",
+            "chip": "STM32F401RETx",
+            "coreConfigs": [
+                {
+                    "programBinary": "target/thumbv7em-none-eabihf/debug/${workspaceFolderBasename}",
+                    "rttEnabled": true,
+                    "rttChannelFormats": [
+                        {
+                            "channelNumber": 0,
+                            "dataFormat": "Defmt",
+                            "showTimestamps": true
+                        }
+                    ]
+                }
+            ],
+            "connectUnderReset": true,
+            "speed": 4000
+        }
+    ]
+}
+</code></pre>
+<p>安装扩展：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>ext install probe-rs.probe-rs-debugger
+<span class="boring">}</span></code></pre></pre>
+<h3 id="c-调试器工作流-vs-rust-嵌入式调试"><a class="header" href="#c-调试器工作流-vs-rust-嵌入式调试">C 调试器工作流 vs Rust 嵌入式调试</a></h3>
+<pre class="mermaid">graph LR
+    subgraph &quot;C 工作流（传统）&quot;
+        C1[&quot;编写代码&quot;] --&gt; C2[&quot;make flash&quot;]
+        C2 --&gt; C3[&quot;openocd -f board.cfg&quot;]
+        C3 --&gt; C4[&quot;arm-none-eabi-gdb&lt;br/&gt;target remote :3333&quot;]
+        C4 --&gt; C5[&quot;printf 通过 semihosting&lt;br/&gt;（每次调用~100ms，停止 CPU）&quot;]
+    end
+
+    subgraph &quot;Rust 工作流（probe-rs）&quot;
+        R1[&quot;编写代码&quot;] --&gt; R2[&quot;cargo embed&quot;]
+        R2 --&gt; R3[&quot;烧录 + RTT 控制台&lt;br/&gt;一条命令&quot;]
+        R3 --&gt; R4[&quot;defmt 日志实时流&lt;br/&gt;（~1μs）&quot;]
+        R2 -.-&gt;|&quot;或&quot;| R5[&quot;VS Code F5&lt;br/&gt;完整 GUI 调试器&quot;]
+    end
+
+    style C5 fill:#ffa07a,color:#000
+    style R3 fill:#91e5a3,color:#000
+    style R4 fill:#91e5a3,color:#000
+    style R5 fill:#91e5a3,color:#000
+</pre>
+<div class="table-wrapper"><table><thead><tr><th>C 调试操作</th><th>Rust 等效</th></tr></thead><tbody>
+<tr><td><code>openocd -f board/st_nucleo_f4.cfg</code></td><td><code>probe-rs info</code>（自动检测 probe + 芯片）</td></tr>
+<tr><td><code>arm-none-eabi-gdb -x .gdbinit</code></td><td><code>probe-rs gdb --chip STM32F401RE</code></td></tr>
+<tr><td><code>target remote :3333</code></td><td>GDB 连接到 <code>localhost:1337</code></td></tr>
+<tr><td><code>monitor reset halt</code></td><td><code>probe-rs reset --chip ...</code></td></tr>
+<tr><td><code>load firmware.elf</code></td><td><code>cargo flash --chip ...</code></td></tr>
+<tr><td><code>printf("debug: %d\n", val)</code>（semihosting）</td><td><code>defmt::info!("debug: {}", val)</code>（RTT）</td></tr>
+<tr><td>Keil/IAR GUI 调试器</td><td>VS Code + <code>probe-rs-debugger</code> 扩展</td></tr>
+<tr><td>Segger SystemView</td><td><code>defmt</code> + <code>probe-rs</code> RTT 查看器</td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p><strong>交叉参考</strong>：对于嵌入式驱动程序中使用的高级 unsafe 模式
+（引脚投影、自定义 arena/slab 分配器），参见配套
+<em>Rust Patterns</em> 指南，"Pin Projections — Structural Pinning"
+和 "Custom Allocators — Arena and Slab Patterns" 部分。</p>
+</blockquote>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch15-no_std-rust-without-the-standard-library.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch16-case-studies.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch15-no_std-rust-without-the-standard-library.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch16-case-studies.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

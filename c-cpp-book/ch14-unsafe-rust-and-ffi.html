@@ -1,0 +1,719 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>14. unsafe Rust 和 FFI - Rust for C/C++ Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C/C++ Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h3 id="unsafe-rust"><a class="header" href="#unsafe-rust">Unsafe Rust</a></h3>
+<blockquote>
+<p><strong>你将学到：</strong> 何时以及如何使用 <code>unsafe</code>——原始指针解引用、FFI（外部函数接口）用于从 Rust 调用 C 以及反之亦然、用于字符串互操作的 <code>CString</code>/<code>CStr</code>，以及如何围绕不安全代码编写安全包装器。</p>
+</blockquote>
+<ul>
+<li><code>unsafe</code> 解锁访问通常被 Rust 编译器禁止的功能
+<ul>
+<li>解引用原始指针</li>
+<li>访问<em>可变</em>静态变量</li>
+<li>https://doc.rust-lang.org/book/ch19-01-unsafe-rust.html</li>
+</ul>
+</li>
+<li>能力越大，责任越大
+<ul>
+<li><code>unsafe</code> 告诉编译器"我，程序员，负责维护编译器通常保证的不变量"</li>
+<li>必须保证没有混叠的可变和不可变引用，没有悬空指针，没有无效引用，...</li>
+<li><code>unsafe</code> 的使用应限制在尽可能小的作用域</li>
+<li>所有使用 <code>unsafe</code> 的代码都应该有"safety"注释描述假设</li>
+</ul>
+</li>
+</ul>
+<h3 id="unsafe-rust-示例"><a class="header" href="#unsafe-rust-示例">Unsafe Rust 示例</a></h3>
+<pre><pre class="playground"><code class="language-rust">unsafe fn harmless() {}
+fn main() {
+    // 安全：我们调用一个无害的 unsafe 函数
+    unsafe {
+        harmless();
+    }
+    let a = 42u32;
+    let p = &amp;a as *const u32;
+    // 安全：p 是指向将在作用域内保持有效的变量的有效指针
+    unsafe {
+        println!("{}", *p);
+    }
+    // 安全：不安全；仅用于说明目的
+    let dangerous_buffer = 0xb8000 as *mut u32;
+    unsafe {
+        println!("即将爆炸！！！");
+        *dangerous_buffer = 0; // 这在大多数现代机器上将导致 SEGV
+    }
+}</code></pre></pre>
+<h3 id="简单-ffi-示例rust-库函数被-c-消费"><a class="header" href="#简单-ffi-示例rust-库函数被-c-消费">简单 FFI 示例（Rust 库函数被 C 消费）</a></h3>
+<h2 id="ffi-字符串cstring-和-cstr"><a class="header" href="#ffi-字符串cstring-和-cstr">FFI 字符串：CString 和 CStr</a></h2>
+<p>FFI 代表<em>外部函数接口</em>——Rust 用于调用用其他语言（如 C）编写的函数的机制，反之亦然。</p>
+<p>在与 C 代码交互时，Rust 的 <code>String</code> 和 <code>&amp;str</code> 类型（无 null 终止符的 UTF-8）与 C 字符串（null 终止的字节数组）不直接兼容。Rust 从 <code>std::ffi</code> 提供 <code>CString</code>（拥有）和 <code>CStr</code>（借用）用于此目的：</p>
+<div class="table-wrapper"><table><thead><tr><th>类型</th><th>类似于</th><th>何时使用</th></tr></thead><tbody>
+<tr><td><code>CString</code></td><td><code>String</code>（拥有）</td><td>从 Rust 数据创建 C 字符串</td></tr>
+<tr><td><code>&amp;CStr</code></td><td><code>&amp;str</code>（借用）</td><td>从外部代码接收 C 字符串</td></tr>
+</tbody></table>
+</div>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::ffi::{CString, CStr};
+use std::os::raw::c_char;
+
+fn demo_ffi_strings() {
+    // 创建 C 兼容字符串（添加 null 终止符）
+    let c_string = CString::new("Hello from Rust").expect("CString::new 失败");
+    let ptr: *const c_char = c_string.as_ptr();
+
+    // 将 C 字符串转换回 Rust（不安全因为我们信任指针）
+    // 安全：ptr 有效且 null 终止（我们刚刚在上面创建了它）
+    let back_to_rust: &amp;CStr = unsafe { CStr::from_ptr(ptr) };
+    let rust_str: &amp;str = back_to_rust.to_str().expect("无效的 UTF-8");
+    println!("{}", rust_str);
+}
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>警告</strong>：如果输入包含内部 null 字节（<code>\0</code>），<code>CString::new()</code> 将返回错误。始终处理 <code>Result</code>。你将在下面的 FFI 示例中广泛看到 <code>CStr</code>。</p>
+</blockquote>
+<ul>
+<li><code>FFI</code> 方法必须标记为 <code>#[no_mangle]</code> 以确保编译器不修改名称</li>
+<li>我们将 crate 编译为静态库
+<pre><code>#[no_mangle]
+pub extern "C" fn add(left: u64, right: u64) -&gt; u64 {
+    left + right
+}
+</code></pre>
+</li>
+<li>我们将编译以下 C 代码并将其链接到我们的静态库。
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdint.h&gt;
+extern uint64_t add(uint64_t, uint64_t);
+int main() {
+    printf("Add 返回 %llu\n", add(21, 21));
+}
+</code></pre>
+</li>
+</ul>
+<h3 id="复杂-ffi-示例"><a class="header" href="#复杂-ffi-示例">复杂 FFI 示例</a></h3>
+<ul>
+<li>在以下示例中，我们将创建 Rust 日志接口并将其暴露给
+[PYTHON] 和 <code>C</code>
+<ul>
+<li>我们将看到如何从 Rust 和 C 原生使用相同的接口</li>
+<li>我们将探索使用 <code>cbindgen</code> 等工具为 <code>C</code> 生成头文件</li>
+<li>我们将看到 <code>unsafe</code> 包装器如何充当安全 Rust 代码的桥梁</li>
+</ul>
+</li>
+</ul>
+<h2 id="logger-辅助函数"><a class="header" href="#logger-辅助函数">Logger 辅助函数</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn create_or_open_log_file(log_file: &amp;str, overwrite: bool) -&gt; Result&lt;File, String&gt; {
+    if overwrite {
+        File::create(log_file).map_err(|e| e.to_string())
+    } else {
+        OpenOptions::new()
+            .write(true)
+            .append(true)
+            .open(log_file)
+            .map_err(|e| e.to_string())
+    }
+}
+
+fn log_to_file(file_handle: &amp;mut File, message: &amp;str) -&gt; Result&lt;(), String&gt; {
+    file_handle
+        .write_all(message.as_bytes())
+        .map_err(|e| e.to_string())
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="logger-struct"><a class="header" href="#logger-struct">Logger struct</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct SimpleLogger {
+    log_level: LogLevel,
+    file_handle: File,
+}
+
+impl SimpleLogger {
+    fn new(log_file: &amp;str, overwrite: bool, log_level: LogLevel) -&gt; Result&lt;Self, String&gt; {
+        let file_handle = create_or_open_log_file(log_file, overwrite)?;
+        Ok(Self {
+            file_handle,
+            log_level,
+        })
+    }
+
+    fn log_message(&amp;mut self, log_level: LogLevel, message: &amp;str) -&gt; Result&lt;(), String&gt; {
+        if log_level as u32 &lt;= self.log_level as u32 {
+            let timestamp = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+            let message = format!("Simple: {timestamp} {log_level} {message}\n");
+            log_to_file(&amp;mut self.file_handle, &amp;message)
+        } else {
+            Ok(())
+        }
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="测试"><a class="header" href="#测试">测试</a></h2>
+<ul>
+<li>使用 Rust 测试功能是微不足道的
+<ul>
+<li>测试方法用 <code>#[test]</code> 装饰，不是编译二进制文件的一部分</li>
+<li>很容易为测试目的创建 mock 方法</li>
+</ul>
+</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[test]
+fn testfunc() -&gt; Result&lt;(), String&gt; {
+    let mut logger = SimpleLogger::new("test.log", false, LogLevel::INFO)?;
+    logger.log_message(LogLevel::TRACELEVEL1, "Hello world")?;
+    logger.log_message(LogLevel::CRITICAL, "Critical message")?;
+    Ok(()) // 编译器在此处自动删除 logger
+}
+<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-bash">cargo test
+</code></pre>
+<h2 id="c-rust-ffi"><a class="header" href="#c-rust-ffi">(C)-Rust FFI</a></h2>
+<ul>
+<li>cbindgen 是为导出的 Rust 函数生成头文件的绝佳工具
+<ul>
+<li>可以使用 cargo 安装</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-bash">cargo install cbindgen
+cbindgen
+</code></pre>
+<ul>
+<li>函数和结构可以使用 <code>#[no_mangle]</code> 和 <code>#[repr(C)]</code> 导出
+<ul>
+<li>我们将假设常见的接口模式，将 <code>**</code> 传递给实际实现，成功时返回 0，错误时返回非零</li>
+<li><strong>不透明 vs 透明结构</strong>：我们的 <code>SimpleLogger</code> 作为<em>不透明指针</em>（<code>*mut SimpleLogger</code>）传递——C 端从不访问其字段，所以 <code>#[repr(C)]</code><strong>不</strong>需要。当 C 代码需要直接读/写结构字段时使用 <code>#[repr(C)]</code>：</li>
+</ul>
+</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 不透明——C 仅持有指针，从不检查字段。不需要 #[repr(C)]。
+struct SimpleLogger { /* 仅 Rust 的字段 */ }
+
+// 透明——C 直接读/写字段。必须使用 #[repr(C)]。
+#[repr(C)]
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+}
+<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-c">typedef struct SimpleLogger SimpleLogger;
+uint32_t create_simple_logger(const char *file_name, struct SimpleLogger **out_logger);
+uint32_t log_entry(struct SimpleLogger *logger, const char *message);
+uint32_t drop_logger(struct SimpleLogger *logger);
+</code></pre>
+<ul>
+<li>注意我们需要大量健全性检查</li>
+<li>我们必须显式泄漏内存以防止 Rust 自动释放</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[no_mangle]
+pub extern "C" fn create_simple_logger(file_name: *const std::os::raw::c_char, out_logger: *mut *mut SimpleLogger) -&gt; u32 {
+    use std::ffi::CStr;
+    // 确保指针不是 NULL
+    if file_name.is_null() || out_logger.is_null() {
+        return 1;
+    }
+    // 安全：传入的指针根据约定为 NULL 或 0 终止
+    let file_name = unsafe {
+        CStr::from_ptr(file_name)
+    };
+    let file_name = file_name.to_str();
+    // 确保 file_name 没有垃圾字符
+    if file_name.is_err() {
+        return 1;
+    }
+    let file_name = file_name.unwrap();
+    // 假设一些默认值；在现实生活中我们将传递它们
+    let new_logger = SimpleLogger::new(file_name, false, LogLevel::CRITICAL);
+    // 检查我们是否能够构造 logger
+    if new_logger.is_err() {
+        return 1;
+    }
+    let new_logger = Box::new(new_logger.unwrap());
+    // 这防止 Box 在离开作用域时被删除
+    let logger_ptr: *mut SimpleLogger = Box::leak(new_logger);
+    // 安全：logger 非空且 logger_ptr 有效
+    unsafe {
+        *out_logger = logger_ptr;
+    }
+    return 0;
+}
+<span class="boring">}</span></code></pre></pre>
+<ul>
+<li>我们在 <code>log_entry()</code> 中有类似的错误检查</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[no_mangle]
+pub extern "C" fn log_entry(logger: *mut SimpleLogger, message: *const std::os::raw::c_char) -&gt; u32 {
+    use std::ffi::CStr;
+    if message.is_null() || logger.is_null() {
+        return 1;
+    }
+    // 安全：message 非空
+    let message = unsafe {
+        CStr::from_ptr(message)
+    };
+    let message = message.to_str();
+    // 确保 file_name 没有垃圾字符
+    if message.is_err() {
+        return 1;
+    }
+    // 安全：logger 是之前由 create_simple_logger() 构造的有效指针
+    unsafe {
+        (*logger).log_message(LogLevel::CRITICAL, message.unwrap()).is_err() as u32
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn drop_logger(logger: *mut SimpleLogger) -&gt; u32 {
+    if logger.is_null() {
+        return 1;
+    }
+    // 安全：logger 是之前由 create_simple_logger() 构造的有效指针
+    unsafe {
+        // 这构造一个 Box&lt;SimpleLogger&gt;，它在离开作用域时被删除
+        let _ = Box::from_raw(logger);
+    }
+    0
+}
+<span class="boring">}</span></code></pre></pre>
+<ul>
+<li>我们可以使用 Rust 测试我们的 (C)-FFI，或通过编写 (C) 程序</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[test]
+fn test_c_logger() {
+    // c".." 创建 NULL 终止字符串
+    let file_name = c"test.log".as_ptr() as *const std::os::raw::c_char;
+    let mut c_logger: *mut SimpleLogger = std::ptr::null_mut();
+    assert_eq!(create_simple_logger(file_name, &amp;mut c_logger), 0);
+    // 这是手动创建 c"..." 字符串的方式
+    let message = b"message from C\0".as_ptr() as *const std::os::raw::c_char;
+    assert_eq!(log_entry(c_logger, message), 0);
+    drop_logger(c_logger);
+}
+<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-c">#include "logger.h"
+...
+int main() {
+    SimpleLogger *logger = NULL;
+    if (create_simple_logger("test.log", &amp;logger) == 0) {
+        log_entry(logger, "Hello from C");
+        drop_logger(logger); /*需要关闭句柄等*/
+    }
+    ...
+}
+</code></pre>
+<h2 id="确保-unsafe-代码的正确性"><a class="header" href="#确保-unsafe-代码的正确性">确保 unsafe 代码的正确性</a></h2>
+<ul>
+<li>TL;DR 版本是使用 <code>unsafe</code> 需要深思熟虑
+<ul>
+<li>始终记录代码做出的安全假设并与专家一起审查</li>
+<li>使用 cbindgen、Miri、Valgrind 等工具帮助验证正确性</li>
+<li><strong>永远不要让 panic 跨越 FFI 边界展开</strong>——这是 UB。在 FFI 入口点使用 <code>std::panic::catch_unwind</code>，或在你的配置中配置 <code>panic = "abort"</code></li>
+<li>如果结构跨 FFI 共享，标记为 <code>#[repr(C)]</code> 以保证 C 兼容的内存布局</li>
+<li>查阅 https://doc.rust-lang.org/nomicon/intro.html（"Rustonomicon"——unsafe Rust 的黑魔法）</li>
+<li>寻求内部专家的帮助</li>
+</ul>
+</li>
+</ul>
+<h3 id="验证工具miri-vs-valgrind"><a class="header" href="#验证工具miri-vs-valgrind">验证工具：Miri vs Valgrind</a></h3>
+<p>C++ 开发者熟悉 Valgrind 和 sanitizer。Rust 有那些<strong>加上</strong> Miri，它对 Rust 特定的 UB 更精确：</p>
+<div class="table-wrapper"><table><thead><tr><th></th><th><strong>Miri</strong></th><th><strong>Valgrind</strong></th><th><strong>C++ sanitizer（ASan/MSan/UBSan）</strong></th></tr></thead><tbody>
+<tr><td><strong>它捕获什么</strong></td><td>Rust 特定的 UB：堆叠借用、无效的 <code>enum</code> 判别式、未初始化读取、别名违规</td><td>内存泄漏、释放后使用、无效读/写、未初始化内存</td><td>缓冲区溢出、释放后使用、数据竞争、UB</td></tr>
+<tr><td><strong>工作原理</strong></td><td>解释 MIR（Rust 的中级 IR）——无本机执行</td><td>在运行时检测编译的二进制文件</td><td>编译时检测</td></tr>
+<tr><td><strong>FFI 支持</strong></td><td>❌ 不能跨越 FFI 边界（跳过 C 调用）</td><td>✅ 适用于任何编译的二进制文件，包括 FFI</td><td>✅ 如果 C 代码也用 sanitizer 编译</td></tr>
+<tr><td><strong>速度</strong></td><td>比本机慢 ~100 倍</td><td>慢 ~10-50 倍</td><td>慢 ~2-5 倍</td></tr>
+<tr><td><strong>何时使用</strong></td><td>纯 Rust <code>unsafe</code> 代码、数据结构不变量</td><td>FFI 代码、完整二进制集成测试</td><td>FFI 的 C/C++ 端、性能敏感的测试</td></tr>
+<tr><td><strong>捕获别名 bug</strong></td><td>✅ 堆叠借用模型</td><td>❌</td><td>部分（TSan 用于数据竞争）</td></tr>
+</tbody></table>
+</div>
+<p><strong>建议</strong>：<strong>两者都使用</strong>——Miri 用于纯 Rust unsafe，Valgrind 用于 FFI 集成：</p>
+<ul>
+<li>
+<p><strong>Miri</strong>——捕获 Valgrind 看不到的 Rust 特定 UB（别名违规、无效 enum 值、堆叠借用）：</p>
+<pre><code>rustup +nightly component add miri
+cargo +nightly miri test                    # 在 Miri 下运行所有测试
+cargo +nightly miri test -- test_name       # 运行特定测试
+</code></pre>
+<blockquote>
+<p>⚠️ Miri 需要 nightly 且不能执行 FFI 调用。将 unsafe Rust 逻辑隔离到可测试单元中。</p>
+</blockquote>
+</li>
+<li>
+<p><strong>Valgrind</strong>——你已经知道的工具，适用于包括 FFI 在内的编译二进制文件：</p>
+<pre><code>sudo apt install valgrind
+cargo install cargo-valgrind
+cargo valgrind test                         # 在 Valgrind 下运行所有测试
+</code></pre>
+<blockquote>
+<p>捕获 FFI 代码中常见的 <code>Box::leak</code> / <code>Box::from_raw</code> 模式中的泄漏。</p>
+</blockquote>
+</li>
+<li>
+<p><strong>cargo-careful</strong>——使用额外的运行时检查运行测试（在常规测试和 Miri 之间）：</p>
+<pre><code>cargo install cargo-careful
+cargo +nightly careful test
+</code></pre>
+</li>
+</ul>
+<h2 id="unsafe-rust-总结"><a class="header" href="#unsafe-rust-总结">Unsafe Rust 总结</a></h2>
+<ul>
+<li><code>cbindgen</code> 是 (C) FFI 到 Rust 的绝佳工具
+<ul>
+<li>使用 <code>bindgen</code> 用于相反方向的 FFI 接口（查阅广泛的文档）</li>
+</ul>
+</li>
+<li><strong>不要假设你的 unsafe 代码是正确的，或者它可以从安全 Rust 使用。真的很容易犯错，甚至看似正常工作的代码也可能因微妙原因而错误</strong>
+<ul>
+<li>使用工具验证正确性</li>
+<li>如果仍有疑问，寻求专家建议</li>
+</ul>
+</li>
+<li>确保你的 <code>unsafe</code> 代码有关于假设和为什么正确的显式文档注释
+<ul>
+<li><code>unsafe</code> 代码的调用者也应该有关于安全的相应注释，并遵守限制</li>
+</ul>
+</li>
+</ul>
+<h1 id="练习编写安全的-ffi-包装器"><a class="header" href="#练习编写安全的-ffi-包装器">练习：编写安全的 FFI 包装器</a></h1>
+<p>🔴 <strong>挑战</strong>——需要理解 unsafe 块、原始指针和安全 API 设计</p>
+<ul>
+<li>编写一个安全 Rust 包装器，围绕 <code>unsafe</code> FFI 风格函数。此练习模拟调用 C 函数，将格式化字符串写入调用者提供的缓冲区。</li>
+<li><strong>步骤 1</strong>：实现 unsafe 函数 <code>unsafe_greet</code>，将问候语写入原始 <code>*mut u8</code> 缓冲区</li>
+<li><strong>步骤 2</strong>：编写安全包装器 <code>safe_greet</code>，分配 <code>Vec&lt;u8&gt;</code>，调用 unsafe 函数，并返回 <code>String</code></li>
+<li><strong>步骤 3</strong>：为每个 unsafe 块添加适当的 <code>// Safety:</code> 注释</li>
+</ul>
+<p><strong>起始代码：</strong></p>
+<pre><pre class="playground"><code class="language-rust">use std::fmt::Write as _;
+
+/// 模拟 C 函数：将 "Hello, &lt;name&gt;!" 写入缓冲区。
+/// 返回写入的字节数（不包括 null 终止符）。
+/// # 安全
+/// - `buf` 必须指向至少 `buf_len` 个可写字节
+/// - `name` 必须是指向 null 终止 C 字符串的有效指针
+unsafe fn unsafe_greet(buf: *mut u8, buf_len: usize, name: *const u8) -&gt; isize {
+    // 待办：构建问候语，复制字节到 buf，返回长度
+    // 提示：使用 std::ffi::CStr::from_ptr 或手动迭代字节
+    todo!()
+}
+
+/// 安全包装器——公共 API 中无 unsafe
+fn safe_greet(name: &amp;str) -&gt; Result&lt;String, String&gt; {
+    // 待办：分配 Vec&lt;u8&gt; 缓冲区，创建 null 终止的 name，
+    // 在带有安全注释的 unsafe 块中调用 unsafe_greet，
+    // 将结果转换回 String
+    todo!()
+}
+
+fn main() {
+    match safe_greet("Rustacean") {
+        Ok(msg) =&gt; println!("{msg}"),
+        Err(e) =&gt; eprintln!("错误：{e}"),
+    }
+    // 预期输出：Hello, Rustacean!
+}</code></pre></pre>
+<details><summary>解决方案（点击展开）</summary>
+<pre><pre class="playground"><code class="language-rust">use std::ffi::CStr;
+
+/// 模拟 C 函数：将 "Hello, &lt;name&gt;!" 写入缓冲区。
+/// 返回写入的字节数，如果缓冲区太小则返回 -1。
+/// # 安全
+/// - `buf` 必须指向至少 `buf_len` 个可写字节
+/// - `name` 必须是指向 null 终止 C 字符串的有效指针
+unsafe fn unsafe_greet(buf: *mut u8, buf_len: usize, name: *const u8) -&gt; isize {
+    // 安全：调用者保证 name 是有效的 null 终止字符串
+    let name_cstr = unsafe { CStr::from_ptr(name as *const std::os::raw::c_char) };
+    let name_str = match name_cstr.to_str() {
+        Ok(s) =&gt; s,
+        Err(_) =&gt; return -1,
+    };
+    let greeting = format!("Hello, {}!", name_str);
+    if greeting.len() &gt; buf_len {
+        return -1;
+    }
+    // 安全：buf 指向至少 buf_len 个可写字节（调用者保证）
+    unsafe {
+        std::ptr::copy_nonoverlapping(greeting.as_ptr(), buf, greeting.len());
+    }
+    greeting.len() as isize
+}
+
+/// 安全包装器——公共 API 中无 unsafe
+fn safe_greet(name: &amp;str) -&gt; Result&lt;String, String&gt; {
+    let mut buffer = vec![0u8; 256];
+    // 为 C API 创建 null 终止版本的 name
+    let name_with_null: Vec&lt;u8&gt; = name.bytes().chain(std::iter::once(0)).collect();
+
+    // 安全：缓冲区有 256 个可写字节，name_with_null 是 null 终止的
+    let bytes_written = unsafe {
+        unsafe_greet(buffer.as_mut_ptr(), buffer.len(), name_with_null.as_ptr())
+    };
+
+    if bytes_written &lt; 0 {
+        return Err("缓冲区太小或无效的 name".to_string());
+    }
+
+    String::from_utf8(buffer[..bytes_written as usize].to_vec())
+        .map_err(|e| format!("无效的 UTF-8: {e}"))
+}
+
+fn main() {
+    match safe_greet("Rustacean") {
+        Ok(msg) =&gt; println!("{msg}"),
+        Err(e) =&gt; eprintln!("错误：{e}"),
+    }
+}
+// 输出：
+// Hello, Rustacean!</code></pre></pre>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch13-concurrency.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch15-no_std-rust-without-the-standard-library.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch13-concurrency.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch15-no_std-rust-without-the-standard-library.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

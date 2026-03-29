@@ -1,0 +1,859 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>5. 数据结构与集合 - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="元组和解构"><a class="header" href="#元组和解构">元组和解构</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> Rust 元组 vs C# <code>ValueTuple</code>，数组和切片，结构体 vs 类，
+用于领域建模的新类型模式（零成本类型安全），以及解构语法。</p>
+<p><strong>难度：</strong> 🟢 初学者</p>
+</blockquote>
+<p>C# 有 <code>ValueTuple</code>（自 C# 7 起）。Rust 元组类似，但更深入地集成到语言中。</p>
+<h3 id="c-元组"><a class="header" href="#c-元组">C# 元组</a></h3>
+<pre><code class="language-csharp">// C# ValueTuple（C# 7+）
+var point = (10, 20);                         // (int, int)
+var named = (X: 10, Y: 20);                   // 命名元素
+Console.WriteLine($"{named.X}, {named.Y}");
+
+// 元组作为返回类型
+public (int Quotient, int Remainder) Divide(int a, int b)
+{
+    return (a / b, a % b);
+}
+
+var (q, r) = Divide(10, 3);    // 解构
+Console.WriteLine($"{q} remainder {r}");
+
+// 丢弃
+var (_, remainder) = Divide(10, 3);  // 忽略商
+</code></pre>
+<h3 id="rust-元组"><a class="header" href="#rust-元组">Rust 元组</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust 元组——默认不可变，无命名元素
+let point = (10, 20);                // (i32, i32)
+let point3d: (f64, f64, f64) = (1.0, 2.0, 3.0);
+
+// 通过索引访问（从 0 开始）
+println!("x={}, y={}", point.0, point.1);
+
+// 元组作为返回类型
+fn divide(a: i32, b: i32) -&gt; (i32, i32) {
+    (a / b, a % b)
+}
+
+let (q, r) = divide(10, 3);       // 解构
+println!("{q} remainder {r}");
+
+// 使用 _ 丢弃
+let (_, remainder) = divide(10, 3);
+
+// 单元类型 () —— "空元组"（类似 C# void）
+fn greet() {          // 隐式返回类型是 ()
+    println!("hi");
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="关键区别"><a class="header" href="#关键区别">关键区别</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>特性</th><th>C# <code>ValueTuple</code></th><th>Rust 元组</th></tr></thead><tbody>
+<tr><td>命名元素</td><td><code>(int X, int Y)</code></td><td>不支持——使用结构体</td></tr>
+<tr><td>最大元数</td><td>~8（嵌套更多）</td><td>无限（实际限制 ~12）</td></tr>
+<tr><td>比较</td><td>自动</td><td>自动（对于 ≤ 12 个元素的元组）</td></tr>
+<tr><td>用作字典键</td><td>是</td><td>是（如果元素实现 <code>Hash</code>）</td></tr>
+<tr><td>从函数返回</td><td>常见</td><td>常见</td></tr>
+<tr><td>可变元素</td><td>总是可变</td><td>仅与 <code>let mut</code> 一起</td></tr>
+</tbody></table>
+</div>
+<h3 id="元组结构体新类型"><a class="header" href="#元组结构体新类型">元组结构体（新类型）</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 当普通元组不够描述性时，使用元组结构体：
+struct Meters(f64);     // 单字段"新类型"包装器
+struct Celsius(f64);
+struct Fahrenheit(f64);
+
+// 编译器将这些视为不同的类型：
+let distance = Meters(100.0);
+let temp = Celsius(36.6);
+// distance == temp;  // ❌ 错误：不能比较 Meters 与 Celsius
+
+// 新类型模式在编译时防止单位混淆错误！
+// 在 C# 中你需要完整的类/结构体来获得相同的安全性。
+<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-csharp">// C# 等价物需要更多工作：
+public readonly record struct Meters(double Value);
+public readonly record struct Celsius(double Value);
+// 不是可互换的，但 records 与 Rust 的零成本新类型相比有开销
+</code></pre>
+<h3 id="深入新类型模式零成本的领域建模"><a class="header" href="#深入新类型模式零成本的领域建模">深入新类型模式：零成本的领域建模</a></h3>
+<p>新类型远不止防止单位混淆。它们是 Rust 将<strong>业务规则编码到类型系统</strong>的主要工具——替代 C# 中常见的"守卫子句"和"验证类"模式。</p>
+<h4 id="c-验证方法运行时守卫"><a class="header" href="#c-验证方法运行时守卫">C# 验证方法：运行时守卫</a></h4>
+<pre><code class="language-csharp">// C# —— 验证在运行时发生，每次都发生
+public class UserService
+{
+    public User CreateUser(string email, int age)
+    {
+        if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
+            throw new ArgumentException("Invalid email");
+        if (age &lt; 0 || age &gt; 150)
+            throw new ArgumentException("Invalid age");
+
+        return new User { Email = email, Age = age };
+    }
+
+    public void SendEmail(string email)
+    {
+        // 必须重新验证——或者相信调用者？
+        if (!email.Contains('@')) throw new ArgumentException("Invalid email");
+        // ...
+    }
+}
+</code></pre>
+<h4 id="rust-新类型方法编译时证明"><a class="header" href="#rust-新类型方法编译时证明">Rust 新类型方法：编译时证明</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>/// 已验证的电子邮件地址——类型本身就是有效性的证明。
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Email(String);
+
+impl Email {
+    /// 创建 Email 的唯一方法——验证在构造时发生一次。
+    pub fn new(raw: &amp;str) -&gt; Result&lt;Self, &amp;'static str&gt; {
+        if raw.contains('@') &amp;&amp; raw.len() &gt; 3 {
+            Ok(Email(raw.to_lowercase()))
+        } else {
+            Err("invalid email format")
+        }
+    }
+
+    /// 安全访问内部值
+    pub fn as_str(&amp;self) -&gt; &amp;str { &amp;self.0 }
+}
+
+/// 已验证的年龄——不可能创建无效的年龄。
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub struct Age(u8);
+
+impl Age {
+    pub fn new(raw: u8) -&gt; Result&lt;Self, &amp;'static str&gt; {
+        if raw &lt;= 150 { Ok(Age(raw)) } else { Err("age out of range") }
+    }
+    pub fn value(&amp;self) -&gt; u8 { self.0 }
+}
+
+// 现在函数接受已证明的类型——无需重新验证！
+fn create_user(email: Email, age: Age) -&gt; User {
+    // email 保证有效——这是类型不变量
+    User { email, age }
+}
+
+fn send_email(to: &amp;Email) {
+    // 无需验证——Email 类型证明有效性
+    println!("Sending to: {}", to.as_str());
+}
+<span class="boring">}</span></code></pre></pre>
+<h4 id="c-开发者的常见新类型用途"><a class="header" href="#c-开发者的常见新类型用途">C# 开发者的常见新类型用途</a></h4>
+<div class="table-wrapper"><table><thead><tr><th>C# 模式</th><th>Rust 新类型</th><th>防止什么</th></tr></thead><tbody>
+<tr><td><code>string</code> 用于 UserId、Email 等</td><td><code>struct UserId(Uuid)</code></td><td>将错误的字符串传递给错误的参数</td></tr>
+<tr><td><code>int</code> 用于 Port、Count、Index</td><td><code>struct Port(u16)</code></td><td>Port 和 Count 不可互换</td></tr>
+<tr><td>到处是守卫子句</td><td>构造函数验证一次</td><td>重新验证、遗漏验证</td></tr>
+<tr><td><code>decimal</code> 用于 USD、EUR</td><td><code>struct Usd(Decimal)</code></td><td>意外将 USD 加到 EUR</td></tr>
+<tr><td><code>TimeSpan</code> 用于不同的语义</td><td><code>struct Timeout(Duration)</code></td><td>将连接超时作为请求超时传递</td></tr>
+</tbody></table>
+</div>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 零成本：新类型编译为与内部类型相同的汇编。
+// 这段 Rust 代码：
+struct UserId(u64);
+fn lookup(id: UserId) -&gt; Option&lt;User&gt; { /* ... */ }
+
+// 生成与以下相同的机器码：
+fn lookup(id: u64) -&gt; Option&lt;User&gt; { /* ... */ }
+// 但在编译时具有完整的类型安全！
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="数组和切片"><a class="header" href="#数组和切片">数组和切片</a></h2>
+<p>理解数组、切片和向量之间的区别至关重要。</p>
+<h3 id="c-数组"><a class="header" href="#c-数组">C# 数组</a></h3>
+<pre><code class="language-csharp">// C# 数组
+int[] numbers = new int[5];         // 固定大小，堆分配
+int[] initialized = { 1, 2, 3, 4, 5 }; // 数组字面量
+
+// 访问
+numbers[0] = 10;
+int first = numbers[0];
+
+// 长度
+int length = numbers.Length;
+
+// 数组作为参数（引用类型）
+void ProcessArray(int[] array)
+{
+    array[0] = 99;  // 修改原始数据
+}
+</code></pre>
+<h3 id="rust-数组切片和向量"><a class="header" href="#rust-数组切片和向量">Rust 数组、切片和向量</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 1. 数组 - 固定大小，栈分配
+let numbers: [i32; 5] = [1, 2, 3, 4, 5];  // 类型：[i32; 5]
+let zeros = [0; 10];                       // 10 个零
+
+// 访问
+let first = numbers[0];
+// numbers[0] = 10;  // ❌ 错误：数组默认不可变
+
+let mut mut_array = [1, 2, 3, 4, 5];
+mut_array[0] = 10;  // ✅ 与 mut 一起工作
+
+// 2. 切片 - 数组或向量的视图
+let slice: &amp;[i32] = &amp;numbers[1..4];  // 元素 1、2、3
+let all_slice: &amp;[i32] = &amp;numbers;    // 整个数组作为切片
+
+// 3. 向量 - 动态大小，堆分配（前面已涵盖）
+let mut vec = vec![1, 2, 3, 4, 5];
+vec.push(6);  // 可以增长
+<span class="boring">}</span></code></pre></pre>
+<h3 id="切片作为函数参数"><a class="header" href="#切片作为函数参数">切片作为函数参数</a></h3>
+<pre><code class="language-csharp">// C# - 使用数组工作的方法
+public void ProcessNumbers(int[] numbers)
+{
+    for (int i = 0; i &lt; numbers.Length; i++)
+    {
+        Console.WriteLine(numbers[i]);
+    }
+}
+
+// 仅适用于数组
+ProcessNumbers(new int[] { 1, 2, 3 });
+</code></pre>
+<pre><pre class="playground"><code class="language-rust">// Rust - 适用于任何序列的函数
+fn process_numbers(numbers: &amp;[i32]) {  // 切片参数
+    for (i, num) in numbers.iter().enumerate() {
+        println!("Index {}: {}", i, num);
+    }
+}
+
+fn main() {
+    let array = [1, 2, 3, 4, 5];
+    let vec = vec![1, 2, 3, 4, 5];
+
+    // 同一个函数适用于两者！
+    process_numbers(&amp;array);      // 数组作为切片
+    process_numbers(&amp;vec);        // 向量作为切片
+    process_numbers(&amp;vec[1..4]);  // 部分切片
+}</code></pre></pre>
+<h3 id="字符串切片str回顾"><a class="header" href="#字符串切片str回顾">字符串切片（&amp;str）回顾</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// String 和 &amp;str 关系
+fn string_slice_example() {
+    let owned = String::from("Hello, World!");
+    let slice: &amp;str = &amp;owned[0..5];      // "Hello"
+    let slice2: &amp;str = &amp;owned[7..];      // "World!"
+
+    println!("{}", slice);   // "Hello"
+    println!("{}", slice2);  // "World!"
+
+    // 接受任何字符串类型的函数
+    print_string("String literal");      // &amp;str
+    print_string(&amp;owned);               // String 作为 &amp;str
+    print_string(slice);                // &amp;str 切片
+}
+
+fn print_string(s: &amp;str) {
+    println!("{}", s);
+}
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="结构体-vs-类"><a class="header" href="#结构体-vs-类">结构体 vs 类</a></h2>
+<p>Rust 中的结构体类似于 C# 中的类，但在所有权和方法方面有一些关键区别。</p>
+<pre class="mermaid">graph TD
+    subgraph &quot;C# 类（堆）&quot;
+        CObj[&quot;对象头&lt;br/&gt;+ vtable 指针&quot;] --&gt; CFields[&quot;Name: string 引用&lt;br/&gt;Age: int&lt;br/&gt;Hobbies: List 引用&quot;]
+        CFields --&gt; CHeap1[&quot;#quot;Alice#quot; 在堆上&quot;]
+        CFields --&gt; CHeap2[&quot;List&amp;lt;string&amp;gt; 在堆上&quot;]
+    end
+    subgraph &quot;Rust 结构体（栈）&quot;
+        RFields[&quot;name: String&lt;br/&gt;  ptr | len | cap&lt;br/&gt;age: i32&lt;br/&gt;hobbies: Vec&lt;br/&gt;  ptr | len | cap&quot;]
+        RFields --&gt; RHeap1[&quot;#quot;Alice#quot; 堆缓冲区&quot;]
+        RFields --&gt; RHeap2[&quot;Vec 堆缓冲区&quot;]
+    end
+
+    style CObj fill:#bbdefb,color:#000
+    style RFields fill:#c8e6c9,color:#000
+</pre>
+<blockquote>
+<p><strong>关键见解</strong>：C# 类总是生活在堆上的引用后面。Rust 结构体默认生活在栈上——只有动态大小的数据（如 <code>String</code> 内容） goes 到堆。这消除了小型、频繁创建对象的 GC 开销。</p>
+</blockquote>
+<h3 id="c-类定义"><a class="header" href="#c-类定义">C# 类定义</a></h3>
+<pre><code class="language-csharp">// C# 带属性和方法的类
+public class Person
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public List&lt;string&gt; Hobbies { get; set; }
+
+    public Person(string name, int age)
+    {
+        Name = name;
+        Age = age;
+        Hobbies = new List&lt;string&gt;();
+    }
+
+    public void AddHobby(string hobby)
+    {
+        Hobbies.Add(hobby);
+    }
+
+    public string GetInfo()
+    {
+        return $"{Name} is {Age} years old";
+    }
+}
+</code></pre>
+<h3 id="rust-结构体定义"><a class="header" href="#rust-结构体定义">Rust 结构体定义</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust 带关联函数和方法的结构体
+#[derive(Debug)]  // 自动实现 Debug trait
+pub struct Person {
+    pub name: String,    // 公开字段
+    pub age: u32,        // 公开字段
+    hobbies: Vec&lt;String&gt;, // 私有字段（无 pub）
+}
+
+impl Person {
+    // 关联函数（类似静态方法）
+    pub fn new(name: String, age: u32) -&gt; Person {
+        Person {
+            name,
+            age,
+            hobbies: Vec::new(),
+        }
+    }
+
+    // 方法（接受 &amp;self、&amp;mut self 或 self）
+    pub fn add_hobby(&amp;mut self, hobby: String) {
+        self.hobbies.push(hobby);
+    }
+
+    // 不可变借用的方法
+    pub fn get_info(&amp;self) -&gt; String {
+        format!("{} is {} years old", self.name, self.age)
+    }
+
+    // 私有字段的 getter
+    pub fn hobbies(&amp;self) -&gt; &amp;Vec&lt;String&gt; {
+        &amp;self.hobbies
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="创建和使用实例"><a class="header" href="#创建和使用实例">创建和使用实例</a></h3>
+<pre><code class="language-csharp">// C# 对象创建和使用
+var person = new Person("Alice", 30);
+person.AddHobby("Reading");
+person.AddHobby("Swimming");
+
+Console.WriteLine(person.GetInfo());
+Console.WriteLine($"Hobbies: {string.Join(", ", person.Hobbies)}");
+
+// 直接修改属性
+person.Age = 31;
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust 结构体创建和使用
+let mut person = Person::new("Alice".to_string(), 30);
+person.add_hobby("Reading".to_string());
+person.add_hobby("Swimming".to_string());
+
+println!("{}", person.get_info());
+println!("Hobbies: {:?}", person.hobbies());
+
+// 直接修改公开字段
+person.age = 31;
+
+// 调试打印整个结构体
+println!("{:?}", person);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="结构体初始化模式"><a class="header" href="#结构体初始化模式">结构体初始化模式</a></h3>
+<pre><code class="language-csharp">// C# 对象初始化
+var person = new Person("Bob", 25)
+{
+    Hobbies = new List&lt;string&gt; { "Gaming", "Coding" }
+};
+
+// 匿名类型
+var anonymous = new { Name = "Charlie", Age = 35 };
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust 结构体初始化
+let person = Person {
+    name: "Bob".to_string(),
+    age: 25,
+    hobbies: vec!["Gaming".to_string(), "Coding".to_string()],
+};
+
+// 结构体更新语法（类似对象展开）
+let older_person = Person {
+    age: 26,
+    ..person  // 从 person 使用剩余字段（移动 person！）
+};
+
+// 元组结构体（类似匿名类型）
+#[derive(Debug)]
+struct Point(i32, i32);
+
+let point = Point(10, 20);
+println!("Point: ({}, {})", point.0, point.1);
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="方法和关联函数"><a class="header" href="#方法和关联函数">方法和关联函数</a></h2>
+<p>理解方法和关联函数之间的区别是关键。</p>
+<h3 id="c-方法类型"><a class="header" href="#c-方法类型">C# 方法类型</a></h3>
+<pre><code class="language-csharp">public class Calculator
+{
+    private int memory = 0;
+
+    // 实例方法
+    public int Add(int a, int b)
+    {
+        return a + b;
+    }
+
+    // 使用状态的实例方法
+    public void StoreInMemory(int value)
+    {
+        memory = value;
+    }
+
+    // 静态方法
+    public static int Multiply(int a, int b)
+    {
+        return a * b;
+    }
+
+    // 静态工厂方法
+    public static Calculator CreateWithMemory(int initialMemory)
+    {
+        var calc = new Calculator();
+        calc.memory = initialMemory;
+        return calc;
+    }
+}
+</code></pre>
+<h3 id="rust-方法类型"><a class="header" href="#rust-方法类型">Rust 方法类型</a></h3>
+<pre><pre class="playground"><code class="language-rust">#[derive(Debug)]
+pub struct Calculator {
+    memory: i32,
+}
+
+impl Calculator {
+    // 关联函数（类似静态方法）- 无 self 参数
+    pub fn new() -&gt; Calculator {
+        Calculator { memory: 0 }
+    }
+
+    // 带参数的关联函数
+    pub fn with_memory(initial_memory: i32) -&gt; Calculator {
+        Calculator { memory: initial_memory }
+    }
+
+    // 不可变借用的方法（&amp;self）
+    pub fn add(&amp;self, a: i32, b: i32) -&gt; i32 {
+        a + b
+    }
+
+    // 可变借用的方法（&amp;mut self）
+    pub fn store_in_memory(&amp;mut self, value: i32) {
+        self.memory = value;
+    }
+
+    // 获取所有权的方法（self）
+    pub fn into_memory(self) -&gt; i32 {
+        self.memory  // Calculator 被消耗
+    }
+
+    // getter 方法
+    pub fn memory(&amp;self) -&gt; i32 {
+        self.memory
+    }
+}
+
+fn main() {
+    // 关联函数使用 :: 调用
+    let mut calc = Calculator::new();
+    let calc2 = Calculator::with_memory(42);
+
+    // 方法使用 . 调用
+    let result = calc.add(5, 3);
+    calc.store_in_memory(result);
+
+    println!("Memory: {}", calc.memory());
+
+    // 消耗方法
+    let memory_value = calc.into_memory();  // calc 不再可用
+    println!("Final memory: {}", memory_value);
+}</code></pre></pre>
+<h3 id="方法接收者类型解释"><a class="header" href="#方法接收者类型解释">方法接收者类型解释</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl Person {
+    // &amp;self - 不可变借用（最常见）
+    // 当你只需要读取数据时使用
+    pub fn get_name(&amp;self) -&gt; &amp;str {
+        &amp;self.name
+    }
+
+    // &amp;mut self - 可变借用
+    // 当你需要修改数据时使用
+    pub fn set_name(&amp;mut self, name: String) {
+        self.name = name;
+    }
+
+    // self - 获取所有权（较少见）
+    // 当你想消耗结构体时使用
+    pub fn consume(self) -&gt; String {
+        self.name  // Person 被移动，不再可访问
+    }
+}
+
+fn method_examples() {
+    let mut person = Person::new("Alice".to_string(), 30);
+
+    // 不可变借用
+    let name = person.get_name();  // person 仍然可以使用
+    println!("Name: {}", name);
+
+    // 可变借用
+    person.set_name("Alice Smith".to_string());  // person 仍然可以使用
+
+    // 获取所有权
+    let final_name = person.consume();  // person 不再可用
+    println!("Final name: {}", final_name);
+}
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：切片窗口平均值</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：编写一个函数，接受 <code>f64</code> 值的切片和窗口大小，返回滚动平均值的 <code>Vec&lt;f64&gt;</code>。例如，<code>[1.0, 2.0, 3.0, 4.0, 5.0]</code> 窗口 3 → <code>[2.0, 3.0, 4.0]</code>。</p>
+<pre><pre class="playground"><code class="language-rust">fn rolling_average(data: &amp;[f64], window: usize) -&gt; Vec&lt;f64&gt; {
+    // 你的实现在这里
+    todo!()
+}
+
+fn main() {
+    let data = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+    let avgs = rolling_average(&amp;data, 3);
+    println!("{avgs:?}"); // [2.0, 3.0, 4.0]
+}</code></pre></pre>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><pre class="playground"><code class="language-rust">fn rolling_average(data: &amp;[f64], window: usize) -&gt; Vec&lt;f64&gt; {
+    data.windows(window)
+        .map(|w| w.iter().sum::&lt;f64&gt;() / w.len() as f64)
+        .collect()
+}
+
+fn main() {
+    let data = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+    let avgs = rolling_average(&amp;data, 3);
+    assert_eq!(avgs, vec![2.0, 3.0, 4.0]);
+    println!("{avgs:?}");
+}</code></pre></pre>
+<p><strong>关键要点</strong>：切片有强大的内置方法，如 <code>.windows()</code>、<code>.chunks()</code> 和 <code>.split()</code>，替代手动索引算术。在 C# 中，你会使用 <code>Enumerable.Range</code> 或 LINQ <code>.Skip().Take()</code>。</p>
+</details>
+</details>
+<details>
+<summary><strong>🏋️ 练习：迷你地址簿</strong>（点击展开）</summary>
+<p>使用结构体、枚举和方法构建一个小型地址簿：</p>
+<ol>
+<li>定义枚举 <code>PhoneType { Mobile, Home, Work }</code></li>
+<li>定义结构体 <code>Contact</code>，包含 <code>name: String</code> 和 <code>phones: Vec&lt;(PhoneType, String)&gt;</code></li>
+<li>实现 <code>Contact::new(name: impl Into&lt;String&gt;) -&gt; Self</code></li>
+<li>实现 <code>Contact::add_phone(&amp;mut self, kind: PhoneType, number: impl Into&lt;String&gt;)</code></li>
+<li>实现 <code>Contact::mobile_numbers(&amp;self) -&gt; Vec&lt;&amp;str&gt;</code> 仅返回手机号码</li>
+<li>在 <code>main</code> 中，创建一个联系人，添加两个电话，打印手机号码</li>
+</ol>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><pre class="playground"><code class="language-rust">#[derive(Debug, PartialEq)]
+enum PhoneType { Mobile, Home, Work }
+
+#[derive(Debug)]
+struct Contact {
+    name: String,
+    phones: Vec&lt;(PhoneType, String)&gt;,
+}
+
+impl Contact {
+    fn new(name: impl Into&lt;String&gt;) -&gt; Self {
+        Contact { name: name.into(), phones: Vec::new() }
+    }
+
+    fn add_phone(&amp;mut self, kind: PhoneType, number: impl Into&lt;String&gt;) {
+        self.phones.push((kind, number.into()));
+    }
+
+    fn mobile_numbers(&amp;self) -&gt; Vec&lt;&amp;str&gt; {
+        self.phones
+            .iter()
+            .filter(|(kind, _)| *kind == PhoneType::Mobile)
+            .map(|(_, num)| num.as_str())
+            .collect()
+    }
+}
+
+fn main() {
+    let mut alice = Contact::new("Alice");
+    alice.add_phone(PhoneType::Mobile, "+1-555-0100");
+    alice.add_phone(PhoneType::Work, "+1-555-0200");
+    alice.add_phone(PhoneType::Mobile, "+1-555-0101");
+
+    println!("{}'s mobile numbers: {:?}", alice.name, alice.mobile_numbers());
+}</code></pre></pre>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch04-control-flow.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch05-1-constructor-patterns.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch04-control-flow.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch05-1-constructor-patterns.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

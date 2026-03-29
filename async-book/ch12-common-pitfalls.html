@@ -1,0 +1,801 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>12. 常见陷阱 - Async Rust: From Futures to Production</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Async Rust: From Futures to Production</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="12-常见陷阱-"><a class="header" href="#12-常见陷阱-">12. 常见陷阱 🔴</a></h1>
+<blockquote>
+<p><strong>你将学到什么：</strong></p>
+<ul>
+<li>9 个常见的 Rust 异步 bug 及如何修复每个</li>
+<li>为什么阻塞执行器是头号错误（以及 <code>spawn_blocking</code> 如何修复）</li>
+<li>取消隐患：当 future 在 await 中途被 drop 时会发生什么</li>
+<li>调试：<code>tokio-console</code>、<code>tracing</code>、<code>#[instrument]</code></li>
+<li>测试：<code>#[tokio::test]</code>、<code>time::pause()</code>、基于 trait 的 mock</li>
+</ul>
+</blockquote>
+<h2 id="阻塞执行器"><a class="header" href="#阻塞执行器">阻塞执行器</a></h2>
+<p>Rust 异步中的头号错误：在异步执行器线程上运行阻塞代码。这会饿死其他任务。</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// ❌ 错误：阻塞整个执行器线程
+async fn bad_handler() -&gt; String {
+    let data = std::fs::read_to_string("big_file.txt").unwrap(); // 阻塞！
+    process(&amp;data)
+}
+
+// ✅ 正确：将阻塞工作卸载到专用线程池
+async fn good_handler() -&gt; String {
+    let data = tokio::task::spawn_blocking(|| {
+        std::fs::read_to_string("big_file.txt").unwrap()
+    }).await.unwrap();
+    process(&amp;data)
+}
+
+// ✅ 也正确：使用 tokio 的异步 fs
+async fn also_good_handler() -&gt; String {
+    let data = tokio::fs::read_to_string("big_file.txt").await.unwrap();
+    process(&amp;data)
+}
+<span class="boring">}</span></code></pre></pre>
+<pre class="mermaid">graph TB
+    subgraph &quot;❌ 在执行器上阻塞调用&quot;
+        T1_BAD[&quot;线程 1: std::fs::read()&lt;br/&gt;🔴 阻塞 500ms&quot;]
+        T2_BAD[&quot;线程 2: 处理请求&lt;br/&gt;🟢 独自工作&quot;]
+        TASKS_BAD[&quot;100 个 pending 任务&lt;br/&gt;⏳ 饿死&quot;]
+        T1_BAD --&gt;|&quot;无法 poll&quot;| TASKS_BAD
+    end
+
+    subgraph &quot;✅ spawn_blocking&quot;
+        T1_GOOD[&quot;线程 1: polling future&lt;br/&gt;🟢 可用&quot;]
+        T2_GOOD[&quot;线程 2: polling future&lt;br/&gt;🟢 可用&quot;]
+        BT[&quot;阻塞池线程:&lt;br/&gt;std::fs::read()&lt;br/&gt;🔵 独立池&quot;]
+        TASKS_GOOD[&quot;100 个任务&lt;br/&gt;✅ 都在进展&quot;]
+        T1_GOOD --&gt;|&quot;polls&quot;| TASKS_GOOD
+        T2_GOOD --&gt;|&quot;polls&quot;| TASKS_GOOD
+    end
+</pre>
+<h3 id="stdthreadsleep-vs-tokiotimesleep"><a class="header" href="#stdthreadsleep-vs-tokiotimesleep">std::thread::sleep vs tokio::time::sleep</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// ❌ 错误：阻塞执行器线程 5 秒
+async fn bad_delay() {
+    std::thread::sleep(Duration::from_secs(5)); // 线程无法 poll 任何其他东西！
+}
+
+// ✅ 正确：向执行器让出，其他任务可以运行
+async fn good_delay() {
+    tokio::time::sleep(Duration::from_secs(5)).await; // 非阻塞！
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="在-await-之间持有-mutexguard"><a class="header" href="#在-await-之间持有-mutexguard">在 .await 之间持有 MutexGuard</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::sync::Mutex; // std Mutex——不是异步感知的
+
+// ❌ 错误：MutexGuard 在 .await 之间持有
+async fn bad_mutex(data: &amp;Mutex&lt;Vec&lt;String&gt;&gt;) {
+    let mut guard = data.lock().unwrap();
+    guard.push("item".into());
+    some_io().await; // 💥 Guard 在这里持有——阻塞其他线程锁定！
+    guard.push("another".into());
+}
+// 另外：std::sync::MutexGuard 是 !Send，所以这不会编译
+// 在 tokio 的多线程运行时中。
+
+// ✅ 修复 1：在 .await 之前作用域 guard 以 drop
+async fn good_mutex_scoped(data: &amp;Mutex&lt;Vec&lt;String&gt;&gt;) {
+    {
+        let mut guard = data.lock().unwrap();
+        guard.push("item".into());
+    } // Guard 在这里 drop
+    some_io().await; // 安全——锁已释放
+    {
+        let mut guard = data.lock().unwrap();
+        guard.push("another".into());
+    }
+}
+
+// ✅ 修复 2：使用 tokio::sync::Mutex（异步感知）
+use tokio::sync::Mutex as AsyncMutex;
+
+async fn good_async_mutex(data: &amp;AsyncMutex&lt;Vec&lt;String&gt;&gt;) {
+    let mut guard = data.lock().await; // 异步锁——不阻塞线程
+    guard.push("item".into());
+    some_io().await; // 可以——tokio Mutex guard 是 Send
+    guard.push("another".into());
+}
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>何时使用哪个 Mutex</strong>：</p>
+<ul>
+<li><code>std::sync::Mutex</code>：短关键区，内部没有 <code>.await</code></li>
+<li><code>tokio::sync::Mutex</code>：当你必须在 <code>.await</code> 点之间持有锁时</li>
+<li><code>parking_lot::Mutex</code>：直接替换 <code>std</code>，更快、更小，仍然没有 <code>.await</code></li>
+</ul>
+</blockquote>
+<h3 id="取消隐患"><a class="header" href="#取消隐患">取消隐患</a></h3>
+<p>drop 一个 future 会取消它——但这可能会使事物处于不一致的状态：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// ❌ 危险：取消时资源泄漏
+async fn transfer(from: &amp;Account, to: &amp;Account, amount: u64) {
+    from.debit(amount).await;  // 如果在这里被取消...
+    to.credit(amount).await;   // ...钱消失了！
+}
+
+// ✅ 安全：使操作原子化或使用补偿
+async fn safe_transfer(from: &amp;Account, to: &amp;Account, amount: u64) -&gt; Result&lt;(), Error&gt; {
+    // 使用数据库事务（全有或全无）
+    let tx = db.begin_transaction().await?;
+    tx.debit(from, amount).await?;
+    tx.credit(to, amount).await?;
+    tx.commit().await?; // 只有在一切成功时才提交
+    Ok(())
+}
+
+// ✅ 也安全：使用带有取消意识的 tokio::select!
+tokio::select! {
+    result = transfer(from, to, amount) =&gt; {
+        // 传输完成
+    }
+    _ = shutdown_signal() =&gt; {
+        // 不要在传输中途取消——让它完成
+        // 或：显式回滚
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="没有异步-drop"><a class="header" href="#没有异步-drop">没有异步 Drop</a></h3>
+<p>Rust 的 <code>Drop</code> trait 是同步的——你<strong>不能</strong>在 <code>drop()</code> 中 <code>.await</code>。这是一个常见的困惑源：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct DbConnection { /* ... */ }
+
+impl Drop for DbConnection {
+    fn drop(&amp;mut self) {
+        // ❌ 不能这样做——drop() 是同步的！
+        // self.connection.shutdown().await;
+
+        // ✅ 变通方法 1：生成清理任务（发后不管）
+        let conn = self.connection.take();
+        tokio::spawn(async move {
+            let _ = conn.shutdown().await;
+        });
+
+        // ✅ 变通方法 2：使用同步关闭
+        // self.connection.blocking_close();
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>最佳实践</strong>：提供一个显式的 <code>async fn close(self)</code> 方法并记录调用者应该使用它。仅将 <code>Drop</code> 用作安全网，而不是主要的清理路径。</p>
+<h3 id="select-公平性和饥饿"><a class="header" href="#select-公平性和饥饿">select! 公平性和饥饿</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use tokio::sync::mpsc;
+
+// ❌ 不公平：busy_stream 总是赢，slow_stream 饿死
+async fn unfair(mut fast: mpsc::Receiver&lt;i32&gt;, mut slow: mpsc::Receiver&lt;i32&gt;) {
+    loop {
+        tokio::select! {
+            Some(v) = fast.recv() =&gt; println!("fast: {v}"),
+            Some(v) = slow.recv() =&gt; println!("slow: {v}"),
+            // 如果两者都就绪，tokio 随机选择一个。
+            // 但如果 `fast` 总是就绪，`slow` 很少被 poll。
+        }
+    }
+}
+
+// ✅ 公平：使用 biased select 或批量排出
+async fn fair(mut fast: mpsc::Receiver&lt;i32&gt;, mut slow: mpsc::Receiver&lt;i32&gt;) {
+    loop {
+        tokio::select! {
+            biased; // 始终按顺序检查——显式优先级
+
+            Some(v) = slow.recv() =&gt; println!("slow: {v}"),  // 优先级！
+            Some(v) = fast.recv() =&gt; println!("fast: {v}"),
+        }
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="意外的顺序执行"><a class="header" href="#意外的顺序执行">意外的顺序执行</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// ❌ 顺序：总共需要 2 秒
+async fn slow() {
+    let a = fetch("url_a").await; // 1 秒
+    let b = fetch("url_b").await; // 1 秒（等待 a 先完成！）
+}
+
+// ✅ 并发：总共需要 1 秒
+async fn fast() {
+    let (a, b) = tokio::join!(
+        fetch("url_a"), // 两者立即启动
+        fetch("url_b"),
+    );
+}
+
+// ✅ 也并发：使用 let + join
+async fn also_fast() {
+    let fut_a = fetch("url_a"); // 创建 future（惰性——尚未启动）
+    let fut_b = fetch("url_b"); // 创建 future
+    let (a, b) = tokio::join!(fut_a, fut_b); // 现在两者并发运行
+}
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>陷阱</strong>：<code>let a = fetch(url).await; let b = fetch(url).await;</code> 是顺序的！
+第二个 <code>.await</code> 在第一个完成之前不会启动。使用 <code>join!</code> 或
+<code>spawn</code> 实现并发。</p>
+</blockquote>
+<h2 id="案例研究调试挂起的生产服务"><a class="header" href="#案例研究调试挂起的生产服务">案例研究：调试挂起的生产服务</a></h2>
+<p>一个真实场景：一个服务处理请求正常 10 分钟，然后停止响应。日志中没有错误。CPU 为 0%。</p>
+<p><strong>诊断步骤：</strong></p>
+<ol>
+<li><strong>附加 <code>tokio-console</code></strong> —— 显示 200+ 任务卡在 <code>Pending</code> 状态</li>
+<li><strong>检查任务详情</strong> —— 都在等待同一个 <code>Mutex::lock().await</code></li>
+<li><strong>根本原因</strong> —— 一个任务在 <code>.await</code> 之间持有 <code>std::sync::MutexGuard</code> 并 panic，毒化了 mutex。所有其他任务现在在 <code>lock().unwrap()</code> 上失败</li>
+</ol>
+<p><strong>修复：</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>之前（损坏）</th><th>之后（修复）</th></tr></thead><tbody>
+<tr><td><code>std::sync::Mutex</code></td><td><code>tokio::sync::Mutex</code></td></tr>
+<tr><td><code>.lock().unwrap()</code> 跨 <code>.await</code></td><td>在 <code>.await</code> 之前作用域锁</td></tr>
+<tr><td>锁获取上没有超时</td><td><code>tokio::time::timeout(dur, mutex.lock())</code></td></tr>
+<tr><td>毒化 mutex 上没有恢复</td><td><code>tokio::sync::Mutex</code> 不会毒化</td></tr>
+</tbody></table>
+</div>
+<p><strong>预防清单：</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"/>
+如果 guard 跨越任何 <code>.await</code>，使用 <code>tokio::sync::Mutex</code></li>
+<li><input disabled="" type="checkbox"/>
+向异步函数添加 <code>#[tracing::instrument]</code> 用于 span 跟踪</li>
+<li><input disabled="" type="checkbox"/>
+在 staging 中运行 <code>tokio-console</code> 以尽早捕获挂起的任务</li>
+<li><input disabled="" type="checkbox"/>
+添加健康检查端点以验证任务响应能力</li>
+</ul>
+<details>
+<summary><strong>🏋️ 练习：发现 bug</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：找出此代码中的所有异步陷阱并修复它们。</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::sync::Mutex;
+
+async fn process_requests(urls: Vec&lt;String&gt;) -&gt; Vec&lt;String&gt; {
+    let results = Mutex::new(Vec::new());
+
+    for url in &amp;urls {
+        let response = reqwest::get(url).await.unwrap().text().await.unwrap();
+        std::thread::sleep(std::time::Duration::from_millis(100)); // 速率限制
+        let mut guard = results.lock().unwrap();
+        guard.push(response);
+        expensive_parse(&amp;guard).await; // 解析到目前为止的所有结果
+    }
+
+    results.into_inner().unwrap()
+}
+<span class="boring">}</span></code></pre></pre>
+<details>
+<summary>🔑 答案</summary>
+<p><strong>发现的 bug：</strong></p>
+<ol>
+<li><strong>顺序获取</strong> —— URL 一次获取一个而不是并发</li>
+<li><strong><code>std::thread::sleep</code></strong> —— 阻塞执行器线程</li>
+<li><strong>MutexGuard 在 <code>.await</code> 之间持有</strong> —— <code>guard</code> 在 <code>expensive_parse</code> await 时仍然存活</li>
+<li><strong>没有并发</strong> —— 应该使用 <code>join!</code> 或 <code>FuturesUnordered</code></li>
+</ol>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use tokio::sync::Mutex;
+use std::sync::Arc;
+use futures::stream::{self, StreamExt};
+
+async fn process_requests(urls: Vec&lt;String&gt;) -&gt; Vec&lt;String&gt; {
+    // 修复 4：使用 buffer_unordered 并发处理 URL
+    let results: Vec&lt;String&gt; = stream::iter(urls)
+        .map(|url| async move {
+            let response = reqwest::get(&amp;url).await.unwrap().text().await.unwrap();
+            // 修复 2：使用 tokio::time::sleep 而不是 std::thread::sleep
+            tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+            response
+        })
+        .buffer_unordered(10) // 最多 10 个并发请求
+        .collect()
+        .await;
+
+    // 修复 3：收集后解析——根本不需要 mutex！
+    for result in &amp;results {
+        expensive_parse(result).await;
+    }
+
+    results
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>关键要点</strong>：通常你可以重构异步代码以完全消除 mutex。使用 stream/join 收集结果，然后处理。更简单、更快、无死锁风险。</p>
+</details>
+</details>
+<hr />
+<h3 id="调试异步代码"><a class="header" href="#调试异步代码">调试异步代码</a></h3>
+<p>异步堆栈跟踪 notoriously 神秘——它们显示执行器的 poll 循环而不是你的逻辑调用链。以下是基本调试工具。</p>
+<h4 id="tokio-console实时任务检查器"><a class="header" href="#tokio-console实时任务检查器">tokio-console：实时任务检查器</a></h4>
+<p><a href="https://github.com/tokio-rs/console">tokio-console</a> 为你提供一个类似 <code>htop</code> 的每个生成任务的视图：其状态、poll 持续时间、waker 活动和资源使用。</p>
+<pre><code class="language-toml"># Cargo.toml
+[dependencies]
+console-subscriber = "0.4"
+tokio = { version = "1", features = ["full", "tracing"] }
+</code></pre>
+<pre><pre class="playground"><code class="language-rust">#[tokio::main]
+async fn main() {
+    console_subscriber::init(); // 替换默认的 tracing subscriber
+    // ... 应用的其余部分
+}</code></pre></pre>
+<p>然后在另一个终端：</p>
+<pre><code class="language-bash">$ RUSTFLAGS="--cfg tokio_unstable" cargo run   # 需要的编译时标志
+$ tokio-console                                # 连接到 127.0.0.1:6669
+</code></pre>
+<h4 id="tracing--instrument异步的结构化日志"><a class="header" href="#tracing--instrument异步的结构化日志">tracing + #[instrument]：异步的结构化日志</a></h4>
+<p><a href="https://docs.rs/tracing"><code>tracing</code></a> crate 理解 <code>Future</code> 生命周期。Span 在 <code>.await</code> 点之间保持打开，即使 OS 线程已经移开，也为你提供逻辑调用链：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use tracing::{info, instrument};
+
+#[instrument(skip(db_pool), fields(user_id = %user_id))]
+async fn handle_request(user_id: u64, db_pool: &amp;Pool) -&gt; Result&lt;Response&gt; {
+    info!("looking up user");
+    let user = db_pool.get_user(user_id).await?;  // span 在 .await 之间保持打开
+    info!(email = %user.email, "found user");
+    let orders = fetch_orders(user_id).await?;     // 仍然是同一个 span
+    Ok(build_response(user, orders))
+}
+<span class="boring">}</span></code></pre></pre>
+<p>输出（使用 <code>tracing_subscriber::fmt::json()</code>）：</p>
+<pre><code class="language-json">{"timestamp":"...","level":"INFO","span":{"name":"handle_request","user_id":"42"},"message":"looking up user"}
+{"timestamp":"...","level":"INFO","span":{"name":"handle_request","user_id":"42"},"fields":{"email":"a@b.com"},"message":"found user"}
+</code></pre>
+<h4 id="调试清单"><a class="header" href="#调试清单">调试清单</a></h4>
+<div class="table-wrapper"><table><thead><tr><th>症状</th><th>可能原因</th><th>工具</th></tr></thead><tbody>
+<tr><td>任务永远挂起</td><td>缺少 <code>.await</code> 或死锁的 <code>Mutex</code></td><td><code>tokio-console</code> 任务视图</td></tr>
+<tr><td>低吞吐量</td><td>在异步线程上阻塞调用</td><td><code>tokio-console</code> poll 时间直方图</td></tr>
+<tr><td><code>Future is not Send</code></td><td>在 <code>.await</code> 之间持有非 Send 类型</td><td>编译器错误 + <code>#[instrument]</code> 定位</td></tr>
+<tr><td>神秘取消</td><td>父 <code>select!</code> drop 了一个分支</td><td><code>tracing</code> span 生命周期事件</td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p><strong>提示</strong>：启用 <code>RUSTFLAGS="--cfg tokio_unstable"</code> 以在 tokio-console 中获取任务级指标
+。这是一个编译时标志，不是运行时标志。</p>
+</blockquote>
+<h3 id="测试异步代码"><a class="header" href="#测试异步代码">测试异步代码</a></h3>
+<p>异步代码引入了独特的测试挑战——你需要运行时、时间控制和测试并发行为的策略。</p>
+<p>使用 <code>#[tokio::test]</code> 的<strong>基本异步测试</strong>：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Cargo.toml
+// [dev-dependencies]
+// tokio = { version = "1", features = ["full", "test-util"] }
+
+#[tokio::test]
+async fn test_basic_async() {
+    let result = fetch_data().await;
+    assert_eq!(result, "expected");
+}
+
+// 单线程测试（用于 !Send 类型）：
+#[tokio::test(flavor = "current_thread")]
+async fn test_single_threaded() {
+    let rc = std::rc::Rc::new(42);
+    let val = async { *rc }.await;
+    assert_eq!(val, 42);
+}
+
+// 带有显式工作线程数的多线程：
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn test_concurrent_behavior() {
+    // 用真实并发测试竞争条件
+    let counter = std::sync::Arc::new(std::sync::atomic::AtomicU32::new(0));
+    let c1 = counter.clone();
+    let c2 = counter.clone();
+    let (a, b) = tokio::join!(
+        tokio::spawn(async move { c1.fetch_add(1, std::sync::atomic::Ordering::SeqCst) }),
+        tokio::spawn(async move { c2.fetch_add(1, std::sync::atomic::Ordering::SeqCst) }),
+    );
+    a.unwrap();
+    b.unwrap();
+    assert_eq!(counter.load(std::sync::atomic::Ordering::SeqCst), 2);
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>时间操作</strong>——测试超时而不实际等待：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use tokio::time::{self, Duration, Instant};
+
+#[tokio::test]
+async fn test_timeout_behavior() {
+    // 暂停时间——sleep() 立即推进，没有真实的挂钟延迟
+    time::pause();
+
+    let start = Instant::now();
+    time::sleep(Duration::from_secs(3600)).await; // "等待"1 小时——花费 0ms
+    assert!(start.elapsed() &gt;= Duration::from_secs(3600));
+    // 测试在几毫秒内运行，而不是一小时！
+}
+
+#[tokio::test]
+async fn test_retry_timing() {
+    time::pause();
+
+    // 测试我们的重试逻辑等待预期的持续时间
+    let start = Instant::now();
+    let result = retry_with_backoff(|| async {
+        Err::&lt;(), _&gt;("simulated failure")
+    }, 3, Duration::from_secs(1))
+    .await;
+
+    assert!(result.is_err());
+    // 1s + 2s + 4s = 7s 的退避（指数）
+    assert!(start.elapsed() &gt;= Duration::from_secs(7));
+}
+
+#[tokio::test]
+async fn test_deadline_exceeded() {
+    time::pause();
+
+    let result = tokio::time::timeout(
+        Duration::from_secs(5),
+        async {
+            // 模拟慢操作
+            time::sleep(Duration::from_secs(10)).await;
+            "done"
+        }
+    ).await;
+
+    assert!(result.is_err()); // 超时
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>Mock 异步依赖</strong>——使用 trait 对象或泛型：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 为依赖定义 trait：
+trait Storage {
+    async fn get(&amp;self, key: &amp;str) -&gt; Option&lt;String&gt;;
+    async fn set(&amp;self, key: &amp;str, value: String);
+}
+
+// 生产实现：
+struct RedisStorage { /* ... */ }
+impl Storage for RedisStorage {
+    async fn get(&amp;self, key: &amp;str) -&gt; Option&lt;String&gt; {
+        // 真实的 Redis 调用
+        todo!()
+    }
+    async fn set(&amp;self, key: &amp;str, value: String) {
+        todo!()
+    }
+}
+
+// 测试 mock：
+struct MockStorage {
+    data: std::sync::Mutex&lt;std::collections::HashMap&lt;String, String&gt;&gt;,
+}
+
+impl MockStorage {
+    fn new() -&gt; Self {
+        MockStorage { data: std::sync::Mutex::new(std::collections::HashMap::new()) }
+    }
+}
+
+impl Storage for MockStorage {
+    async fn get(&amp;self, key: &amp;str) -&gt; Option&lt;String&gt; {
+        self.data.lock().unwrap().get(key).cloned()
+    }
+    async fn set(&amp;self, key: &amp;str, value: String) {
+        self.data.lock().unwrap().insert(key.to_string(), value);
+    }
+}
+
+// 被测试函数在 Storage 上是泛型的：
+async fn cache_lookup&lt;S: Storage&gt;(store: &amp;S, key: &amp;str) -&gt; String {
+    match store.get(key).await {
+        Some(val) =&gt; val,
+        None =&gt; {
+            let val = "computed".to_string();
+            store.set(key, val.clone()).await;
+            val
+        }
+    }
+}
+
+#[tokio::test]
+async fn test_cache_miss_then_hit() {
+    let mock = MockStorage::new();
+
+    // 第一次调用：miss → 计算并存储
+    let val = cache_lookup(&amp;mock, "key1").await;
+    assert_eq!(val, "computed");
+
+    // 第二次调用：hit → 返回存储的值
+    let val = cache_lookup(&amp;mock, "key1").await;
+    assert_eq!(val, "computed");
+    assert!(mock.data.lock().unwrap().contains_key("key1"));
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>测试 channel 和任务通信</strong>：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[tokio::test]
+async fn test_producer_consumer() {
+    let (tx, mut rx) = tokio::sync::mpsc::channel(10);
+
+    tokio::spawn(async move {
+        for i in 0..5 {
+            tx.send(i).await.unwrap();
+        }
+        // tx 在这里 drop——channel 关闭
+    });
+
+    let mut received = Vec::new();
+    while let Some(val) = rx.recv().await {
+        received.push(val);
+    }
+
+    assert_eq!(received, vec![0, 1, 2, 3, 4]);
+}
+<span class="boring">}</span></code></pre></pre>
+<div class="table-wrapper"><table><thead><tr><th>测试模式</th><th>何时使用</th><th>关键工具</th></tr></thead><tbody>
+<tr><td><code>#[tokio::test]</code></td><td>所有异步测试</td><td><code>tokio = { features = ["macros", "rt"] }</code></td></tr>
+<tr><td><code>time::pause()</code></td><td>测试超时、重试、周期性任务</td><td><code>tokio::time::pause()</code></td></tr>
+<tr><td>Trait mock</td><td>测试业务逻辑而无 I/O</td><td>泛型 <code>&lt;S: Storage&gt;</code></td></tr>
+<tr><td><code>current_thread</code> flavor</td><td>测试 <code>!Send</code> 类型或确定性调度</td><td><code>#[tokio::test(flavor = "current_thread")]</code></td></tr>
+<tr><td><code>multi_thread</code> flavor</td><td>测试竞争条件</td><td><code>#[tokio::test(flavor = "multi_thread")]</code></td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p><strong>关键要点 — 常见陷阱</strong></p>
+<ul>
+<li>永远不要阻塞执行器——对 CPU/同步工作使用 <code>spawn_blocking</code></li>
+<li>永远不要在 <code>.await</code> 之间持有 <code>MutexGuard</code>——紧密作用域锁或使用 <code>tokio::sync::Mutex</code></li>
+<li>取消立即 drop future——对部分操作使用"取消安全"模式</li>
+<li>使用 <code>tokio-console</code> 和 <code>#[tracing::instrument]</code> 调试异步代码</li>
+<li>使用 <code>#[tokio::test]</code> 和 <code>time::pause()</code> 测试异步代码以获得确定性计时</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>另见：</strong> <a href="ch08-tokio-deep-dive.html">第 8 章 — Tokio 深度解析</a> 了解同步原语，<a href="ch13-production-patterns.html">第 13 章 — 生产模式</a> 了解优雅关闭和结构化并发</p>
+</blockquote>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch11-streams-and-asynciterator.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch13-production-patterns.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch11-streams-and-asynciterator.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch13-production-patterns.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

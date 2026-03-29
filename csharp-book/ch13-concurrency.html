@@ -1,0 +1,597 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>13. 并发 - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="线程安全约定-vs-类型系统保证"><a class="header" href="#线程安全约定-vs-类型系统保证">线程安全：约定 vs 类型系统保证</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> Rust 如何在编译时强制执行线程安全 vs C# 的基于约定的方法，
+<code>Arc&lt;Mutex&lt;T&gt;&gt;</code> vs <code>lock</code>，通道 vs <code>ConcurrentQueue</code>，<code>Send</code>/<code>Sync</code> traits，
+作用域线程，以及与 async/await 的桥梁。</p>
+<p><strong>难度：</strong> 🔴 高级</p>
+</blockquote>
+<blockquote>
+<p><strong>深入</strong>：对于生产异步模式（流处理、优雅关闭、连接池、取消安全），请参阅配套 <a href="../../async-book/src/summary.html">Async Rust Training</a> 指南。</p>
+<p><strong>先决条件</strong>：<a href="ch07-ownership-and-borrowing.html">所有权和借用</a> 和 <a href="ch07-3-smart-pointers-beyond-single-ownership.html">智能指针</a>（Rc vs Arc 决策树）。</p>
+</blockquote>
+<h3 id="c---通过约定的线程安全"><a class="header" href="#c---通过约定的线程安全">C# - 通过约定的线程安全</a></h3>
+<pre><code class="language-csharp">// C# 集合默认不是线程安全的
+public class UserService
+{
+    private readonly List&lt;string&gt; items = new();
+    private readonly Dictionary&lt;int, User&gt; cache = new();
+
+    // 这可能导致数据竞争：
+    public void AddItem(string item)
+    {
+        items.Add(item);  // 不是线程安全！
+    }
+
+    // 必须手动使用锁：
+    private readonly object lockObject = new();
+
+    public void SafeAddItem(string item)
+    {
+        lock (lockObject)
+        {
+            items.Add(item);  // 安全，但运行时开销
+        }
+        // 容易在其他地方忘记锁
+    }
+
+    // ConcurrentCollection 有帮助但有限：
+    private readonly ConcurrentBag&lt;string&gt; safeItems = new();
+
+    public void ConcurrentAdd(string item)
+    {
+        safeItems.Add(item);  // 线程安全但操作有限
+    }
+
+    // 复杂共享状态管理
+    private readonly ConcurrentDictionary&lt;int, User&gt; threadSafeCache = new();
+    private volatile bool isShutdown = false;
+
+    public async Task ProcessUser(int userId)
+    {
+        if (isShutdown) return;  // 可能的数据竞争！
+
+        var user = await GetUser(userId);
+        threadSafeCache.TryAdd(userId, user);  // 必须记得哪些集合是安全的
+    }
+
+    // 线程本地存储需要仔细管理
+    private static readonly ThreadLocal&lt;Random&gt; threadLocalRandom =
+        new ThreadLocal&lt;Random&gt;(() =&gt; new Random());
+
+    public int GetRandomNumber()
+    {
+        return threadLocalRandom.Value.Next();  // 安全但手动管理
+    }
+}
+
+// 带可能数据竞争的事件处理
+public class EventProcessor
+{
+    public event Action&lt;string&gt; DataReceived;
+    private readonly List&lt;string&gt; eventLog = new();
+
+    public void OnDataReceived(string data)
+    {
+        // 数据竞争——事件可能在检查和调用之间为 null
+        if (DataReceived != null)
+        {
+            DataReceived(data);
+        }
+
+        // 另一个数据竞争——列表不是线程安全
+        eventLog.Add($"Processed: {data}");
+    }
+}
+</code></pre>
+<h3 id="rust---类型系统保证的线程安全"><a class="header" href="#rust---类型系统保证的线程安全">Rust - 类型系统保证的线程安全</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::sync::{Arc, Mutex, RwLock};
+use std::thread;
+use std::collections::HashMap;
+use tokio::sync::{mpsc, broadcast};
+
+// Rust 在编译时防止数据竞争
+pub struct UserService {
+    items: Arc&lt;Mutex&lt;Vec&lt;String&gt;&gt;&gt;,
+    cache: Arc&lt;RwLock&lt;HashMap&lt;i32, User&gt;&gt;&gt;,
+}
+
+impl UserService {
+    pub fn new() -&gt; Self {
+        UserService {
+            items: Arc::new(Mutex::new(Vec::new())),
+            cache: Arc::new(RwLock::new(HashMap::new())),
+        }
+    }
+
+    pub fn add_item(&amp;self, item: String) {
+        let mut items = self.items.lock().unwrap();
+        items.push(item);
+        // 当 `items` 超出作用域时锁自动释放
+    }
+
+    // 多个读取器，单个写入器——自动强制执行
+    pub async fn get_user(&amp;self, user_id: i32) -&gt; Option&lt;User&gt; {
+        let cache = self.cache.read().unwrap();
+        cache.get(&amp;user_id).cloned()
+    }
+
+    pub async fn cache_user(&amp;self, user_id: i32, user: User) {
+        let mut cache = self.cache.write().unwrap();
+        cache.insert(user_id, user);
+    }
+
+    // 克隆 Arc 用于线程共享
+    pub fn process_in_background(&amp;self) {
+        let items = Arc::clone(&amp;self.items);
+
+        thread::spawn(move || {
+            let items = items.lock().unwrap();
+            for item in items.iter() {
+                println!("Processing: {}", item);
+            }
+        });
+    }
+}
+
+// 基于通道的通信——无需共享状态
+pub struct MessageProcessor {
+    sender: mpsc::UnboundedSender&lt;String&gt;,
+}
+
+impl MessageProcessor {
+    pub fn new() -&gt; (Self, mpsc::UnboundedReceiver&lt;String&gt;) {
+        let (tx, rx) = mpsc::unbounded_channel();
+        (MessageProcessor { sender: tx }, rx)
+    }
+
+    pub fn send_message(&amp;self, message: String) -&gt; Result&lt;(), mpsc::error::SendError&lt;String&gt;&gt; {
+        self.sender.send(message)
+    }
+}
+
+// 这不会编译——Rust 防止不安全地共享可变数据：
+fn impossible_data_race() {
+    let mut items = vec![1, 2, 3];
+
+    // 这不会编译——不能将 `items` 移动到多个闭包中
+    /*
+    thread::spawn(move || {
+        items.push(4);  // 错误：使用移动的值
+    });
+
+    thread::spawn(move || {
+        items.push(5);  // 错误：使用移动的值
+    });
+    */
+}
+
+// 安全并发数据处理
+use rayon::prelude::*;
+
+fn parallel_processing() {
+    let data = vec![1, 2, 3, 4, 5];
+
+    // 并行迭代——保证线程安全
+    let results: Vec&lt;i32&gt; = data
+        .par_iter()
+        .map(|&amp;x| x * x)
+        .collect();
+
+    println!("{:?}", results);
+}
+
+// 带消息传递的异步并发
+async fn async_message_passing() {
+    let (tx, mut rx) = mpsc::channel(100);
+
+    // 生产者任务
+    let producer = tokio::spawn(async move {
+        for i in 0..10 {
+            if tx.send(i).await.is_err() {
+                break;
+            }
+        }
+    });
+
+    // 消费者任务
+    let consumer = tokio::spawn(async move {
+        while let Some(value) = rx.recv().await {
+            println!("Received: {}", value);
+        }
+    });
+
+    // 等待两个任务
+    let (producer_result, consumer_result) = tokio::join!(producer, consumer);
+    producer_result.unwrap();
+    consumer_result.unwrap();
+}
+
+#[derive(Clone)]
+struct User {
+    id: i32,
+    name: String,
+}
+<span class="boring">}</span></code></pre></pre>
+<pre class="mermaid">graph TD
+    subgraph &quot;C# 线程安全挑战&quot;
+        CS_MANUAL[&quot;手动同步&quot;]
+        CS_LOCKS[&quot;lock 语句&quot;]
+        CS_CONCURRENT[&quot;ConcurrentCollections&quot;]
+        CS_VOLATILE[&quot;volatile 字段&quot;]
+        CS_FORGET[&quot;😰 容易忘记锁&quot;]
+        CS_DEADLOCK[&quot;💀 可能的死锁&quot;]
+        CS_RACE[&quot;🏃 数据竞争&quot;]
+        CS_OVERHEAD[&quot;⚡ 运行时开销&quot;]
+
+        CS_MANUAL --&gt; CS_LOCKS
+        CS_MANUAL --&gt; CS_CONCURRENT
+        CS_MANUAL --&gt; CS_VOLATILE
+        CS_LOCKS --&gt; CS_FORGET
+        CS_LOCKS --&gt; CS_DEADLOCK
+        CS_FORGET --&gt; CS_RACE
+        CS_LOCKS --&gt; CS_OVERHEAD
+    end
+
+    subgraph &quot;Rust 类型系统保证&quot;
+        RUST_OWNERSHIP[&quot;所有权系统&quot;]
+        RUST_BORROWING[&quot;借用检查器&quot;]
+        RUST_SEND[&quot;Send trait&quot;]
+        RUST_SYNC[&quot;Sync trait&quot;]
+        RUST_ARC[&quot;Arc&lt;Mutex&lt;T&gt;&gt;&quot;]
+        RUST_CHANNELS[&quot;消息传递&quot;]
+        RUST_SAFE[&quot;✅ 数据竞争不可能&quot;]
+        RUST_FAST[&quot;⚡ 零成本抽象&quot;]
+
+        RUST_OWNERSHIP --&gt; RUST_BORROWING
+        RUST_BORROWING --&gt; RUST_SEND
+        RUST_SEND --&gt; RUST_SYNC
+        RUST_SYNC --&gt; RUST_ARC
+        RUST_ARC --&gt; RUST_CHANNELS
+        RUST_CHANNELS --&gt; RUST_SAFE
+        RUST_SAFE --&gt; RUST_FAST
+    end
+
+    style CS_FORGET fill:#ffcdd2,color:#000
+    style CS_DEADLOCK fill:#ffcdd2,color:#000
+    style CS_RACE fill:#ffcdd2,color:#000
+    style RUST_SAFE fill:#c8e6c9,color:#000
+    style RUST_FAST fill:#c8e6c9,color:#000
+</pre>
+<hr />
+<details>
+<summary><strong>🏋️ 练习：线程安全计数器</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：实现一个线程安全计数器，可以从 10 个线程同时递增。每个线程递增 1000 次。最终计数应恰好为 10,000。</p>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><pre class="playground"><code class="language-rust">use std::sync::{Arc, Mutex};
+use std::thread;
+
+fn main() {
+    let counter = Arc::new(Mutex::new(0u64));
+    let mut handles = vec![];
+
+    for _ in 0..10 {
+        let counter = Arc::clone(&amp;counter);
+        handles.push(thread::spawn(move || {
+            for _ in 0..1000 {
+                let mut count = counter.lock().unwrap();
+                *count += 1;
+            }
+        }));
+    }
+
+    for h in handles { h.join().unwrap(); }
+    assert_eq!(*counter.lock().unwrap(), 10_000);
+    println!("Final count: {}", counter.lock().unwrap());
+}</code></pre></pre>
+<p><strong>或使用原子（更快，无锁定）：</strong></p>
+<pre><pre class="playground"><code class="language-rust">use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::Arc;
+use std::thread;
+
+fn main() {
+    let counter = Arc::new(AtomicU64::new(0));
+    let handles: Vec&lt;_&gt; = (0..10).map(|_| {
+        let counter = Arc::clone(&amp;counter);
+        thread::spawn(move || {
+            for _ in 0..1000 {
+                counter.fetch_add(1, Ordering::Relaxed);
+            }
+        })
+    }).collect();
+
+    for h in handles { h.join().unwrap(); }
+    assert_eq!(counter.load(Ordering::SeqCst), 10_000);
+}</code></pre></pre>
+<p><strong>关键要点</strong>：<code>Arc&lt;Mutex&lt;T&gt;&gt;</code> 是通用模式。对于简单计数器，<code>AtomicU64</code> 完全避免锁开销。</p>
+</details>
+</details>
+<h3 id="为什么-rust-防止数据竞争send-和-sync"><a class="header" href="#为什么-rust-防止数据竞争send-和-sync">为什么 Rust 防止数据竞争：Send 和 Sync</a></h3>
+<p>Rust 使用两个 marker traits 在<strong>编译时</strong>强制执行线程安全——没有 C# 等价物：</p>
+<ul>
+<li><code>Send</code>：类型可以安全地<strong>转移</strong>到另一个线程（例如，移动到传递给 <code>thread::spawn</code> 的闭包中）</li>
+<li><code>Sync</code>：类型可以安全地（通过 <code>&amp;T</code>）在线程之间<strong>共享</strong></li>
+</ul>
+<p>大多数类型自动是 <code>Send + Sync</code>。值得注意的例外：</p>
+<ul>
+<li><code>Rc&lt;T&gt;</code> <strong>既不</strong>是 Send 也不是 Sync——编译器会拒绝让你将它传递给 <code>thread::spawn</code>（改用 <code>Arc&lt;T&gt;</code>）</li>
+<li><code>Cell&lt;T&gt;</code> 和 <code>RefCell&lt;T&gt;</code> <strong>不</strong>是 Sync——对线程安全内部可变性使用 <code>Mutex&lt;T&gt;</code> 或 <code>RwLock&lt;T&gt;</code></li>
+<li>原始指针（<code>*const T</code>、<code>*mut T</code>）<strong>既不</strong>是 Send 也不是 Sync</li>
+</ul>
+<p>在 C# 中，<code>List&lt;T&gt;</code> 不是线程安全的但编译器不会阻止你跨线程共享它。在 Rust 中，等价的错误是<strong>编译错误</strong>，不是运行时数据竞争。</p>
+<h3 id="作用域线程从栈借用"><a class="header" href="#作用域线程从栈借用">作用域线程：从栈借用</a></h3>
+<p><code>thread::scope()</code> 允许生成的线程借用局部变量——无需 <code>Arc</code>：</p>
+<pre><pre class="playground"><code class="language-rust">use std::thread;
+
+fn main() {
+    let data = vec![1, 2, 3, 4, 5];
+
+    // 作用域线程可以借用 'data'——作用域等待所有线程完成
+    thread::scope(|s| {
+        s.spawn(|| println!("Thread 1: {data:?}"));
+        s.spawn(|| println!("Thread 2: sum = {}", data.iter().sum::&lt;i32&gt;()));
+    });
+    // 'data' 在这里仍然有效——保证线程已完成
+}</code></pre></pre>
+<p>这类似于 C# 的 <code>Parallel.ForEach</code>，因为调用代码等待完成，但 Rust 的借用检查器在编译时<strong>证明</strong>没有数据竞争。</p>
+<h3 id="桥接到-asyncawait"><a class="header" href="#桥接到-asyncawait">桥接到 async/await</a></h3>
+<p>C# 开发者通常使用 <code>Task</code> 和 <code>async/await</code> 而不是原始线程。Rust 有两种范式：</p>
+<div class="table-wrapper"><table><thead><tr><th>C#</th><th>Rust</th><th>何时使用</th></tr></thead><tbody>
+<tr><td><code>Thread</code></td><td><code>std::thread::spawn</code></td><td>CPU 绑定工作，每个任务一个 OS 线程</td></tr>
+<tr><td><code>Task.Run</code></td><td><code>tokio::spawn</code></td><td>运行时上的异步任务</td></tr>
+<tr><td><code>async/await</code></td><td><code>async/await</code></td><td>I/O 绑定并发</td></tr>
+<tr><td><code>lock</code></td><td><code>Mutex&lt;T&gt;</code></td><td>同步互斥</td></tr>
+<tr><td><code>SemaphoreSlim</code></td><td><code>tokio::sync::Semaphore</code></td><td>异步并发限制</td></tr>
+<tr><td><code>Interlocked</code></td><td><code>std::sync::atomic</code></td><td>无锁原子操作</td></tr>
+<tr><td><code>CancellationToken</code></td><td><code>tokio_util::sync::CancellationToken</code></td><td>协作废止</td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p>下一章（<a href="ch13-1-asyncawait-deep-dive.html">Async/Await 深入</a>）详细涵盖 Rust 的异步模型——包括它与 C# 的 <code>Task</code> 基础模型有何不同。</p>
+</blockquote>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch12-1-macros-primer.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch13-1-asyncawait-deep-dive.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch12-1-macros-primer.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch13-1-asyncawait-deep-dive.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

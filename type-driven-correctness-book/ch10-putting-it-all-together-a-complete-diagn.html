@@ -1,0 +1,444 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>12. 综合应用 — 完整的诊断平台 - Type-Driven Correctness in Rust</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Type-Driven Correctness in Rust</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="整合一切--完整诊断平台-"><a class="header" href="#整合一切--完整诊断平台-">整合一切 —— 完整诊断平台 🟡</a></h1>
+<blockquote>
+<p><strong>你将学到：</strong> 所有七个核心模式（ch02-ch09）如何组合成单个工作流 —— 认证、会话、类型化命令、审计令牌、量纲结果、验证数据和幻象类型寄存器 —— 零总运行时开销。</p>
+<p><strong>交叉引用：</strong> 每个核心模式章节（ch02-ch09）、<a href="ch14-testing-type-level-guarantees.html">ch14</a>（测试这些保证）</p>
+</blockquote>
+<h2 id="目标"><a class="header" href="#目标">目标</a></h2>
+<p>本章将第 2-9 章的<strong>七个模式</strong>组合成单个、现实的诊断工作流。我们将构建一个服务器健康检查：</p>
+<ol>
+<li><strong>认证</strong>（能力令牌 — ch04）</li>
+<li><strong>打开 IPMI 会话</strong>（类型状态 — ch05）</li>
+<li><strong>发送类型化命令</strong>（类型化命令 — ch02）</li>
+<li><strong>使用一次性令牌</strong>进行审计日志（一次性类型 — ch03）</li>
+<li><strong>返回量纲结果</strong>（量纲分析 — ch06）</li>
+<li><strong>验证 FRU 数据</strong>（验证边界 — ch07）</li>
+<li><strong>读取类型化寄存器</strong>（幻象类型 — ch09）</li>
+</ol>
+<pre><code class="language-rust ignore">use std::marker::PhantomData;
+use std::io;
+
+// ──── 模式 1：量纲类型（ch06）────
+
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+pub struct Celsius(pub f64);
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+pub struct Rpm(pub f64);
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+pub struct Volts(pub f64);
+
+// ──── 模式 2：类型化命令（ch02）────
+
+pub trait IpmiCmd {
+    type Response;
+    fn net_fn(&amp;self) -&gt; u8;
+    fn cmd_byte(&amp;self) -&gt; u8;
+    fn payload(&amp;self) -&gt; Vec&lt;u8&gt;;
+    fn parse_response(&amp;self, raw: &amp;[u8]) -&gt; io::Result&lt;Self::Response&gt;;
+}
+
+pub struct ReadTemp { pub sensor_id: u8 }
+impl IpmiCmd for ReadTemp {
+    type Response = Celsius;
+    fn net_fn(&amp;self) -&gt; u8 { 0x04 }
+    fn cmd_byte(&amp;self) -&gt; u8 { 0x2D }
+    fn payload(&amp;self) -&gt; Vec&lt;u8&gt; { vec![self.sensor_id] }
+    fn parse_response(&amp;self, raw: &amp;[u8]) -&gt; io::Result&lt;Celsius&gt; {
+        if raw.is_empty() { return Err(io::Error::new(io::ErrorKind::InvalidData, "empty")); }
+        Ok(Celsius(raw[0] as f64))
+    }
+}
+
+pub struct ReadFanSpeed { pub fan_id: u8 }
+impl IpmiCmd for ReadFanSpeed {
+    type Response = Rpm;
+    fn net_fn(&amp;self) -&gt; u8 { 0x04 }
+    fn cmd_byte(&amp;self) -&gt; u8 { 0x2D }
+    fn payload(&amp;self) -&gt; Vec&lt;u8&gt; { vec![self.fan_id] }
+    fn parse_response(&amp;self, raw: &amp;[u8]) -&gt; io::Result&lt;Rpm&gt; {
+        if raw.len() &lt; 2 { return Err(io::Error::new(io::ErrorKind::InvalidData, "need 2 bytes")); }
+        Ok(Rpm(u16::from_le_bytes([raw[0], raw[1]]) as f64))
+    }
+}
+
+// ──── 模式 3：能力令牌（ch04）────
+
+pub struct AdminToken { _private: () }
+pub fn authenticate(user: &amp;str, pass: &amp;str) -&gt; Result&lt;AdminToken, &amp;'static str&gt; {
+    if user == "admin" &amp;&amp; pass == "secret" { Ok(AdminToken { _private: () }) }
+    else { Err("authentication failed") }
+}
+
+// ──── 模式 4：类型状态会话（ch05）────
+
+pub struct Idle;
+pub struct Active;
+
+pub struct Session&lt;State&gt; {
+    host: String,
+    _state: PhantomData&lt;State&gt;,
+}
+
+impl Session&lt;Idle&gt; {
+    pub fn connect(host: &amp;str) -&gt; Self {
+        Session { host: host.to_string(), _state: PhantomData }
+    }
+    pub fn activate(self, _admin: &amp;AdminToken) -&gt; Result&lt;Session&lt;Active&gt;, String&gt; {
+        println!("Session activated on {}", self.host);
+        Ok(Session { host: self.host, _state: PhantomData })
+    }
+}
+
+impl Session&lt;Active&gt; {
+    pub fn execute&lt;C: IpmiCmd&gt;(&amp;mut self, cmd: &amp;C) -&gt; io::Result&lt;C::Response&gt; {
+        let raw = self.raw_send(cmd.net_fn(), cmd.cmd_byte(), &amp;cmd.payload())?;
+        cmd.parse_response(&amp;raw)
+    }
+    fn raw_send(&amp;self, _nf: u8, _cmd: u8, _data: &amp;[u8]) -&gt; io::Result&lt;Vec&lt;u8&gt;&gt; {
+        Ok(vec![42, 0x1E])
+    }
+    pub fn close(self) { println!("Session closed"); }
+}
+
+// ──── 模式 5：一次性审计令牌（ch03）────
+
+pub struct AuditToken { run_id: u64 }
+impl AuditToken {
+    pub fn issue(run_id: u64) -&gt; Self { AuditToken { run_id } }
+    pub fn log(self, message: &amp;str) {
+        println!("[AUDIT run_id={}] {}", self.run_id, message);
+    }
+}
+
+// ──── 模式 6：验证边界（ch07）────
+
+pub struct ValidFru { pub board_serial: String, pub product_name: String }
+impl ValidFru {
+    pub fn parse(raw: &amp;[u8]) -&gt; Result&lt;Self, &amp;'static str&gt; {
+        if raw.len() &lt; 8 { return Err("FRU too short"); }
+        if raw[0] != 0x01 { return Err("bad FRU version"); }
+        Ok(ValidFru { board_serial: "SN12345".to_string(), product_name: "ServerX".to_string() })
+    }
+}
+
+// ──── 模式 7：幻象类型寄存器（ch09）────
+
+pub struct Width16;
+pub struct Reg&lt;W&gt; { offset: u16, _w: PhantomData&lt;W&gt; }
+impl Reg&lt;Width16&gt; { pub fn read(&amp;self) -&gt; u16 { 0x8086 } }
+pub struct PcieDev { pub vendor_id: Reg&lt;Width16&gt;, pub device_id: Reg&lt;Width16&gt; }
+impl PcieDev {
+    pub fn new() -&gt; Self {
+        PcieDev {
+            vendor_id: Reg { offset: 0x00, _w: PhantomData },
+            device_id: Reg { offset: 0x02, _w: PhantomData },
+        }
+    }
+}
+
+// ──── 组合工作流 ────
+
+fn full_diagnostic() -&gt; Result&lt;(), String&gt; {
+    // 1. 认证 → 获得能力令牌
+    let admin = authenticate("admin", "secret").map_err(|e| e.to_string())?;
+
+    // 2. 连接并激活会话（类型状态：Idle → Active）
+    let session = Session::connect("192.168.1.100");
+    let mut session = session.activate(&amp;admin)?;  // 需要 AdminToken
+
+    // 3. 发送类型化命令（响应类型匹配命令）
+    let temp: Celsius = session.execute(&amp;ReadTemp { sensor_id: 0 }).map_err(|e| e.to_string())?;
+    let fan: Rpm = session.execute(&amp;ReadFanSpeed { fan_id: 1 }).map_err(|e| e.to_string())?;
+
+    // 4. 读取幻象类型 PCIe 寄存器
+    let pcie = PcieDev::new();
+    let vid: u16 = pcie.vendor_id.read();  // 保证 u16
+
+    // 5. 在边界验证 FRU 数据
+    let raw_fru = vec![0x01, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0xFD];
+    let fru = ValidFru::parse(&amp;raw_fru).map_err(|e| e.to_string())?;
+
+    // 6. 发行一次性审计令牌
+    let audit = AuditToken::issue(1001);
+
+    // 7. 生成报告（所有数据都是类型化和验证的）
+    let report = format!(
+        "Server: {} (SN: {}), VID: 0x{:04X}, CPU: {:?}, Fan: {:?}",
+        fru.product_name, fru.board_serial, vid, temp, fan,
+    );
+
+    // 8. 消耗审计令牌 —— 不能记录两次
+    audit.log(&amp;report);
+    // audit.log("oops");  // ❌ 使用已移动的值
+
+    // 9. 关闭会话（类型状态：Active → dropped）
+    session.close();
+
+    Ok(())
+}</code></pre>
+<h3 id="编译器证明的内容"><a class="header" href="#编译器证明的内容">编译器证明的内容</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Bug 类</th><th>如何防止</th><th>模式</th></tr></thead><tbody>
+<tr><td>未授权访问</td><td><code>activate()</code> 需要 <code>&amp;AdminToken</code></td><td>能力令牌</td></tr>
+<tr><td>错误会话状态的命令</td><td><code>execute()</code> 仅存在于 <code>Session&lt;Active&gt;</code></td><td>类型状态</td></tr>
+<tr><td>错误响应类型</td><td><code>ReadTemp::Response = Celsius</code>，由 trait 固定</td><td>类型化命令</td></tr>
+<tr><td>单位混淆（°C vs RPM）</td><td><code>Celsius</code> ≠ <code>Rpm</code> ≠ <code>Volts</code></td><td>量纲类型</td></tr>
+<tr><td>寄存器宽度不匹配</td><td><code>Reg&lt;Width16&gt;</code> 返回 <code>u16</code></td><td>幻象类型</td></tr>
+<tr><td>处理未验证数据</td><td>必须先调用 <code>ValidFru::parse()</code></td><td>验证边界</td></tr>
+<tr><td>重复审计条目</td><td><code>AuditToken</code> 在日志时被消耗</td><td>一次性类型</td></tr>
+<tr><td>乱序电源排序</td><td>每个步骤需要前一个令牌</td><td>能力令牌（ch04）</td></tr>
+</tbody></table>
+</div>
+<p><strong>所有这些保证的总运行时开销：零。</strong></p>
+<p>每个检查都在编译时发生。生成的汇编与没有检查的手写 C 代码相同 —— 但<strong>C 可能有 bug，这个不可能</strong>。</p>
+<h2 id="关键要点"><a class="header" href="#关键要点">关键要点</a></h2>
+<ol>
+<li><strong>七个模式无缝组合</strong> —— 能力令牌、类型状态、类型化命令、一次性类型、量纲类型、验证边界和幻象类型都一起工作。</li>
+<li><strong>编译器证明八个 bug 类不可能</strong> —— 见上面的"编译器证明的内容"表。</li>
+<li><strong>零总运行时开销</strong> —— 生成的汇编与未检查的 C 代码相同。</li>
+<li><strong>每个模式独立有用</strong> —— 你不需要所有七个；逐步采用它们。</li>
+<li><strong>集成章节是设计模板</strong> —— 用它作为你自己类型化诊断工作流的起点。</li>
+<li><strong>从 IPMI 到大规模 Redfish</strong> —— ch17 和 ch18 将这相同的七个模式（加上 ch08 的能力混入）应用于完整的 Redfish 客户端和服务器。这里的 IPMI 工作流是基础；Redfish 演练展示组合如何扩展到具有多个数据源和模式版本约束的生产系统。</li>
+</ol>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch16-send-sync-compile-time-concurrency-proofs.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch17-redfish-applied-walkthrough.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch16-send-sync-compile-time-concurrency-proofs.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch17-redfish-applied-walkthrough.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

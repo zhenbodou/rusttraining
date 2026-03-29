@@ -1,0 +1,840 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>5. Miri、Valgrind 和 Sanitizers — 验证 unsafe 代码 - Rust Engineering Practices — Beyond cargo build</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust Engineering Practices — Beyond cargo build</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="mirivalgrind-和-sanitizers--验证-unsafe-代码-"><a class="header" href="#mirivalgrind-和-sanitizers--验证-unsafe-代码-">Miri、Valgrind 和 Sanitizers — 验证 unsafe 代码 🔴</a></h1>
+<blockquote>
+<p><strong>你将学到：</strong></p>
+<ul>
+<li>Miri 作为 MIR 解释器 — 它能捕获什么（别名、UB、泄漏）以及不能捕获什么（FFI、系统调用）</li>
+<li>Valgrind memcheck、Helgrind（数据竞争）、Callgrind（分析）和 Massif（堆）</li>
+<li>LLVM sanitizers：ASan、MSan、TSan、LSan 与 nightly <code>-Zbuild-std</code></li>
+<li><code>cargo-fuzz</code> 用于崩溃发现和 <code>loom</code> 用于并发模型检查</li>
+<li>选择正确验证工具的决策树</li>
+</ul>
+<p><strong>交叉引用：</strong> <a href="ch04-code-coverage-seeing-what-tests-miss.html">代码覆盖率</a> — 覆盖率发现未测试的路径，Miri 验证已测试的路径 · <a href="ch09-no-std-and-feature-verification.html"><code>no_std</code> 与特性</a> — <code>no_std</code> 代码通常需要 Miri 可以验证的 <code>unsafe</code> · <a href="ch11-putting-it-all-together-a-production-cic.html">CI/CD 流水线</a> — 流水线中的 Miri 作业</p>
+</blockquote>
+<p>安全 Rust 在编译时保证内存安全和数据竞争自由。但当你编写 <code>unsafe</code> 的那一刻 —
+为了 FFI、手写数据结构或性能技巧 — 这些保证就变成了<em>你的</em>责任。
+本章涵盖验证你的 <code>unsafe</code> 代码实际上遵守其声称的安全合约的工具。</p>
+<h3 id="miri--unsafe-rust-的解释器"><a class="header" href="#miri--unsafe-rust-的解释器">Miri — Unsafe Rust 的解释器</a></h3>
+<p><a href="https://github.com/rust-lang/miri">Miri</a> 是 Rust 中级中间表示（MIR）的<strong>解释器</strong>。
+Miri 不是编译为机器码，而是<em>逐步执行</em>你的程序，在每次操作时进行详尽的未定义行为检查。</p>
+<pre><code class="language-bash"># 安装 Miri（仅 nightly 组件）
+rustup +nightly component add miri
+
+# 在 Miri 下运行你的测试套件
+cargo +nightly miri test
+
+# 在 Miri 下运行特定二进制文件
+cargo +nightly miri run
+
+# 运行特定测试
+cargo +nightly miri test -- test_name
+</code></pre>
+<p><strong>Miri 的工作原理：</strong></p>
+<pre><code class="language-text">源代码 → rustc → MIR → Miri 解释 MIR
+                        │
+                        ├─ 跟踪每个指针的出处
+                        ├─ 验证每次内存访问
+                        ├─ 在每次解引用时检查对齐
+                        ├─ 检测释放后使用
+                        ├─ 检测数据竞争（带线程）
+                        └─ 强制 Stacked Borrows / Tree Borrows 规则
+</code></pre>
+<h3 id="miri-能捕获什么以及不能捕获什么"><a class="header" href="#miri-能捕获什么以及不能捕获什么">Miri 能捕获什么（以及不能捕获什么）</a></h3>
+<p><strong>Miri 检测：</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>类别</th><th>示例</th><th>会在运行时崩溃吗？</th></tr></thead><tbody>
+<tr><td>越界访问</td><td><code>ptr.add(100).read()</code> 超出分配</td><td>有时（取决于页面布局）</td></tr>
+<tr><td>释放后使用</td><td>通过原始指针读取已丢弃的 <code>Box</code></td><td>有时（取决于分配器）</td></tr>
+<tr><td>双重释放</td><td>调用 <code>drop_in_place</code> 两次</td><td>通常</td></tr>
+<tr><td>未对齐访问</td><td>在奇数地址上 <code>(ptr as *const u32).read()</code></td><td>在某些架构上</td></tr>
+<tr><td>无效值</td><td><code>transmute::&lt;u8, bool&gt;(2)</code></td><td>静默错误</td></tr>
+<tr><td>悬垂引用</td><td><code>&amp;*ptr</code> 其中 ptr 已释放</td><td>否（静默损坏）</td></tr>
+<tr><td>数据竞争</td><td>两个线程，一个写入，无同步</td><td>间歇性，难以重现</td></tr>
+<tr><td>Stacked Borrows 违规</td><td>别名 <code>&amp;mut</code> 引用</td><td>否（静默损坏）</td></tr>
+</tbody></table>
+</div>
+<p><strong>Miri 不检测：</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>限制</th><th>原因</th></tr></thead><tbody>
+<tr><td>逻辑 bug</td><td>Miri 检查内存安全，而不是正确性</td></tr>
+<tr><td>并发死锁</td><td>Miri 检查数据竞争，而不是活锁</td></tr>
+<tr><td>性能问题</td><td>解释比原生慢 10-100 倍</td></tr>
+<tr><td>OS/硬件交互</td><td>Miri 无法模拟系统调用、设备 I/O</td></tr>
+<tr><td>所有 FFI 调用</td><td>无法解释 C 代码（仅 Rust MIR）</td></tr>
+<tr><td>穷尽路径覆盖</td><td>仅测试你的测试套件触及的路径</td></tr>
+</tbody></table>
+</div>
+<p><strong>具体示例 — 捕获在实践中"有效"的不健全代码：</strong></p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_miri_catches_ub() {
+        // 这在 release 构建中"有效"但是未定义行为
+        let mut v = vec![1, 2, 3];
+        let ptr = v.as_ptr();
+
+        // Push 可能重新分配，使 ptr 无效
+        v.push(4);
+
+        // ❌ UB：ptr 可能在重新分配后悬垂
+        // Miri 会捕获这个，即使分配器碰巧没有移动缓冲区。
+        // let _val = unsafe { *ptr };
+        // 错误：Miri 会报告：
+        //   "pointer to alloc1234 was dereferenced after this
+        //    allocation got freed"
+
+        // ✅ 正确：在变异后获取新指针
+        let ptr = v.as_ptr();
+        let val = unsafe { *ptr };
+        assert_eq!(val, 1);
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="在真实-crate-上运行-miri"><a class="header" href="#在真实-crate-上运行-miri">在真实 Crate 上运行 Miri</a></h3>
+<p><strong>带有 <code>unsafe</code> 的 crate 的实用 Miri 工作流：</strong></p>
+<pre><code class="language-bash"># 步骤 1：在 Miri 下运行所有测试
+cargo +nightly miri test 2&gt;&amp;1 | tee miri_output.txt
+
+# 步骤 2：如果 Miri 报告错误，隔离它们
+cargo +nightly miri test -- failing_test_name
+
+# 步骤 3：使用 Miri 的回溯进行诊断
+MIRIFLAGS="-Zmiri-backtrace=full" cargo +nightly miri test
+
+# 步骤 4：选择借用模型
+# Stacked Borrows（默认，更严格）：
+cargo +nightly miri test
+
+# Tree Borrows（实验性，更宽松）：
+MIRIFLAGS="-Zmiri-tree-borrows" cargo +nightly miri test
+</code></pre>
+<p><strong>常见场景的 Miri 标志：</strong></p>
+<pre><code class="language-bash"># 禁用隔离（允许文件系统访问、环境变量）
+MIRIFLAGS="-Zmiri-disable-isolation" cargo +nightly miri test
+
+# 内存泄漏检测在 Miri 中默认开启。
+# 要抑制泄漏错误（例如，用于故意泄漏）：
+# MIRIFLAGS="-Zmiri-ignore-leaks" cargo +nightly miri test
+
+# 为随机测试播种 RNG 以获得可重现的结果
+MIRIFLAGS="-Zmiri-seed=42" cargo +nightly miri test
+
+# 启用严格的出处检查
+MIRIFLAGS="-Zmiri-strict-provenance" cargo +nightly miri test
+
+# 多个标志
+MIRIFLAGS="-Zmiri-disable-isolation -Zmiri-backtrace=full -Zmiri-strict-provenance" \
+    cargo +nightly miri test
+</code></pre>
+<p><strong>CI 中的 Miri：</strong></p>
+<pre><code class="language-yaml"># .github/workflows/miri.yml
+name: Miri
+on: [push, pull_request]
+
+jobs:
+  miri:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: miri
+
+      - name: 运行 Miri
+        run: cargo miri test --workspace
+        env:
+          MIRIFLAGS: "-Zmiri-backtrace=full"
+          # 泄漏检查在 Miri 中默认开启。
+          # 跳过使用 Miri 无法处理的系统调用的测试
+          # （文件 I/O、网络等）
+</code></pre>
+<blockquote>
+<p><strong>性能注意</strong>：Miri 比原生执行慢 10-100 倍。原生运行 5 秒的测试套件在 Miri 下可能需要 5 分钟。
+在 CI 中，仅在 focused 子集上运行 Miri：仅带有 <code>unsafe</code> 代码的 crate。</p>
+</blockquote>
+<h3 id="valgrind-及其-rust-集成"><a class="header" href="#valgrind-及其-rust-集成">Valgrind 及其 Rust 集成</a></h3>
+<p><a href="https://valgrind.org/">Valgrind</a> 是经典的 C/C++ 内存检查器。它也适用于编译后的 Rust 二进制文件，
+在机器码级别检查内存错误。</p>
+<pre><code class="language-bash"># 安装 Valgrind
+sudo apt install valgrind  # Debian/Ubuntu
+sudo dnf install valgrind  # Fedora
+
+# 使用 debug 信息构建（Valgrind 需要符号）
+cargo build --tests
+# 或带有 debug 信息的 release：
+# cargo build --release
+# [profile.release]
+# debug = true
+
+# 在 Valgrind 下运行特定测试二进制文件
+valgrind --tool=memcheck \
+    --leak-check=full \
+    --show-leak-kinds=all \
+    --track-origins=yes \
+    ./target/debug/deps/my_crate-abc123 --test-threads=1
+
+# 运行主二进制文件
+valgrind --tool=memcheck \
+    --leak-check=full \
+    --error-exitcode=1 \
+    ./target/debug/diag_tool --run-diagnostics
+</code></pre>
+<p><strong>memcheck 之外的 Valgrind 工具：</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>工具</th><th>命令</th><th>检测内容</th></tr></thead><tbody>
+<tr><td><strong>Memcheck</strong></td><td><code>--tool=memcheck</code></td><td>内存泄漏、释放后使用、缓冲区溢出</td></tr>
+<tr><td><strong>Helgrind</strong></td><td><code>--tool=helgrind</code></td><td>数据竞争和锁顺序违规</td></tr>
+<tr><td><strong>DRD</strong></td><td><code>--tool=drd</code></td><td>数据竞争（不同的检测算法）</td></tr>
+<tr><td><strong>Callgrind</strong></td><td><code>--tool=callgrind</code></td><td>CPU 指令分析（路径级别）</td></tr>
+<tr><td><strong>Massif</strong></td><td><code>--tool=massif</code></td><td>堆内存分析随时间变化</td></tr>
+<tr><td><strong>Cachegrind</strong></td><td><code>--tool=cachegrind</code></td><td>缓存未命中分析</td></tr>
+</tbody></table>
+</div>
+<p><strong>使用 Callgrind 进行指令级别分析：</strong></p>
+<pre><code class="language-bash"># 记录指令计数（比挂钟时间更稳定）
+valgrind --tool=callgrind \
+    --callgrind-out-file=callgrind.out \
+    ./target/release/diag_tool --run-diagnostics
+
+# 使用 KCachegrind 可视化
+kcachegrind callgrind.out
+# 或基于文本的替代方案：
+callgrind_annotate callgrind.out | head -100
+</code></pre>
+<p><strong>Miri vs Valgrind — 何时使用哪个：</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>方面</th><th>Miri</th><th>Valgrind</th></tr></thead><tbody>
+<tr><td>检查 Rust 特定 UB</td><td>✅ Stacked/Tree Borrows</td><td>❌ 不知道 Rust 规则</td></tr>
+<tr><td>检查 C FFI 代码</td><td>❌ 无法解释 C</td><td>✅ 检查所有机器码</td></tr>
+<tr><td>需要 nightly</td><td>✅ 是</td><td>❌ 否</td></tr>
+<tr><td>速度</td><td>慢 10-100 倍</td><td>慢 10-50 倍</td></tr>
+<tr><td>平台</td><td>任意（解释 MIR）</td><td>Linux、macOS（运行原生代码）</td></tr>
+<tr><td>数据竞争检测</td><td>✅ 是</td><td>✅ 是（Helgrind/DRD）</td></tr>
+<tr><td>泄漏检测</td><td>✅ 是</td><td>✅ 是（更彻底）</td></tr>
+<tr><td>假阳性</td><td>非常罕见</td><td>偶尔（尤其是分配器）</td></tr>
+</tbody></table>
+</div>
+<p><strong>两者都使用</strong>：</p>
+<ul>
+<li><strong>Miri</strong> 用于纯 Rust <code>unsafe</code> 代码（Stacked Borrows、出处）</li>
+<li><strong>Valgrind</strong> 用于 FFI 繁重的代码和整个程序的泄漏分析</li>
+</ul>
+<h3 id="addresssanitizermemorysanitizerthreadsanitizer"><a class="header" href="#addresssanitizermemorysanitizerthreadsanitizer">AddressSanitizer、MemorySanitizer、ThreadSanitizer</a></h3>
+<p>LLVM sanitizers 是编译时插桩传递，插入运行时检查。
+它们比 Valgrind 快（2-5 倍开销 vs 10-50 倍）并捕获不同类别的 bug。</p>
+<pre><code class="language-bash"># 必需：安装 Rust 源以使用 sanitizer 插桩重建 std
+rustup component add rust-src --toolchain nightly
+# AddressSanitizer（ASan） — 缓冲区溢出、释放后使用、栈溢出
+RUSTFLAGS="-Zsanitizer=address" \
+    cargo +nightly test -Zbuild-std --target x86_64-unknown-linux-gnu
+
+# MemorySanitizer（MSan） — 未初始化内存读取
+RUSTFLAGS="-Zsanitizer=memory" \
+    cargo +nightly test -Zbuild-std --target x86_64-unknown-linux-gnu
+
+# ThreadSanitizer（TSan） — 数据竞争
+RUSTFLAGS="-Zsanitizer=thread" \
+    cargo +nightly test -Zbuild-std --target x86_64-unknown-linux-gnu
+
+# LeakSanitizer（LSan） — 内存泄漏（默认包含在 ASan 中）
+RUSTFLAGS="-Zsanitizer=leak" \
+    cargo +nightly test --target x86_64-unknown-linux-gnu
+</code></pre>
+<blockquote>
+<p><strong>注意</strong>：ASan、MSan 和 TSan 需要 <code>-Zbuild-std</code> 来使用 sanitizer 插桩重建标准库。
+LSan 不需要。</p>
+</blockquote>
+<p><strong>Sanitizer 比较：</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Sanitizer</th><th>开销</th><th>捕获</th><th>Nightly？</th><th><code>-Zbuild-std</code>？</th></tr></thead><tbody>
+<tr><td><strong>ASan</strong></td><td>2 倍内存，2 倍 CPU</td><td>缓冲区溢出、释放后使用、栈溢出</td><td>是</td><td>是</td></tr>
+<tr><td><strong>MSan</strong></td><td>3 倍内存，3 倍 CPU</td><td>未初始化读取</td><td>是</td><td>是</td></tr>
+<tr><td><strong>TSan</strong></td><td>5-10 倍内存，5 倍 CPU</td><td>数据竞争</td><td>是</td><td>是</td></tr>
+<tr><td><strong>LSan</strong></td><td>最小</td><td>内存泄漏</td><td>是</td><td>否</td></tr>
+</tbody></table>
+</div>
+<p><strong>实际示例 — 使用 TSan 捕获数据竞争：</strong></p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::sync::Arc;
+use std::thread;
+
+fn racy_counter() -&gt; u64 {
+    // ❌ UB：无同步的共享可变状态
+    let data = Arc::new(std::cell::UnsafeCell::new(0u64));
+    let mut handles = vec![];
+
+    for _ in 0..4 {
+        let data = Arc::clone(&amp;data);
+        handles.push(thread::spawn(move || {
+            for _ in 0..1000 {
+                // SAFETY: 不健全 — 数据竞争！
+                unsafe {
+                    *data.get() += 1;
+                }
+            }
+        }));
+    }
+
+    for h in handles {
+        h.join().unwrap();
+    }
+
+    // 值应该是 4000 但由于竞争可能是任何值
+    unsafe { *data.get() }
+}
+
+// Miri 和 TSan 都捕获这个：
+// Miri:  "Data race detected between (1) write and (2) write"
+// TSan:  "WARNING: ThreadSanitizer: data race"
+//
+// 修复：使用 AtomicU64 或 Mutex&lt;u64&gt;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="相关工具fuzzing-和并发验证"><a class="header" href="#相关工具fuzzing-和并发验证">相关工具：Fuzzing 和并发验证</a></h3>
+<p><strong><code>cargo-fuzz</code> — 覆盖率引导 Fuzzing</strong>（在解析器和解码器中发现崩溃）：</p>
+<pre><code class="language-bash"># 安装
+cargo install cargo-fuzz
+
+# 初始化模糊目标
+cargo fuzz init
+cargo fuzz add parse_gpu_csv
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// fuzz/fuzz_targets/parse_gpu_csv.rs
+#![no_main]
+use libfuzzer_sys::fuzz_target;
+
+fuzz_target!(|data: &amp;[u8]| {
+    if let Ok(s) = std::str::from_utf8(data) {
+        // 模糊测试器生成数百万个输入以寻找 panic/崩溃。
+        let _ = diag_tool::parse_gpu_csv(s);
+    }
+});
+<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-bash"># 运行模糊测试器（运行直到被中断或发现崩溃）
+cargo +nightly fuzz run parse_gpu_csv -- -max_total_time=300  # 5 分钟
+
+# 最小化崩溃
+cargo +nightly fuzz tmin parse_gpu_csv artifacts/parse_gpu_csv/crash-...
+</code></pre>
+<blockquote>
+<p><strong>何时模糊测试</strong>：任何解析不受信任/半受信任输入的函数（传感器输出、配置文件、网络数据、JSON/CSV）。
+Fuzzing 在每个主要 Rust 解析器 crate（serde、regex、image）中都发现了真正的 bug。</p>
+</blockquote>
+<p><strong><code>loom</code> — 并发模型检查器</strong>（穷尽测试原子排序）：</p>
+<pre><code class="language-toml">[dev-dependencies]
+loom = "0.7"
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[cfg(loom)]
+mod tests {
+    use loom::sync::atomic::{AtomicUsize, Ordering};
+    use loom::thread;
+
+    #[test]
+    fn test_counter_is_atomic() {
+        loom::model(|| {
+            let counter = loom::sync::Arc::new(AtomicUsize::new(0));
+            let c1 = counter.clone();
+            let c2 = counter.clone();
+
+            let t1 = thread::spawn(move || { c1.fetch_add(1, Ordering::SeqCst); });
+            let t2 = thread::spawn(move || { c2.fetch_add(1, Ordering::SeqCst); });
+
+            t1.join().unwrap();
+            t2.join().unwrap();
+
+            // loom 探索所有可能的线程交错
+            assert_eq!(counter.load(Ordering::SeqCst), 2);
+        });
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>何时使用 <code>loom</code></strong>：当你有无锁数据结构或自定义同步原语时。
+Loom 穷尽地探索线程交错 — 它是模型检查器，而不是压力测试。
+基于 <code>Mutex</code>/<code>RwLock</code> 的代码不需要。</p>
+</blockquote>
+<h3 id="何时使用哪个工具"><a class="header" href="#何时使用哪个工具">何时使用哪个工具</a></h3>
+<pre><code class="language-text">unsafe 验证的决策树：
+
+代码是纯 Rust（无 FFI）吗？
+├─ 是 → 使用 Miri（捕获 Rust 特定 UB、Stacked Borrows）
+│       也在 CI 中运行 ASan 进行纵深防御
+└─ 否（通过 FFI 调用 C/C++ 代码）
+   ├─ 内存安全问题？
+   │  └─ 是 → 使用 Valgrind memcheck 和 ASan
+   ├─ 并发问题？
+   │  └─ 是 → 使用 TSan（更快）或 Helgrind（更彻底）
+   └─ 内存泄漏问题？
+      └─ 是 → 使用 Valgrind --leak-check=full
+</code></pre>
+<p><strong>推荐的 CI 矩阵：</strong></p>
+<pre><code class="language-yaml"># 并行运行所有工具以获得快速反馈
+jobs:
+  miri:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dtolnay/rust-toolchain@nightly
+        with: { components: miri }
+      - run: cargo miri test --workspace
+
+  asan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dtolnay/rust-toolchain@nightly
+      - run: |
+          RUSTFLAGS="-Zsanitizer=address" \
+          cargo test -Zbuild-std --target x86_64-unknown-linux-gnu
+
+  valgrind:
+    runs-on: ubuntu-latest
+    steps:
+      - run: sudo apt-get install -y valgrind
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --tests
+      - run: |
+          for test_bin in $(find target/debug/deps -maxdepth 1 -executable -type f ! -name '*.d'); do
+            valgrind --error-exitcode=1 --leak-check=full "$test_bin" --test-threads=1
+          done
+</code></pre>
+<h3 id="应用零-unsafe--以及何时需要它"><a class="header" href="#应用零-unsafe--以及何时需要它">应用：零 Unsafe — 以及何时需要它</a></h3>
+<p>项目在 90K+ 行 Rust 中包含<strong>零 <code>unsafe</code> 块</strong>。
+这对于系统级诊断工具来说是一项非凡的成就，并证明安全 Rust 足以用于：</p>
+<ul>
+<li>IPMI 通信（通过 <code>std::process::Command</code> 到 <code>ipmitool</code>）</li>
+<li>GPU 查询（通过 <code>std::process::Command</code> 到 <code>accel-query</code>）</li>
+<li>PCIe 拓扑解析（纯 JSON/文本解析）</li>
+<li>SEL 记录管理（纯数据结构）</li>
+<li>DER 报告生成（JSON 序列化）</li>
+</ul>
+<p><strong>项目何时需要 <code>unsafe</code>？</strong></p>
+<p>可能引入 <code>unsafe</code> 的触发器：</p>
+<div class="table-wrapper"><table><thead><tr><th>场景</th><th>为什么 <code>unsafe</code></th><th>推荐的验证</th></tr></thead><tbody>
+<tr><td>直接基于 ioctl 的 IPMI</td><td><code>libc::ioctl()</code> 绕过 <code>ipmitool</code> 子进程</td><td>Miri + Valgrind</td></tr>
+<tr><td>直接 GPU 驱动查询</td><td>accel-mgmt FFI 而不是 <code>accel-query</code> 解析</td><td>Valgrind（C 库）</td></tr>
+<tr><td>内存映射 PCIe 配置</td><td><code>mmap</code> 用于直接配置空间读取</td><td>ASan + Valgrind</td></tr>
+<tr><td>无锁 SEL 缓冲区</td><td><code>AtomicPtr</code> 用于并发事件收集</td><td>Miri + TSan</td></tr>
+<tr><td>嵌入式/no_std 变体</td><td>裸机的原始指针操作</td><td>Miri</td></tr>
+</tbody></table>
+</div>
+<p><strong>准备</strong>：在引入 <code>unsafe</code> 之前，将验证工具添加到 CI：</p>
+<pre><code class="language-toml"># Cargo.toml — 添加特性标志用于 unsafe 优化
+[features]
+default = []
+direct-ipmi = []     # 启用直接 ioctl IPMI 而不是 ipmitool 子进程
+direct-accel-api = []     # 启用 accel-mgmt FFI 而不是 accel-query 解析
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// src/ipmi.rs — 在特性标志后门控
+#[cfg(feature = "direct-ipmi")]
+mod direct {
+    //! 通过 /dev/ipmi0 ioctl 直接 IPMI 设备访问。
+    //!
+    //! # Safety
+    //! 此模块使用 `unsafe` 进行 ioctl 系统调用。
+    //! 已验证：Miri（在可能的情况下）、Valgrind memcheck、ASan。
+
+    use std::os::unix::io::RawFd;
+
+    // ... unsafe ioctl 实现 ...
+}
+
+#[cfg(not(feature = "direct-ipmi"))]
+mod subprocess {
+    //! 通过 ipmitool 子进程的 IPMI（默认，完全安全）。
+    // ... 当前实现 ...
+}
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>关键见解</strong>：将 <code>unsafe</code> 保持在 <a href="ch09-no-std-and-feature-verification.html">特性标志</a> 后面，
+以便可以独立验证。在 <a href="ch11-putting-it-all-together-a-production-cic.html">CI</a> 中运行
+<code>cargo +nightly miri test --features direct-ipmi</code> 以持续验证 unsafe 路径，
+而不影响安全的默认构建。</p>
+</blockquote>
+<h3 id="cargo-careful--稳定版上的额外-ub-检查"><a class="header" href="#cargo-careful--稳定版上的额外-ub-检查"><code>cargo-careful</code> — 稳定版上的额外 UB 检查</a></h3>
+<p><a href="https://github.com/RalfJung/cargo-careful"><code>cargo-careful</code></a> 运行你的代码，
+启用额外的标准库检查 — 捕获正常构建忽略的一些未定义行为，
+无需 nightly 或 Miri 的 10-100 倍减速：</p>
+<pre><code class="language-bash"># 安装（需要 nightly，但以接近原生的速度运行你的代码）
+cargo install cargo-careful
+
+# 运行带有额外 UB 检查的测试（捕获未初始化内存、无效值）
+cargo +nightly careful test
+
+# 运行带有额外检查的二进制文件
+cargo +nightly careful run -- --run-diagnostics
+</code></pre>
+<p><strong><code>cargo-careful</code> 捕获正常构建不捕获的内容：</strong></p>
+<ul>
+<li><code>MaybeUninit</code> 和 <code>zeroed()</code> 中未初始化内存的读取</li>
+<li>通过 transmute 创建无效的 <code>bool</code>、<code>char</code> 或 enum 值</li>
+<li>未对齐的指针读取/写入</li>
+<li><code>copy_nonoverlapping</code> 与重叠范围</li>
+</ul>
+<p><strong>它在验证阶梯中的位置：</strong></p>
+<pre><code class="language-text">最小开销                                          最彻底
+├─ cargo test ──► cargo careful test ──► Miri ──► ASan ──► Valgrind ─┤
+│  (0 倍开销)   (~1.5 倍开销)     (10-100 倍)  (2 倍)     (10-50 倍)   │
+│  仅安全 Rust   捕获一些 UB       纯 Rust     FFI+Rust  FFI+Rust     │
+</code></pre>
+<blockquote>
+<p><strong>推荐</strong>：在 CI 中添加 <code>cargo +nightly careful test</code> 作为快速安全检查。
+它以接近原生的速度运行（不像 Miri）并捕获安全 Rust 抽象掩盖的真正 bug。</p>
+</blockquote>
+<h3 id="miri-和-sanitizers-故障排除"><a class="header" href="#miri-和-sanitizers-故障排除">Miri 和 Sanitizers 故障排除</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>症状</th><th>原因</th><th>修复</th></tr></thead><tbody>
+<tr><td><code>Miri does not support FFI</code></td><td>Miri 是 Rust 解释器；无法执行 C 代码</td><td>对 FFI 代码改用 Valgrind 或 ASan</td></tr>
+<tr><td><code>error: unsupported operation: can't call foreign function</code></td><td>Miri 遇到 <code>extern "C"</code> 调用</td><td>模拟 FFI 边界或在 <code>#[cfg(miri)]</code> 后门控</td></tr>
+<tr><td><code>Stacked Borrows violation</code></td><td>别名规则违规 — 即使代码"有效"</td><td>Miri 是正确的；重构以避免 <code>&amp;mut</code> 与 <code>&amp;</code> 别名</td></tr>
+<tr><td>Sanitizer 说 <code>DEADLYSIGNAL</code></td><td>ASan 检测到缓冲区溢出</td><td>检查数组索引、切片操作和指针算术</td></tr>
+<tr><td><code>LeakSanitizer: detected memory leaks</code></td><td><code>Box::leak()</code>、<code>forget()</code> 或缺少 <code>drop()</code></td><td>故意：使用 <code>__lsan_disable()</code> 抑制；无意：修复泄漏</td></tr>
+<tr><td>Miri 非常慢</td><td>Miri 解释，不编译 — 慢 10-100 倍</td><td>仅在 <code>--lib</code> 测试上运行，或使用 <code>#[cfg_attr(miri, ignore)]</code> 标记慢测试</td></tr>
+<tr><td><code>TSan: false positive</code> 与原子</td><td>TSan 不完全理解 Rust 的原子排序模型</td><td>添加 <code>TSAN_OPTIONS=suppressions=tsan.supp</code> 与特定抑制</td></tr>
+</tbody></table>
+</div>
+<h3 id="亲自尝试"><a class="header" href="#亲自尝试">亲自尝试</a></h3>
+<ol>
+<li>
+<p><strong>触发 Miri UB 检测</strong>：编写一个 <code>unsafe</code> 函数，创建两个对同一 <code>i32</code> 的 <code>&amp;mut</code> 引用（别名违规）。
+运行 <code>cargo +nightly miri test</code> 并观察"Stacked Borrows"错误。使用 <code>UnsafeCell</code> 或单独的分配修复它。</p>
+</li>
+<li>
+<p><strong>在故意 bug 上运行 ASan</strong>：创建一个进行 <code>unsafe</code> 越界数组访问的测试。
+使用 <code>RUSTFLAGS="-Zsanitizer=address"</code> 构建并观察 ASan 的报告。注意它如何精确指出行。</p>
+</li>
+<li>
+<p><strong>基准测试 Miri 开销</strong>：对同一测试套件计时 <code>cargo test --lib</code> vs <code>cargo +nightly miri test --lib</code>。
+计算减速因子。基于此，决定在 CI 中哪些测试在 Miri 下运行，哪些使用 <code>#[cfg_attr(miri, ignore)]</code> 跳过。</p>
+</li>
+</ol>
+<h3 id="安全验证决策树"><a class="header" href="#安全验证决策树">安全验证决策树</a></h3>
+<pre class="mermaid">flowchart TD
+    START[&quot;有 unsafe 代码？&quot;] --&gt;|否 | SAFE[&quot;安全 Rust — 无需\n验证&quot;]
+    START --&gt;|是 | KIND{&quot;什么类型？&quot;}
+
+    KIND --&gt;|&quot;纯 Rust unsafe&quot;| MIRI[&quot;Miri\nMIR 解释器\n捕获别名、UB、泄漏&quot;]
+    KIND --&gt;|&quot;FFI / C 互操作&quot;| VALGRIND[&quot;Valgrind memcheck\n或 ASan&quot;]
+    KIND --&gt;|&quot;并发 unsafe&quot;| CONC{&quot;无锁？&quot;}
+
+    CONC --&gt;|&quot;原子/无锁&quot;| LOOM[&quot;loom\n原子模型检查器&quot;]
+    CONC --&gt;|&quot;Mutex/共享状态&quot;| TSAN[&quot;TSan 或\nMiri -Zmiri-check-number-validity&quot;]
+
+    MIRI --&gt; CI_MIRI[&quot;CI: cargo +nightly miri test&quot;]
+    VALGRIND --&gt; CI_VALGRIND[&quot;CI: valgrind --leak-check=full&quot;]
+
+    style SAFE fill:#91e5a3,color:#000
+    style MIRI fill:#e3f2fd,color:#000
+    style VALGRIND fill:#ffd43b,color:#000
+    style LOOM fill:#ff6b6b,color:#000
+    style TSAN fill:#ffd43b,color:#000
+</pre>
+<h3 id="-练习"><a class="header" href="#-练习">🏋️ 练习</a></h3>
+<h4 id="-练习-1触发-miri-ub-检测"><a class="header" href="#-练习-1触发-miri-ub-检测">🟡 练习 1：触发 Miri UB 检测</a></h4>
+<p>编写一个 <code>unsafe</code> 函数，创建两个对同一 <code>i32</code> 的 <code>&amp;mut</code> 引用（别名违规）。
+运行 <code>cargo +nightly miri test</code> 并观察 Stacked Borrows 错误。修复它。</p>
+<details>
+<summary>解决方案</summary>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[cfg(test)]
+mod tests {
+    #[test]
+    fn aliasing_ub() {
+        let mut x: i32 = 42;
+        let ptr = &amp;mut x as *mut i32;
+        unsafe {
+            // BUG：两个 &amp;mut 引用指向同一位置
+            let _a = &amp;mut *ptr;
+            let _b = &amp;mut *ptr; // Miri: Stacked Borrows 违规！
+        }
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>修复：使用单独的分配或 <code>UnsafeCell</code>：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::cell::UnsafeCell;
+
+#[test]
+fn no_aliasing_ub() {
+    let x = UnsafeCell::new(42);
+    unsafe {
+        let a = &amp;mut *x.get();
+        *a = 100;
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+</details>
+<h4 id="-练习-2asan-越界检测"><a class="header" href="#-练习-2asan-越界检测">🔴 练习 2：ASan 越界检测</a></h4>
+<p>创建一个带有 <code>unsafe</code> 越界数组访问的测试。
+在 nightly 上使用 <code>RUSTFLAGS="-Zsanitizer=address"</code> 构建并观察 ASan 的报告。</p>
+<details>
+<summary>解决方案</summary>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[test]
+fn oob_access() {
+    let arr = [1u8, 2, 3, 4, 5];
+    let ptr = arr.as_ptr();
+    unsafe {
+        let _val = *ptr.add(10); // 越界！
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-bash">RUSTFLAGS="-Zsanitizer=address" cargo +nightly test -Zbuild-std \
+  --target x86_64-unknown-linux-gnu -- oob_access
+# ASan 报告：stack-buffer-overflow 在 &lt;确切地址&gt;
+</code></pre>
+</details>
+<h3 id="关键要点"><a class="header" href="#关键要点">关键要点</a></h3>
+<ul>
+<li><strong>Miri</strong> 是纯 Rust <code>unsafe</code> 的工具 — 它捕获编译并通过测试的别名违规、释放后使用和泄漏</li>
+<li><strong>Valgrind</strong> 是 FFI/C 互操作的工具 — 它在最终二进制文件上工作，无需重新编译</li>
+<li><strong>Sanitizers</strong>（ASan、TSan、MSan）需要 nightly 但以接近原生的速度运行 — 适合大型测试套件</li>
+<li><strong><code>loom</code></strong> 专为验证无锁并发数据结构而构建</li>
+<li>在每次推送时在 CI 中运行 Miri；在夜间计划运行 sanitizers 以避免拖慢主流水线</li>
+</ul>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch04-code-coverage-seeing-what-tests-miss.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch06-dependency-management-and-supply-chain-s.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch04-code-coverage-seeing-what-tests-miss.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch06-dependency-management-and-supply-chain-s.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

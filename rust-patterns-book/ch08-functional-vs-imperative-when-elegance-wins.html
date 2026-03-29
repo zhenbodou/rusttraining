@@ -1,0 +1,937 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>8. 函数式 vs 命令式：优雅制胜 - Rust Patterns &amp; Engineering How-Tos</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust Patterns &amp; Engineering How-Tos</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="第-8-章--函数式-vs-命令式优雅制胜以及何时不行"><a class="header" href="#第-8-章--函数式-vs-命令式优雅制胜以及何时不行">第 8 章 — 函数式 vs 命令式：优雅制胜（以及何时不行）🟡</a></h1>
+<blockquote>
+<p><strong>难度：</strong> 🟡 中级 | <strong>时间：</strong> 2–3 小时 | <strong>前置要求：</strong> <a href="ch07-closures-and-higher-order-functions.html">第 7 章 — 闭包</a></p>
+</blockquote>
+<p>Rust 给你函数式和命令式风格的真正对等。不像 Haskell（强制函数式）或 C（默认命令式），Rust 让你选择——正确的选择取决于你表达什么。本章建立明智选择的判断力。</p>
+<p><strong>核心原则</strong>：当你<em>通过管道转换数据</em>时函数式风格闪耀。当你<em>管理带副作用的状态转换</em>时命令式风格闪耀。大多数真实代码两者都有，技能是知道边界落在哪里。</p>
+<hr />
+<h2 id="81-你不知道你想要的组合子"><a class="header" href="#81-你不知道你想要的组合子">8.1 你不知道你想要的组合子</a></h2>
+<p>许多 Rust 开发者写这个：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let value = if let Some(x) = maybe_config() {
+    x
+} else {
+    default_config()
+};
+process(value);
+<span class="boring">}</span></code></pre></pre>
+<p>当他们可以写这个：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>process(maybe_config().unwrap_or_else(default_config));
+<span class="boring">}</span></code></pre></pre>
+<p>或这个常见模式：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let display_name = if let Some(name) = user.nickname() {
+    name.to_uppercase()
+} else {
+    "ANONYMOUS".to_string()
+};
+<span class="boring">}</span></code></pre></pre>
+<p>这是：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let display_name = user.nickname()
+    .map(|n| n.to_uppercase())
+    .unwrap_or_else(|| "ANONYMOUS".to_string());
+<span class="boring">}</span></code></pre></pre>
+<p>函数式版本不仅更短——它告诉你<em>什么</em>在发生（转换，然后默认）而无需让你跟踪控制流。<code>if let</code> 版本让你阅读分支以找出两条路径最终到达同一地方。</p>
+<h3 id="option-组合子家族"><a class="header" href="#option-组合子家族">Option 组合子家族</a></h3>
+<p>这是心智模型：<code>Option&lt;T&gt;</code> 是一个元素或空集合。<code>Option</code> 上的每个组合子都有集合操作的类比。</p>
+<div class="table-wrapper"><table><thead><tr><th>你写...</th><th>替代...</th><th>它传达什么</th></tr></thead><tbody>
+<tr><td><code>opt.unwrap_or(default)</code></td><td><code>if let Some(x) = opt { x } else { default }</code></td><td>"使用这个值或回退"</td></tr>
+<tr><td><code>opt.unwrap_or_else(|| expensive())</code></td><td><code>if let Some(x) = opt { x } else { expensive() }</code></td><td>相同，但默认是惰性的</td></tr>
+<tr><td><code>opt.map(f)</code></td><td><code>match opt { Some(x) =&gt; Some(f(x)), None =&gt; None }</code></td><td>"转换内部，传播缺失"</td></tr>
+<tr><td><code>opt.and_then(f)</code></td><td><code>match opt { Some(x) =&gt; f(x), None =&gt; None }</code></td><td>"链接 fallible 操作"（flatmap）</td></tr>
+<tr><td><code>opt.filter(|x| pred(x))</code></td><td><code>match opt { Some(x) if pred(&amp;x) =&gt; Some(x), _ =&gt; None }</code></td><td>"仅当通过时保留"</td></tr>
+<tr><td><code>opt.zip(other)</code></td><td><code>if let (Some(a), Some(b)) = (opt, other) { Some((a,b)) } else { None }</code></td><td>"两者或都不"</td></tr>
+<tr><td><code>opt.or(fallback)</code></td><td><code>if opt.is_some() { opt } else { fallback }</code></td><td>"第一个可用"</td></tr>
+<tr><td><code>opt.or_else(|| try_another())</code></td><td><code>if opt.is_some() { opt } else { try_another() }</code></td><td>"按顺序尝试替代"</td></tr>
+<tr><td><code>opt.map_or(default, f)</code></td><td><code>if let Some(x) = opt { f(x) } else { default }</code></td><td>"转换或默认" —— 一行</td></tr>
+<tr><td><code>opt.map_or_else(default_fn, f)</code></td><td><code>if let Some(x) = opt { f(x) } else { default_fn() }</code></td><td>相同，两边都是闭包</td></tr>
+<tr><td><code>opt?</code></td><td><code>match opt { Some(x) =&gt; x, None =&gt; return None }</code></td><td>"向上传播缺失"</td></tr>
+</tbody></table>
+</div>
+<h3 id="result-组合子家族"><a class="header" href="#result-组合子家族">Result 组合子家族</a></h3>
+<p>相同模式应用于 <code>Result&lt;T, E&gt;</code>：</p>
+<div class="table-wrapper"><table><thead><tr><th>你写...</th><th>替代...</th><th>它传达什么</th></tr></thead><tbody>
+<tr><td><code>res.map(f)</code></td><td><code>match res { Ok(x) =&gt; Ok(f(x)), Err(e) =&gt; Err(e) }</code></td><td>转换成功路径</td></tr>
+<tr><td><code>res.map_err(f)</code></td><td><code>match res { Ok(x) =&gt; Ok(x), Err(e) =&gt; Err(f(e)) }</code></td><td>转换错误</td></tr>
+<tr><td><code>res.and_then(f)</code></td><td><code>match res { Ok(x) =&gt; f(x), Err(e) =&gt; Err(e) }</code></td><td>链接 fallible 操作</td></tr>
+<tr><td><code>res.unwrap_or_else(|e| default(e))</code></td><td><code>match res { Ok(x) =&gt; x, Err(e) =&gt; default(e) }</code></td><td>从错误恢复</td></tr>
+<tr><td><code>res.ok()</code></td><td><code>match res { Ok(x) =&gt; Some(x), Err(_) =&gt; None }</code></td><td>"我不关心错误"</td></tr>
+<tr><td><code>res?</code></td><td><code>match res { Ok(x) =&gt; x, Err(e) =&gt; return Err(e.into()) }</code></td><td>向上传播错误</td></tr>
+</tbody></table>
+</div>
+<h3 id="何时-if-let-更好"><a class="header" href="#何时-if-let-更好">何时 <code>if let</code> 更好</a></h3>
+<p>组合子在以下情况失败：</p>
+<ul>
+<li><strong>你需要 <code>Some</code> 分支中的多条语句。</strong> 5 行的 map 闭包比 5 行的 <code>if let</code> 更差。</li>
+<li><strong>控制流是重点。</strong> <code>if let Some(connection) = pool.try_get() { /* 使用它 */ } else { /* 日志、重试、警报 */ }</code> —— 两条分支是真正不同的代码路径，不是转换或默认。</li>
+<li><strong>副作用主导。</strong> 如果两条分支都做 I/O 带不同的错误处理，组合子版本模糊重要差异。</li>
+</ul>
+<p><strong>经验法则</strong>：如果 <code>else</code> 分支产生与 <code>Some</code> 分支<em>相同类型</em>且主体是短表达式，使用组合子。如果分支做根本不同的事情，使用 <code>if let</code> 或 <code>match</code>。</p>
+<hr />
+<h2 id="82-bool-组合子then-和-then_some"><a class="header" href="#82-bool-组合子then-和-then_some">8.2 Bool 组合子：<code>.then()</code> 和 <code>.then_some()</code></a></h2>
+<p>另一个比应该更常见的模式：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let label = if is_admin {
+    Some("ADMIN")
+} else {
+    None
+};
+<span class="boring">}</span></code></pre></pre>
+<p>Rust 1.62+ 给你：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let label = is_admin.then_some("ADMIN");
+<span class="boring">}</span></code></pre></pre>
+<p>或带计算值：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let permissions = is_admin.then(|| compute_admin_permissions());
+<span class="boring">}</span></code></pre></pre>
+<p>这在链中特别强大：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 命令式
+let mut tags = Vec::new();
+if user.is_admin { tags.push("admin"); }
+if user.is_verified { tags.push("verified"); }
+if user.score &gt; 100 { tags.push("power-user"); }
+
+// 函数式
+let tags: Vec&lt;&amp;str&gt; = [
+    user.is_admin.then_some("admin"),
+    user.is_verified.then_some("verified"),
+    (user.score &gt; 100).then_some("power-user"),
+]
+.into_iter()
+.flatten()
+.collect();
+<span class="boring">}</span></code></pre></pre>
+<p>函数式版本使模式明确："从条件元素构建列表。"命令式版本让你阅读每个 <code>if</code> 以确认它们都做相同事情（推送标签）。</p>
+<hr />
+<h2 id="83-迭代器链-vs-循环决策框架"><a class="header" href="#83-迭代器链-vs-循环决策框架">8.3 迭代器链 vs 循环：决策框架</a></h2>
+<p>第 7 章展示机制。本节建立判断力。</p>
+<h3 id="何时迭代器赢"><a class="header" href="#何时迭代器赢">何时迭代器赢</a></h3>
+<p><strong>数据管道</strong> —— 通过一系列步骤转换集合：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 命令式：8 行，2 个可变变量
+let mut results = Vec::new();
+for item in inventory {
+    if item.category == Category::Server {
+        if let Some(temp) = item.last_temperature() {
+            if temp &gt; 80.0 {
+                results.push((item.id, temp));
+            }
+        }
+    }
+}
+
+// 函数式：6 行，0 个可变变量，一个管道
+let results: Vec&lt;_&gt; = inventory.iter()
+    .filter(|item| item.category == Category::Server)
+    .filter_map(|item| item.last_temperature().map(|t| (item.id, t)))
+    .filter(|(_, temp)| *temp &gt; 80.0)
+    .collect();
+<span class="boring">}</span></code></pre></pre>
+<p>函数式版本赢因为：</p>
+<ul>
+<li>每个过滤器独立可读</li>
+<li>无 <code>mut</code> —— 数据单向流动</li>
+<li>你可以添加/删除/重新排序管道阶段而无需重构</li>
+<li>LLVM 内联迭代器适配器到与循环相同的机器码</li>
+</ul>
+<p><strong>聚合</strong> —— 从集合计算单个值：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 命令式
+let mut total_power = 0.0;
+let mut count = 0;
+for server in fleet {
+    total_power += server.power_draw();
+    count += 1;
+}
+let avg = total_power / count as f64;
+
+// 函数式
+let (total_power, count) = fleet.iter()
+    .map(|s| s.power_draw())
+    .fold((0.0, 0usize), |(sum, n), p| (sum + p, n + 1));
+let avg = total_power / count as f64;
+<span class="boring">}</span></code></pre></pre>
+<p>或更简单如果你只需要总和：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let total: f64 = fleet.iter().map(|s| s.power_draw()).sum();
+<span class="boring">}</span></code></pre></pre>
+<h3 id="何时循环赢"><a class="header" href="#何时循环赢">何时循环赢</a></h3>
+<p><strong>带复杂状态的提前退出</strong>：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 这清晰直接
+let mut best_candidate = None;
+for server in fleet {
+    let score = evaluate(server);
+    if score &gt; threshold {
+        if server.is_available() {
+            best_candidate = Some(server);
+            break; // 找到一个——立即停止
+        }
+    }
+}
+
+// 函数式版本很勉强
+let best_candidate = fleet.iter()
+    .filter(|s| evaluate(s) &gt; threshold)
+    .find(|s| s.is_available());
+<span class="boring">}</span></code></pre></pre>
+<p>等等——那个函数式版本实际上相当干净。让我们尝试它真正失败的情况：</p>
+<p><strong>同时构建多个输出</strong>：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 命令式：清晰，每个分支做不同的事情
+let mut warnings = Vec::new();
+let mut errors = Vec::new();
+let mut stats = Stats::default();
+
+for event in log_stream {
+    match event.severity {
+        Severity::Warn =&gt; {
+            warnings.push(event.clone());
+            stats.warn_count += 1;
+        }
+        Severity::Error =&gt; {
+            errors.push(event.clone());
+            stats.error_count += 1;
+            if event.is_critical() {
+                alert_oncall(&amp;event);
+            }
+        }
+        _ =&gt; stats.other_count += 1,
+    }
+}
+
+// 函数式版本：强制、笨拙、没人想读这个
+let (warnings, errors, stats) = log_stream.iter().fold(
+    (Vec::new(), Vec::new(), Stats::default()),
+    |(mut w, mut e, mut s), event| {
+        match event.severity {
+            Severity::Warn =&gt; { w.push(event.clone()); s.warn_count += 1; }
+            Severity::Error =&gt; {
+                e.push(event.clone()); s.error_count += 1;
+                if event.is_critical() { alert_oncall(event); }
+            }
+            _ =&gt; s.other_count += 1,
+        }
+        (w, e, s)
+    },
+);
+<span class="boring">}</span></code></pre></pre>
+<p>fold 版本<em>更长</em>、<em>更难读</em>，并且仍有变异（<code>mut</code> 解构累加器）。循环赢因为：</p>
+<ul>
+<li>并行构建多个输出</li>
+<li>副作用（警报）混合到逻辑中</li>
+<li>分支主体是语句，不是表达式</li>
+</ul>
+<p><strong>带 I/O 的状态机</strong>：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 读取令牌的分析器——循环就是算法
+let mut state = ParseState::Start;
+loop {
+    let token = lexer.next_token()?;
+    state = match state {
+        ParseState::Start =&gt; match token {
+            Token::Keyword(k) =&gt; ParseState::GotKeyword(k),
+            Token::Eof =&gt; break,
+            _ =&gt; return Err(ParseError::UnexpectedToken(token)),
+        },
+        ParseState::GotKeyword(k) =&gt; match token {
+            Token::Ident(name) =&gt; ParseState::GotName(k, name),
+            _ =&gt; return Err(ParseError::ExpectedIdentifier),
+        },
+        // ...更多状态
+    };
+}
+<span class="boring">}</span></code></pre></pre>
+<p>没有函数式等价物更干净。带 <code>match state</code> 的循环是状态机的自然表达。</p>
+<h3 id="决策流程图"><a class="header" href="#决策流程图">决策流程图</a></h3>
+<pre class="mermaid">flowchart TB
+    START{你在做什么？}
+
+    START --&gt;|&quot;转换集合\n为另一个集合&quot;| PIPE[使用迭代器链]
+    START --&gt;|&quot;从集合计算单个值&quot;| AGG{多复杂？}
+    START --&gt;|&quot;从一次传递构建多个输出&quot;| LOOP[使用 for 循环]
+    START --&gt;|&quot;带 I/O 或副作用的状态机&quot;| LOOP
+    START --&gt;|&quot;一个 Option/Result\n转换 + 默认&quot;| COMB[使用组合子]
+
+    AGG --&gt;|&quot;总和、计数、最小、最大&quot;| BUILTIN[&quot;使用 .sum()、.count()、\n.min()、.max()&quot;]
+    AGG --&gt;|&quot;自定义累积&quot;| FOLD{累加器有变异\n或副作用？}
+    FOLD --&gt;|&quot;否&quot;| FOLDF[&quot;使用 .fold()&quot;]
+    FOLD --&gt;|&quot;是&quot;| LOOP
+
+    style PIPE fill:#d4efdf,stroke:#27ae60,color:#000
+    style COMB fill:#d4efdf,stroke:#27ae60,color:#000
+    style BUILTIN fill:#d4efdf,stroke:#27ae60,color:#000
+    style FOLDF fill:#d4efdf,stroke:#27ae60,color:#000
+    style LOOP fill:#fef9e7,stroke:#f1c40f,color:#000
+</pre>
+<h3 id="侧边栏作用域可变性内部命令式外部函数式"><a class="header" href="#侧边栏作用域可变性内部命令式外部函数式">侧边栏：作用域可变性——内部命令式，外部函数式</a></h3>
+<p>Rust 块是表达式。这让你将变异限制在构造阶段并不可变绑定结果：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use rand::random;
+
+let samples = {
+    let mut buf = Vec::with_capacity(10);
+    while buf.len() &lt; 10 {
+        let reading: f64 = random();
+        buf.push(reading);
+        if random::&lt;u8&gt;() % 3 == 0 { break; } // 随机提前停止
+    }
+    buf
+};
+// samples 是不可变的——包含 1 到 10 个元素
+<span class="boring">}</span></code></pre></pre>
+<p>内部 <code>buf</code> 只在块内可变。一旦块 yield，外部绑定 <code>samples</code> 是不可变的，编译器将拒绝任何后来的 <code>samples.push(...)</code>。</p>
+<p><strong>为什么不是迭代器链？</strong> 你可能尝试：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let samples: Vec&lt;f64&gt; = std::iter::from_fn(|| Some(random()))
+    .take(10)
+    .take_while(|_| random::&lt;u8&gt;() % 3 != 0)
+    .collect();
+<span class="boring">}</span></code></pre></pre>
+<p>但 <code>take_while</code> <em>排除</em> 失败谓词的元素，产生 0 到 9 个元素而非命令式版本提供的至少一个保证。你可以用 <code>scan</code> 或 <code>chain</code> 解决它，但命令式版本更清晰。</p>
+<p><strong>作用域可变性真正赢何时</strong>：</p>
+<div class="table-wrapper"><table><thead><tr><th>场景</th><th>为什么迭代器挣扎</th></tr></thead><tbody>
+<tr><td><strong>排序然后冻结</strong>（<code>sort_unstable()</code> + <code>dedup()</code>）</td><td>两者返回 <code>()</code> —— 无链式输出（如果可用 itertools 提供 <code>.sorted().dedup()</code>）</td></tr>
+<tr><td><strong>有状态终止</strong>（停止在与数据无关的条件）</td><td><code>take_while</code> 丢弃边界元素</td></tr>
+<tr><td><strong>多步结构体填充</strong>（来自不同源的逐字段）</td><td>无自然单一管道</td></tr>
+</tbody></table>
+</div>
+<p><strong>诚实校准</strong>：对于大多数集合构建任务，迭代器链或 <a href="https://docs.rs/itertools">itertools</a> 是首选。当构造逻辑有分支、提前退出或不映射到单一管道的原地变异时使用作用域可变性。模式的真正价值是教导<em>变异作用域可以小于变量生命周期</em> —— 一个 Rust 基础，让来自 C++、C# 和 Python 的开发者惊讶。</p>
+<hr />
+<h2 id="84--操作符函数式遇见命令式"><a class="header" href="#84--操作符函数式遇见命令式">8.4 <code>?</code> 操作符：函数式遇见命令式</a></h2>
+<p><code>?</code> 操作符是 Rust 两种风格最优雅的综合。它本质上是 <code>.and_then()</code> 结合提前返回：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 这个 and_then 链...
+fn load_config() -&gt; Result&lt;Config, Error&gt; {
+    read_file("config.toml")
+        .and_then(|contents| parse_toml(&amp;contents))
+        .and_then(|table| validate_config(table))
+        .and_then(|valid| Config::from_validated(valid))
+}
+
+// ...完全等价于这个
+fn load_config() -&gt; Result&lt;Config, Error&gt; {
+    let contents = read_file("config.toml")?;
+    let table = parse_toml(&amp;contents)?;
+    let valid = validate_config(table)?;
+    Config::from_validated(valid)
+}
+<span class="boring">}</span></code></pre></pre>
+<p>两者在精神上都是函数式（它们自动传播错误）但 <code>?</code> 版本给你命名的中间变量，这在以下情况重要：</p>
+<ul>
+<li>你需要稍后再次使用 <code>contents</code></li>
+<li>你想每步添加 <code>.context("while parsing config")?</code></li>
+<li>你在调试并想检查中间值</li>
+</ul>
+<p><strong>反模式</strong>：当 <code>?</code> 可用时的长 <code>.and_then()</code> 链。如果链中每个闭包是 <code>|x| next_step(x)</code>，你重新发明了 <code>?</code> 而无可读性。</p>
+<p><strong>何时 <code>.and_then()</code> 比 <code>?</code> 好</strong>：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 在 Option 内转换，无提前返回
+let port: Option&lt;u16&gt; = config.get("port")
+    .and_then(|v| v.parse::&lt;u16&gt;().ok())
+    .filter(|&amp;p| p &gt; 0 &amp;&amp; p &lt; 65535);
+<span class="boring">}</span></code></pre></pre>
+<p>你不能在这里使用 <code>?</code> 因为无封闭函数返回——你在构建 <code>Option</code>，不是传播它。</p>
+<hr />
+<h2 id="85-集合构建collect-vs-push-循环"><a class="header" href="#85-集合构建collect-vs-push-循环">8.5 集合构建：<code>collect()</code> vs Push 循环</a></h2>
+<p><code>collect()</code> 比大多数开发者意识到的更强大：</p>
+<h3 id="收集到-result"><a class="header" href="#收集到-result">收集到 Result</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 命令式：解析列表，在第一个错误失败
+let mut numbers = Vec::new();
+for s in input_strings {
+    let n: i64 = s.parse().map_err(|_| Error::BadInput(s.clone()))?;
+    numbers.push(n);
+}
+
+// 函数式：收集到 Result&lt;Vec&lt;_&gt;, _&gt;
+let numbers: Vec&lt;i64&gt; = input_strings.iter()
+    .map(|s| s.parse::&lt;i64&gt;().map_err(|_| Error::BadInput(s.clone())))
+    .collect::&lt;Result&lt;_, _&gt;&gt;()?;
+<span class="boring">}</span></code></pre></pre>
+<p><code>collect::&lt;Result&lt;Vec&lt;_&gt;, _&gt;&gt;()</code> 技巧工作因为 <code>Result</code> 实现 <code>FromIterator</code>。它在第一个 <code>Err</code> 短路，就像带 <code>?</code> 的循环。</p>
+<h3 id="收集到-hashmap"><a class="header" href="#收集到-hashmap">收集到 HashMap</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 命令式
+let mut index = HashMap::new();
+for server in fleet {
+    index.insert(server.id.clone(), server);
+}
+
+// 函数式
+let index: HashMap&lt;_, _&gt; = fleet.into_iter()
+    .map(|s| (s.id.clone(), s))
+    .collect();
+<span class="boring">}</span></code></pre></pre>
+<h3 id="收集到-string"><a class="header" href="#收集到-string">收集到 String</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 命令式
+let mut csv = String::new();
+for (i, field) in fields.iter().enumerate() {
+    if i &gt; 0 { csv.push(','); }
+    csv.push_str(field);
+}
+
+// 函数式
+let csv = fields.join(",");
+
+// 或对更复杂格式化：
+let csv: String = fields.iter()
+    .map(|f| format!("\"{f}\""))
+    .collect::&lt;Vec&lt;_&gt;&gt;()
+    .join(",");
+<span class="boring">}</span></code></pre></pre>
+<h3 id="何时循环版本赢"><a class="header" href="#何时循环版本赢">何时循环版本赢</a></h3>
+<p><code>collect()</code> 分配新集合。如果你<em>原地修改</em>，循环更清晰和更高效：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 原地更新——无更好的函数式等价物
+for server in &amp;mut fleet {
+    if server.needs_refresh() {
+        server.refresh_telemetry()?;
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>函数式版本将需要 <code>.iter_mut().for_each(|s| { ... })</code>，这只是带额外语法的循环。</p>
+<hr />
+<h2 id="86-模式匹配作为函数-dispatch"><a class="header" href="#86-模式匹配作为函数-dispatch">8.6 模式匹配作为函数 dispatch</a></h2>
+<p>Rust 的 <code>match</code> 是大多数开发者命令式使用的函数式构造。这是函数式视角：</p>
+<h3 id="match-作为查找表"><a class="header" href="#match-作为查找表">Match 作为查找表</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 命令式思维："检查每个情况"
+fn status_message(code: StatusCode) -&gt; &amp;'static str {
+    if code == StatusCode::OK { "Success" }
+    else if code == StatusCode::NOT_FOUND { "Not found" }
+    else if code == StatusCode::INTERNAL { "Server error" }
+    else { "Unknown" }
+}
+
+// 函数式思维："从定义域映射到值域"
+fn status_message(code: StatusCode) -&gt; &amp;'static str {
+    match code {
+        StatusCode::OK =&gt; "Success",
+        StatusCode::NOT_FOUND =&gt; "Not found",
+        StatusCode::INTERNAL =&gt; "Server error",
+        _ =&gt; "Unknown",
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p><code>match</code> 版本不仅是风格——编译器验证穷尽性。添加新变体，每个不处理它的 <code>match</code> 成为编译错误。<code>if/else</code> 链静默落入默认。</p>
+<h3 id="match--解构作为管道"><a class="header" href="#match--解构作为管道">Match + 解构作为管道</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 解析命令——每个臂提取和转换
+fn execute(cmd: Command) -&gt; Result&lt;Response, Error&gt; {
+    match cmd {
+        Command::Get { key } =&gt; db.get(&amp;key).map(Response::Value),
+        Command::Set { key, value } =&gt; db.set(key, value).map(|_| Response::Ok),
+        Command::Delete { key } =&gt; db.delete(&amp;key).map(|_| Response::Ok),
+        Command::Batch(cmds) =&gt; cmds.into_iter()
+            .map(execute)
+            .collect::&lt;Result&lt;Vec&lt;_&gt;, _&gt;&gt;()
+            .map(Response::Batch),
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>每个臂是返回相同类型的表达式。这是作为函数 dispatch 的模式匹配——<code>match</code> 臂本质上是按 enum 变体索引的函数表。</p>
+<hr />
+<h2 id="87-在自定义类型上链接方法"><a class="header" href="#87-在自定义类型上链接方法">8.7 在自定义类型上链接方法</a></h2>
+<p>函数式风格扩展到标准库类型之外。构建器模式和流畅 API 是伪装中的函数式编程：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 这是在你自己类型上的组合子链
+let query = QueryBuilder::new("servers")
+    .filter("status", Eq, "active")
+    .filter("rack", In, &amp;["A1", "A2", "B1"])
+    .order_by("temperature", Desc)
+    .limit(50)
+    .build();
+<span class="boring">}</span></code></pre></pre>
+<p><strong>关键洞察</strong>：如果你的类型有接受 <code>self</code> 并返回 <code>Self</code>（或转换类型）的方法，你构建了组合子。相同函数式/命令式判断适用：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 好：可链式因为每步是简单转换
+let config = Config::default()
+    .with_timeout(Duration::from_secs(30))
+    .with_retries(3)
+    .with_tls(true);
+
+// 坏：可链式但链做太多不相关事情
+let result = processor
+    .load_data(path)?       // I/O
+    .validate()             // 纯
+    .transform(rule_set)    // 纯
+    .save_to_disk(output)?  // I/O
+    .notify_downstream()?;  // 副作用
+
+// 更好：分离纯管道和 I/O 书端
+let data = load_data(path)?;
+let processed = data.validate().transform(rule_set);
+save_to_disk(output, &amp;processed)?;
+notify_downstream()?;
+<span class="boring">}</span></code></pre></pre>
+<p>当链混合纯转换和 I/O 时失败。读者不能告诉哪些调用可能失败、哪些有副作用、以及实际数据转换发生在哪里。</p>
+<hr />
+<h2 id="88-性能它们相同"><a class="header" href="#88-性能它们相同">8.8 性能：它们相同</a></h2>
+<p>一个常见误解："函数式风格更慢因为所有闭包和分配。"</p>
+<p>在 Rust 中，<strong>迭代器链编译到与手写循环相同的机器码</strong>。LLVM 内联闭包调用，消除迭代器适配器结构体，并经常产生相同汇编。这称为<em>零成本抽象</em>，它不是愿望——它是测量的。</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 这些在 release 构建中产生相同汇编：
+
+// 函数式
+let sum: i64 = (0..1000).filter(|n| n % 2 == 0).map(|n| n * n).sum();
+
+// 命令式
+let mut sum: i64 = 0;
+for n in 0..1000 {
+    if n % 2 == 0 {
+        sum += n * n;
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>一个例外</strong>：<code>.collect()</code> 分配。如果你用中间集合链式 <code>.map().collect().iter().map().collect()</code>，你支付循环版本避免的分配。修复：通过直接链适配器消除中间 collect，或如果你需要中间集合用于其他原因使用循环。</p>
+<hr />
+<h2 id="89-品味测试转换目录"><a class="header" href="#89-品味测试转换目录">8.9 品味测试：转换目录</a></h2>
+<p>这是最常见"我写了 6 行但有一个一行"模式的参考表：</p>
+<div class="table-wrapper"><table><thead><tr><th>命令式模式</th><th>函数式等价物</th><th>何时优先函数式</th></tr></thead><tbody>
+<tr><td><code>if let Some(x) = opt { f(x) } else { default }</code></td><td><code>opt.map_or(default, f)</code></td><td>两边短表达式</td></tr>
+<tr><td><code>if let Some(x) = opt { Some(g(x)) } else { None }</code></td><td><code>opt.map(g)</code></td><td>总是——这是 <code>map</code> 的用途</td></tr>
+<tr><td><code>if condition { Some(x) } else { None }</code></td><td><code>condition.then_some(x)</code></td><td>总是</td></tr>
+<tr><td><code>if condition { Some(compute()) } else { None }</code></td><td><code>condition.then(compute)</code></td><td>总是</td></tr>
+<tr><td><code>match opt { Some(x) if pred(x) =&gt; Some(x), _ =&gt; None }</code></td><td><code>opt.filter(pred)</code></td><td>总是</td></tr>
+<tr><td><code>for x in iter { if pred(x) { result.push(f(x)); } }</code></td><td><code>iter.filter(pred).map(f).collect()</code></td><td>当管道在一个屏幕上可读</td></tr>
+<tr><td><code>if a.is_some() &amp;&amp; b.is_some() { Some((a?, b?)) }</code></td><td><code>a.zip(b)</code></td><td>总是——<code>.zip()</code> 正是这个</td></tr>
+<tr><td><code>match (a, b) { (Some(x), Some(y)) =&gt; x + y, _ =&gt; 0 }</code></td><td><code>a.zip(b).map(|(x,y)| x + y).unwrap_or(0)</code></td><td>判断调用——取决于复杂度</td></tr>
+<tr><td><code>iter.map(f).collect::&lt;Vec&lt;_&gt;&gt;()[0]</code></td><td><code>iter.map(f).next().unwrap()</code></td><td>不要为一个元素分配 Vec</td></tr>
+<tr><td><code>let mut v = vec; v.sort(); v</code></td><td><code>{ let mut v = vec; v.sort(); v }</code></td><td>Rust 在 std 中没有 <code>.sorted()</code>（使用 itertools）</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h2 id="810-反模式"><a class="header" href="#810-反模式">8.10 反模式</a></h2>
+<h3 id="过度函数式化没人能读的-5-层深链"><a class="header" href="#过度函数式化没人能读的-5-层深链">过度函数式化：没人能读的 5 层深链</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 这不优雅。这是谜题。
+let result = data.iter()
+    .filter_map(|x| x.metadata.as_ref())
+    .flat_map(|m| m.tags.iter())
+    .filter(|t| t.starts_with("env:"))
+    .map(|t| t.strip_prefix("env:").unwrap())
+    .filter(|env| allowed_envs.contains(env))
+    .map(|env| env.to_uppercase())
+    .collect::&lt;HashSet&lt;_&gt;&gt;()
+    .into_iter()
+    .sorted()
+    .collect::&lt;Vec&lt;_&gt;&gt;();
+<span class="boring">}</span></code></pre></pre>
+<p>当链超过 ~4 个适配器时，用命名的中间变量分解或提取辅助函数：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let env_tags = data.iter()
+    .filter_map(|x| x.metadata.as_ref())
+    .flat_map(|m| m.tags.iter());
+
+let allowed: Vec&lt;_&gt; = env_tags
+    .filter_map(|t| t.strip_prefix("env:"))
+    .filter(|env| allowed_envs.contains(env))
+    .map(|env| env.to_uppercase())
+    .sorted()
+    .collect();
+<span class="boring">}</span></code></pre></pre>
+<h3 id="不足函数式化rust-有单词的-c-风格循环"><a class="header" href="#不足函数式化rust-有单词的-c-风格循环">不足函数式化：Rust 有单词的 C 风格循环</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 这只是 .any()
+let mut found = false;
+for item in &amp;list {
+    if item.is_expired() {
+        found = true;
+        break;
+    }
+}
+
+// 改为写这个
+let found = list.iter().any(|item| item.is_expired());
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 这只是 .find()
+let mut target = None;
+for server in &amp;fleet {
+    if server.id == target_id {
+        target = Some(server);
+        break;
+    }
+}
+
+// 改为写这个
+let target = fleet.iter().find(|s| s.id == target_id);
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 这只是 .all()
+let mut all_healthy = true;
+for server in &amp;fleet {
+    if !server.is_healthy() {
+        all_healthy = false;
+        break;
+    }
+}
+
+// 改为写这个
+let all_healthy = fleet.iter().all(|s| s.is_healthy());
+<span class="boring">}</span></code></pre></pre>
+<p>标准库有这些是有原因的。学习词汇，模式变得明显。</p>
+<hr />
+<h2 id="要点"><a class="header" href="#要点">要点</a></h2>
+<blockquote>
+<ul>
+<li><strong>Option 和 Result 是单元素集合。</strong> 它们的组合子（<code>.map()</code>、<code>.and_then()</code>、<code>.unwrap_or_else()</code>、<code>.filter()</code>、<code>.zip()</code>）替换大多数 <code>if let</code> / <code>match</code> 样板。</li>
+<li><strong>使用 <code>bool::then_some()</code></strong> —— 它在每种情况下替换 <code>if cond { Some(x) } else { None }</code>。</li>
+<li><strong>迭代器链赢数据管道</strong> —— filter/map/collect 带零可变状态。它们编译到与循环相同的机器码。</li>
+<li><strong>循环赢多输出状态机</strong> —— 当你构建多个集合、在分支中做 I/O 或管理状态转换时。</li>
+<li><strong><code>?</code> 操作符是两者最好的</strong> —— 函数式错误传播带命令式可读性。</li>
+<li><strong>在 ~4 个适配器处打破链</strong> —— 使用命名的中间变量提高可读性。过度函数式化与不足函数式化一样坏。</li>
+<li><strong>学习标准库词汇</strong> —— <code>.any()</code>、<code>.all()</code>、<code>.find()</code>、<code>.position()</code>、<code>.sum()</code>、<code>.min_by_key()</code> —— 每个用一个单一意图揭示调用替换多行循环。</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>另见：</strong> <a href="ch07-closures-and-higher-order-functions.html">第 7 章</a> 了解闭包机制和 <code>Fn</code> trait 层次结构。<a href="ch10-error-handling-patterns.html">第 10 章</a> 了解错误组合子模式。<a href="ch15-crate-architecture-and-api-design.html">第 15 章</a> 了解流畅 API 设计。</p>
+</blockquote>
+<hr />
+<h3 id="练习重构命令式为函数式-约-30-分钟"><a class="header" href="#练习重构命令式为函数式-约-30-分钟">练习：重构命令式为函数式 ★★（约 30 分钟）</a></h3>
+<p>将以下函数从命令式重构为函数式风格。然后识别函数式版本<em>更差</em>的一个地方并解释为什么。</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn summarize_fleet(fleet: &amp;[Server]) -&gt; FleetSummary {
+    let mut healthy = Vec::new();
+    let mut degraded = Vec::new();
+    let mut failed = Vec::new();
+    let mut total_power = 0.0;
+    let mut max_temp = f64::NEG_INFINITY;
+
+    for server in fleet {
+        match server.health_status() {
+            Health::Healthy =&gt; healthy.push(server.id.clone()),
+            Health::Degraded(reason) =&gt; degraded.push((server.id.clone(), reason)),
+            Health::Failed(err) =&gt; failed.push((server.id.clone(), err)),
+        }
+        total_power += server.power_draw();
+        if server.max_temperature() &gt; max_temp {
+            max_temp = server.max_temperature();
+        }
+    }
+
+    FleetSummary {
+        healthy,
+        degraded,
+        failed,
+        avg_power: total_power / fleet.len() as f64,
+        max_temp,
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<details>
+<summary>🔑 解决方案</summary>
+<p><code>total_power</code> 和 <code>max_temp</code> 是干净的函数式重写：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn summarize_fleet(fleet: &amp;[Server]) -&gt; FleetSummary {
+    let avg_power: f64 = fleet.iter().map(|s| s.power_draw()).sum::&lt;f64&gt;()
+        / fleet.len() as f64;
+
+    let max_temp = fleet.iter()
+        .map(|s| s.max_temperature())
+        .fold(f64::NEG_INFINITY, f64::max);
+
+    // 但三路分区作为循环更好。
+    // 函数式版本将需要三个单独的传递
+    // 或带三个可变累加器的笨拙 fold。
+    let mut healthy = Vec::new();
+    let mut degraded = Vec::new();
+    let mut failed = Vec::new();
+
+    for server in fleet {
+        match server.health_status() {
+            Health::Healthy =&gt; healthy.push(server.id.clone()),
+            Health::Degraded(reason) =&gt; degraded.push((server.id.clone(), reason)),
+            Health::Failed(err) =&gt; failed.push((server.id.clone(), err)),
+        }
+    }
+
+    FleetSummary { healthy, degraded, failed, avg_power, max_temp }
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>为什么循环对三路分区更好</strong>：函数式版本将需要三个 <code>.filter().collect()</code> 传递（3x 迭代），或带元组内三个 <code>mut Vec</code> 累加器的 <code>.fold()</code> —— 这只是用更差语法重写的循环。命令式单遍循环更清晰、更高效、更容易扩展。</p>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch07-closures-and-higher-order-functions.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch09-smart-pointers-and-interior-mutability.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch07-closures-and-higher-order-functions.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch09-smart-pointers-and-interior-mutability.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

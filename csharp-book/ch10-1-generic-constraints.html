@@ -1,0 +1,483 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>泛型约束 - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="泛型约束where-vs-trait-边界"><a class="header" href="#泛型约束where-vs-trait-边界">泛型约束：where vs trait 边界</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> Rust 的 trait 边界 vs C# 的 <code>where</code> 约束，<code>where</code> 子句语法，
+条件 trait 实现，关联类型，以及高阶 trait 边界（HRTBs）。</p>
+<p><strong>难度：</strong> 🔴 高级</p>
+</blockquote>
+<h3 id="c-泛型约束"><a class="header" href="#c-泛型约束">C# 泛型约束</a></h3>
+<pre><code class="language-csharp">// C# 带 where 子句的泛型约束
+public class Repository&lt;T&gt; where T : class, IEntity, new()
+{
+    public T Create()
+    {
+        return new T();  // new() 约束允许无参数构造函数
+    }
+
+    public void Save(T entity)
+    {
+        if (entity.Id == 0)  // IEntity 约束提供 Id 属性
+        {
+            entity.Id = GenerateId();
+        }
+        // 保存到数据库
+    }
+}
+
+// 带约束的多个类型参数
+public class Converter&lt;TInput, TOutput&gt;
+    where TInput : IConvertible
+    where TOutput : class, new()
+{
+    public TOutput Convert(TInput input)
+    {
+        var output = new TOutput();
+        // 使用 IConvertible 的转换逻辑
+        return output;
+    }
+}
+
+// 泛型中的方差
+public interface IRepository&lt;out T&gt; where T : IEntity
+{
+    IEnumerable&lt;T&gt; GetAll();  // 协变——可以返回更派生的类型
+}
+
+public interface IWriter&lt;in T&gt; where T : IEntity
+{
+    void Write(T entity);  // 逆变——可以接受更基的类型
+}
+</code></pre>
+<h3 id="rust-带-trait-边界的泛型约束"><a class="header" href="#rust-带-trait-边界的泛型约束">Rust 带 Trait 边界的泛型约束</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::fmt::{Debug, Display};
+use std::clone::Clone;
+
+// 基本 trait 边界
+pub struct Repository&lt;T&gt;
+where
+    T: Clone + Debug + Default,
+{
+    items: Vec&lt;T&gt;,
+}
+
+impl&lt;T&gt; Repository&lt;T&gt;
+where
+    T: Clone + Debug + Default,
+{
+    pub fn new() -&gt; Self {
+        Repository { items: Vec::new() }
+    }
+
+    pub fn create(&amp;self) -&gt; T {
+        T::default()  // Default trait 提供默认值
+    }
+
+    pub fn add(&amp;mut self, item: T) {
+        println!("Adding item: {:?}", item);  // Debug trait 用于打印
+        self.items.push(item);
+    }
+
+    pub fn get_all(&amp;self) -&gt; Vec&lt;T&gt; {
+        self.items.clone()  // Clone trait 用于复制
+    }
+}
+
+// 带不同语法的多个 trait 边界
+pub fn process_data&lt;T, U&gt;(input: T) -&gt; U
+where
+    T: Display + Clone,
+    U: From&lt;T&gt; + Debug,
+{
+    println!("Processing: {}", input);  // Display trait
+    let cloned = input.clone();         // Clone trait
+    let output = U::from(cloned);       // From trait 用于转换
+    println!("Result: {:?}", output);   // Debug trait
+    output
+}
+
+// 关联类型（类似 C# 泛型约束）
+pub trait Iterator {
+    type Item;  // 关联类型而不是泛型参数
+
+    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt;;
+}
+
+pub trait Collect&lt;T&gt; {
+    fn collect&lt;I: Iterator&lt;Item = T&gt;&gt;(iter: I) -&gt; Self;
+}
+
+// 高阶 trait 边界（高级）
+fn apply_to_all&lt;F&gt;(items: &amp;[String], f: F) -&gt; Vec&lt;String&gt;
+where
+    F: for&lt;'a&gt; Fn(&amp;'a str) -&gt; String,  // 函数适用于任何生命周期
+{
+    items.iter().map(|s| f(s)).collect()
+}
+
+// 条件 trait 实现
+impl&lt;T&gt; PartialEq for Repository&lt;T&gt;
+where
+    T: PartialEq + Clone + Debug + Default,
+{
+    fn eq(&amp;self, other: &amp;Self) -&gt; bool {
+        self.items == other.items
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<pre class="mermaid">graph TD
+    subgraph &quot;C# 泛型约束&quot;
+        CS_WHERE[&quot;where T : class, IInterface, new()&quot;]
+        CS_RUNTIME[&quot;[错误] 一些运行时类型检查&lt;br/&gt;虚方法分发&quot;]
+        CS_VARIANCE[&quot;[好] 协变/逆变&lt;br/&gt;in/out 关键字&quot;]
+        CS_REFLECTION[&quot;[错误] 可能的运行时反射&lt;br/&gt;typeof(T)、is、as 运算符&quot;]
+        CS_BOXING[&quot;[错误] 值类型装箱&lt;br/&gt;用于接口约束&quot;]
+
+        CS_WHERE --&gt; CS_RUNTIME
+        CS_WHERE --&gt; CS_VARIANCE
+        CS_WHERE --&gt; CS_REFLECTION
+        CS_WHERE --&gt; CS_BOXING
+    end
+
+    subgraph &quot;Rust Trait 边界&quot;
+        RUST_WHERE[&quot;where T: Trait + Clone + Debug&quot;]
+        RUST_COMPILE[&quot;[好] 编译时解析&lt;br/&gt;单态化&quot;]
+        RUST_ZERO[&quot;[好] 零成本抽象&lt;br/&gt;无运行时开销&quot;]
+        RUST_ASSOCIATED[&quot;[好] 关联类型&lt;br/&gt;比泛型更灵活&quot;]
+        RUST_HKT[&quot;[好] 高阶 trait 边界&lt;br/&gt;高级类型关系&quot;]
+
+        RUST_WHERE --&gt; RUST_COMPILE
+        RUST_WHERE --&gt; RUST_ZERO
+        RUST_WHERE --&gt; RUST_ASSOCIATED
+        RUST_WHERE --&gt; RUST_HKT
+    end
+
+    subgraph &quot;灵活性比较&quot;
+        CS_FLEX[&quot;C# 灵活性&lt;br/&gt;[好] 方差&lt;br/&gt;[好] 运行时类型信息&lt;br/&gt;[错误] 性能成本&quot;]
+        RUST_FLEX[&quot;Rust 灵活性&lt;br/&gt;[好] 零成本&lt;br/&gt;[好] 编译时安全&lt;br/&gt;[错误] 无方差（尚未）&quot;]
+    end
+
+    style CS_RUNTIME fill:#fff3e0,color:#000
+    style CS_BOXING fill:#ffcdd2,color:#000
+    style RUST_COMPILE fill:#c8e6c9,color:#000
+    style RUST_ZERO fill:#c8e6c9,color:#000
+    style CS_FLEX fill:#e3f2fd,color:#000
+    style RUST_FLEX fill:#c8e6c9,color:#000
+</pre>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：泛型仓库</strong>（点击展开）</summary>
+<p>将此 C# 泛型仓库接口翻译为 Rust traits：</p>
+<pre><code class="language-csharp">public interface IRepository&lt;T&gt; where T : IEntity, new()
+{
+    T GetById(int id);
+    IEnumerable&lt;T&gt; Find(Func&lt;T, bool&gt; predicate);
+    void Save(T entity);
+}
+</code></pre>
+<p>要求：</p>
+<ol>
+<li>定义带 <code>fn id(&amp;self) -&gt; u64</code> 的 <code>Entity</code> trait</li>
+<li>定义 <code>Repository&lt;T&gt;</code> trait，其中 <code>T: Entity + Clone</code></li>
+<li>实现将项存储在 <code>Vec&lt;T&gt;</code> 中的 <code>InMemoryRepository&lt;T&gt;</code></li>
+<li><code>find</code> 方法应接受 <code>impl Fn(&amp;T) -&gt; bool</code></li>
+</ol>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><pre class="playground"><code class="language-rust">trait Entity: Clone {
+    fn id(&amp;self) -&gt; u64;
+}
+
+trait Repository&lt;T: Entity&gt; {
+    fn get_by_id(&amp;self, id: u64) -&gt; Option&lt;&amp;T&gt;;
+    fn find(&amp;self, predicate: impl Fn(&amp;T) -&gt; bool) -&gt; Vec&lt;&amp;T&gt;;
+    fn save(&amp;mut self, entity: T);
+}
+
+struct InMemoryRepository&lt;T&gt; {
+    items: Vec&lt;T&gt;,
+}
+
+impl&lt;T: Entity&gt; InMemoryRepository&lt;T&gt; {
+    fn new() -&gt; Self { Self { items: Vec::new() } }
+}
+
+impl&lt;T: Entity&gt; Repository&lt;T&gt; for InMemoryRepository&lt;T&gt; {
+    fn get_by_id(&amp;self, id: u64) -&gt; Option&lt;&amp;T&gt; {
+        self.items.iter().find(|item| item.id() == id)
+    }
+    fn find(&amp;self, predicate: impl Fn(&amp;T) -&gt; bool) -&gt; Vec&lt;&amp;T&gt; {
+        self.items.iter().filter(|item| predicate(item)).collect()
+    }
+    fn save(&amp;mut self, entity: T) {
+        if let Some(pos) = self.items.iter().position(|e| e.id() == entity.id()) {
+            self.items[pos] = entity;
+        } else {
+            self.items.push(entity);
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+struct User { user_id: u64, name: String }
+
+impl Entity for User {
+    fn id(&amp;self) -&gt; u64 { self.user_id }
+}
+
+fn main() {
+    let mut repo = InMemoryRepository::new();
+    repo.save(User { user_id: 1, name: "Alice".into() });
+    repo.save(User { user_id: 2, name: "Bob".into() });
+
+    let found = repo.find(|u| u.name.starts_with('A'));
+    assert_eq!(found.len(), 1);
+}</code></pre></pre>
+<p><strong>与 C# 的关键区别</strong>：无 <code>new()</code> 约束（改用 <code>Default</code> trait）。<code>Fn(&amp;T) -&gt; bool</code> 替代 <code>Func&lt;T, bool&gt;</code>。返回 <code>Option</code> 而不是抛出。</p>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch10-traits-and-generics.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch10-2-inheritance-vs-composition.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch10-traits-and-generics.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch10-2-inheritance-vs-composition.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,488 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>智能指针 — 超越单一所有权 - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="智能指针当单一所有权不够时"><a class="header" href="#智能指针当单一所有权不够时">智能指针：当单一所有权不够时</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> <code>Box&lt;T&gt;</code>、<code>Rc&lt;T&gt;</code>、<code>Arc&lt;T&gt;</code>、<code>Cell&lt;T&gt;</code>、<code>RefCell&lt;T&gt;</code> 和 <code>Cow&lt;'a, T&gt;</code>——
+何时使用每个，它们如何与 C# 的 GC 管理引用比较，<code>Drop</code> 作为 Rust 的 <code>IDisposable</code>，
+<code>Deref</code> 强制转换，以及选择正确智能指针的决策树。</p>
+<p><strong>难度：</strong> 🔴 高级</p>
+</blockquote>
+<p>在 C# 中，每个对象本质上由 GC 引用计数。在 Rust 中，单一所有权是默认——但有时你需要共享所有权、堆分配或内部可变性。这就是智能指针的用武之地。</p>
+<h3 id="boxt--简单堆分配"><a class="header" href="#boxt--简单堆分配">Box&lt;T&gt; —— 简单堆分配</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 栈分配（Rust 中的默认）
+let x = 42;           // 在栈上
+
+// 使用 Box 堆分配
+let y = Box::new(42); // 在堆上，类似 C# `new int(42)`（装箱）
+println!("{}", y);     // 自动解引用：打印 42
+
+// 常见用途：递归类型（编译时无法知道大小）
+#[derive(Debug)]
+enum List {
+    Cons(i32, Box&lt;List&gt;),  // Box 给出已知的指针大小
+    Nil,
+}
+
+let list = List::Cons(1, Box::new(List::Cons(2, Box::new(List::Nil))));
+<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-csharp">// C# —— 一切已经在堆上（引用类型）
+// Box&lt;T&gt; 仅在 Rust 中需要，因为栈是默认
+var list = new LinkedListNode&lt;int&gt;(1);  // 总是堆分配
+</code></pre>
+<h3 id="rct--共享所有权单线程"><a class="header" href="#rct--共享所有权单线程">Rc&lt;T&gt; —— 共享所有权（单线程）</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::rc::Rc;
+
+// 数据的多个所有者——类似多个 C# 引用
+let shared = Rc::new(vec![1, 2, 3]);
+let clone1 = Rc::clone(&amp;shared); // 引用计数：2
+let clone2 = Rc::clone(&amp;shared); // 引用计数：3
+
+println!("Count: {}", Rc::strong_count(&amp;shared)); // 3
+// 数据在最后一个 Rc 超出作用域时被丢弃
+
+// 常见用途：共享配置、图节点、树结构
+<span class="boring">}</span></code></pre></pre>
+<h3 id="arct--共享所有权线程安全"><a class="header" href="#arct--共享所有权线程安全">Arc&lt;T&gt; —— 共享所有权（线程安全）</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::sync::Arc;
+use std::thread;
+
+// Arc = 原子引用计数——安全地跨线程共享
+let data = Arc::new(vec![1, 2, 3]);
+
+let handles: Vec&lt;_&gt; = (0..3).map(|i| {
+    let data = Arc::clone(&amp;data);
+    thread::spawn(move || {
+        println!("Thread {i}: {:?}", data);
+    })
+}).collect();
+
+for h in handles { h.join().unwrap(); }
+<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-csharp">// C# —— 所有引用默认线程安全（GC 处理它）
+var data = new List&lt;int&gt; { 1, 2, 3 };
+// 可以自由跨线程共享（但变异仍然不安全！）
+</code></pre>
+<h3 id="cellt-和-refcellt--内部可变性"><a class="header" href="#cellt-和-refcellt--内部可变性">Cell&lt;T&gt; 和 RefCell&lt;T&gt; —— 内部可变性</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::cell::RefCell;
+
+// 有时你需要通过共享引用变异数据。
+// RefCell 将借用检查从编译时移动到运行时。
+struct Logger {
+    entries: RefCell&lt;Vec&lt;String&gt;&gt;,
+}
+
+impl Logger {
+    fn new() -&gt; Self {
+        Logger { entries: RefCell::new(Vec::new()) }
+    }
+
+    fn log(&amp;self, msg: &amp;str) { // &amp;self，不是 &amp;mut self！
+        self.entries.borrow_mut().push(msg.to_string());
+    }
+
+    fn dump(&amp;self) {
+        for entry in self.entries.borrow().iter() {
+            println!("{entry}");
+        }
+    }
+}
+// ⚠️ RefCell 在违反借用规则时在运行时 panic
+// 谨慎使用——可能时更喜欢编译时检查
+<span class="boring">}</span></code></pre></pre>
+<h3 id="cowa-str--写入时克隆"><a class="header" href="#cowa-str--写入时克隆">Cow&lt;'a, str&gt; —— 写入时克隆</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::borrow::Cow;
+
+// 有时你有一个可能*需要*变成 String 的 &amp;str
+fn normalize(input: &amp;str) -&gt; Cow&lt;'_, str&gt; {
+    if input.contains('\t') {
+        // 仅在我们需要修改时分配
+        Cow::Owned(input.replace('\t', "    "))
+    } else {
+        // 借用原始——零分配
+        Cow::Borrowed(input)
+    }
+}
+
+let clean = normalize("hello");           // Cow::Borrowed —— 无分配
+let dirty = normalize("hello\tworld");    // Cow::Owned —— 分配
+// 两者都可以作为 &amp;str 通过 Deref 使用
+println!("{clean} / {dirty}");
+<span class="boring">}</span></code></pre></pre>
+<h3 id="droprust-的-idisposable"><a class="header" href="#droprust-的-idisposable">Drop：Rust 的 <code>IDisposable</code></a></h3>
+<p>在 C# 中，<code>IDisposable</code> + <code>using</code> 处理资源清理。Rust 的等价物是 <code>Drop</code> trait——但它是<strong>自动</strong>的，不是可选的：</p>
+<pre><code class="language-csharp">// C# —— 必须记得使用 'using' 或调用 Dispose()
+using var file = File.OpenRead("data.bin");
+// 在 using 块结束时调用 Dispose()
+
+// 忘记 'using' 是资源泄漏！
+var file2 = File.OpenRead("data.bin");
+// GC *最终* 会终结，但时机不可预测
+</code></pre>
+<pre><pre class="playground"><code class="language-rust">// Rust —— Drop 在值超出作用域时自动运行
+{
+    let file = File::open("data.bin")?;
+    // 使用 file...
+}   // file.drop() 在这里调用，确定性——不需要 'using'
+
+// 自定义 Drop（类似实现 IDisposable）
+struct TempFile {
+    path: std::path::PathBuf,
+}
+
+impl Drop for TempFile {
+    fn drop(&amp;mut self) {
+        // 当 TempFile 超出作用域时保证运行
+        let _ = std::fs::remove_file(&amp;self.path);
+        println!("Cleaned up {:?}", self.path);
+    }
+}
+
+fn main() {
+    let tmp = TempFile { path: "scratch.tmp".into() };
+    // ... 使用 tmp ...
+}   // scratch.tmp 在这里自动删除</code></pre></pre>
+<p><strong>与 C# 的关键区别：</strong> 在 Rust 中，<em>每个</em>类型都可以有确定性清理。你永远不会忘记 <code>using</code> 因为没什么可忘记的——<code>Drop</code> 在所有者超出作用域时运行。这个模式称为 <strong>RAII</strong>（资源获取即初始化）。</p>
+<blockquote>
+<p><strong>规则</strong>：如果你的类型持有资源（文件句柄、网络连接、锁守卫、临时文件），实现 <code>Drop</code>。所有权系统保证它恰好运行一次。</p>
+</blockquote>
+<h3 id="deref-强制转换自动智能指针解包"><a class="header" href="#deref-强制转换自动智能指针解包">Deref 强制转换：自动智能指针解包</a></h3>
+<p>Rust 自动"解包"智能指针当你调用方法或将它们传递给函数时。这称为 <strong>Deref 强制转换</strong>：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let boxed: Box&lt;String&gt; = Box::new(String::from("hello"));
+
+// Deref 强制转换链：Box&lt;String&gt; → String → str
+println!("Length: {}", boxed.len());   // 调用 str::len() —— 自动解引用！
+
+fn greet(name: &amp;str) {
+    println!("Hello, {name}");
+}
+
+let s = String::from("Alice");
+greet(&amp;s);       // &amp;String → &amp;str 通过 Deref 强制转换
+greet(&amp;boxed);   // &amp;Box&lt;String&gt; → &amp;String → &amp;str —— 两层！
+<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-csharp">// C# 无等价物——你需要显式强制转换或 .ToString()
+// 最接近：隐式转换运算符，但那些需要显式定义
+</code></pre>
+<p><strong>为什么这重要：</strong> 你可以传递 <code>&amp;String</code> 到期望 <code>&amp;str</code> 的地方，<code>&amp;Vec&lt;T&gt;</code> 到期望 <code>&amp;[T]</code> 的地方，<code>&amp;Box&lt;T&gt;</code> 到期望 <code>&amp;T</code> 的地方——都无需显式转换。这就是为什么 Rust API 通常接受 <code>&amp;str</code> 和 <code>&amp;[T]</code> 而不是 <code>&amp;String</code> 和 <code>&amp;Vec&lt;T&gt;</code>。</p>
+<h3 id="rc-vs-arc何时使用哪个"><a class="header" href="#rc-vs-arc何时使用哪个">Rc vs Arc：何时使用哪个</a></h3>
+<div class="table-wrapper"><table><thead><tr><th></th><th><code>Rc&lt;T&gt;</code></th><th><code>Arc&lt;T&gt;</code></th></tr></thead><tbody>
+<tr><td><strong>线程安全</strong></td><td>❌ 仅单线程</td><td>✅ 线程安全（原子操作）</td></tr>
+<tr><td><strong>开销</strong></td><td>更低（非原子引用计数）</td><td>更高（原子引用计数）</td></tr>
+<tr><td><strong>编译器强制执行</strong></td><td>不会在 <code>thread::spawn</code> 中编译</td><td>到处工作</td></tr>
+<tr><td><strong>与...组合</strong></td><td><code>RefCell&lt;T&gt;</code> 用于变异</td><td><code>Mutex&lt;T&gt;</code> 或 <code>RwLock&lt;T&gt;</code> 用于变异</td></tr>
+</tbody></table>
+</div>
+<p><strong>经验法则：</strong> 从 <code>Rc</code> 开始。编译器会告诉你是否需要 <code>Arc</code>。</p>
+<h3 id="决策树哪个智能指针"><a class="header" href="#决策树哪个智能指针">决策树：哪个智能指针？</a></h3>
+<pre class="mermaid">graph TD
+    START[&quot;需要共享所有权&lt;br/&gt;或堆分配？&quot;]
+    HEAP[&quot;只需要堆分配？&quot;]
+    SHARED[&quot;需要共享所有权？&quot;]
+    THREADED[&quot;跨线程共享？&quot;]
+    MUTABLE[&quot;需要内部可变性？&quot;]
+    MAYBE_OWN[&quot;有时借用，&lt;br/&gt;有时拥有？&quot;]
+
+    BOX[&quot;使用 Box&amp;lt;T&amp;gt;&quot;]
+    RC[&quot;使用 Rc&amp;lt;T&amp;gt;&quot;]
+    ARC[&quot;使用 Arc&amp;lt;T&amp;gt;&quot;]
+    REFCELL[&quot;使用 RefCell&amp;lt;T&amp;gt;&lt;br/&gt;（或 Rc&amp;lt;RefCell&amp;lt;T&amp;gt;&amp;gt;）&quot;]
+    MUTEX[&quot;使用 Arc&amp;lt;Mutex&amp;lt;T&amp;gt;&amp;gt;&quot;]
+    COW[&quot;使用 Cow&amp;lt;'a, T&amp;gt;&quot;]
+    OWN[&quot;使用 owned 类型&lt;br/&gt;（String、Vec 等）&quot;]
+
+    START --&gt;|是 | HEAP
+    START --&gt;|否 | OWN
+    HEAP --&gt;|是 | BOX
+    HEAP --&gt;|共享 | SHARED
+    SHARED --&gt;|单线程 | RC
+    SHARED --&gt;|多线程 | THREADED
+    THREADED --&gt;|只读 | ARC
+    THREADED --&gt;|读写 | MUTEX
+    RC --&gt;|需要变异？| MUTABLE
+    MUTABLE --&gt;|是 | REFCELL
+    MAYBE_OWN --&gt;|是 | COW
+
+    style BOX fill:#e3f2fd,color:#000
+    style RC fill:#e8f5e8,color:#000
+    style ARC fill:#c8e6c9,color:#000
+    style REFCELL fill:#fff3e0,color:#000
+    style MUTEX fill:#fff3e0,color:#000
+    style COW fill:#e3f2fd,color:#000
+    style OWN fill:#f5f5f5,color:#000
+</pre>
+<details>
+<summary><strong>🏋️ 练习：选择正确的智能指针</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：对于每个场景，选择正确的智能指针并解释为什么。</p>
+<ol>
+<li>递归树数据结构</li>
+<li>多个组件读取的共享配置对象（单线程）</li>
+<li>跨 HTTP 处理线程共享的请求计数器</li>
+<li>可能返回借用或拥有字符串的缓存</li>
+<li>需要通过共享引用变异的日志缓冲区</li>
+</ol>
+<details>
+<summary>🔑 解决方案</summary>
+<ol>
+<li><strong><code>Box&lt;T&gt;</code></strong> —— 递归类型需要间接以便编译时已知大小</li>
+<li><strong><code>Rc&lt;T&gt;</code></strong> —— 共享只读访问，单线程，不需要 <code>Arc</code> 开销</li>
+<li><strong><code>Arc&lt;Mutex&lt;u64&gt;&gt;</code></strong> —— 跨线程共享（<code>Arc</code>）带变异（<code>Mutex</code>）</li>
+<li><strong><code>Cow&lt;'a, str&gt;</code></strong> —— 有时返回 <code>&amp;str</code>（缓存命中），有时 <code>String</code>（缓存未命中）</li>
+<li><strong><code>RefCell&lt;Vec&lt;String&gt;&gt;</code></strong> —— <code>&amp;self</code> 后面的内部可变性（单线程）</li>
+</ol>
+<p><strong>经验法则</strong>：从 owned 类型开始。当你需要间接时使用 <code>Box</code>，当你需要共享时使用 <code>Rc</code>/<code>Arc</code>，当你需要内部可变性时使用 <code>RefCell</code>/<code>Mutex</code>，当你想要常见情况的零拷贝时使用 <code>Cow</code>。</p>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch07-2-lifetimes-deep-dive.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch08-crates-and-modules.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch07-2-lifetimes-deep-dive.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch08-crates-and-modules.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

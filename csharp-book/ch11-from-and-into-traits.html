@@ -1,0 +1,425 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>11. From 与 Into Trait - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="rust-中的类型转换"><a class="header" href="#rust-中的类型转换">Rust 中的类型转换</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> <code>From</code>/<code>Into</code> traits vs C# 的隐式/显式运算符，<code>TryFrom</code>/<code>TryInto</code>
+用于可能失败的转换，<code>FromStr</code> 用于解析，以及惯用的字符串转换模式。</p>
+<p><strong>难度：</strong> 🟡 中级</p>
+</blockquote>
+<p>C# 使用隐式/显式转换和强制转换运算符。Rust 使用 <code>From</code> 和 <code>Into</code> traits 进行安全、显式的转换。</p>
+<h3 id="c-转换模式"><a class="header" href="#c-转换模式">C# 转换模式</a></h3>
+<pre><code class="language-csharp">// C# 隐式/显式转换
+public class Temperature
+{
+    public double Celsius { get; }
+
+    public Temperature(double celsius) { Celsius = celsius; }
+
+    // 隐式转换
+    public static implicit operator double(Temperature t) =&gt; t.Celsius;
+
+    // 显式转换
+    public static explicit operator Temperature(double d) =&gt; new Temperature(d);
+}
+
+double temp = new Temperature(100.0);  // 隐式
+Temperature t = (Temperature)37.5;     // 显式
+</code></pre>
+<h3 id="rust-from-和-into"><a class="header" href="#rust-from-和-into">Rust From 和 Into</a></h3>
+<pre><pre class="playground"><code class="language-rust">#[derive(Debug)]
+struct Temperature {
+    celsius: f64,
+}
+
+impl From&lt;f64&gt; for Temperature {
+    fn from(celsius: f64) -&gt; Self {
+        Temperature { celsius }
+    }
+}
+
+impl From&lt;Temperature&gt; for f64 {
+    fn from(temp: Temperature) -&gt; f64 {
+        temp.celsius
+    }
+}
+
+fn main() {
+    // From
+    let temp = Temperature::from(100.0);
+
+    // Into（当实现 From 时自动可用）
+    let temp2: Temperature = 37.5.into();
+
+    // 也在函数参数中工作
+    fn process_temp(temp: impl Into&lt;Temperature&gt;) {
+        let t: Temperature = temp.into();
+        println!("Temperature: {:.1}°C", t.celsius);
+    }
+
+    process_temp(98.6);
+    process_temp(Temperature { celsius: 0.0 });
+}</code></pre></pre>
+<pre class="mermaid">graph LR
+    A[&quot;impl From&amp;lt;f64&amp;gt; for Temperature&quot;] --&gt;|&quot;自动生成&quot;| B[&quot;impl Into&amp;lt;Temperature&amp;gt; for f64&quot;]
+    C[&quot;Temperature::from(37.5)&quot;] --&gt;|&quot;显式&quot;| D[&quot;Temperature&quot;]
+    E[&quot;37.5.into()&quot;] --&gt;|&quot;通过 Into 隐式&quot;| D
+    F[&quot;fn process(t: impl Into&amp;lt;Temperature&amp;gt;)&quot;] --&gt;|&quot;接受两者&quot;| D
+
+    style A fill:#c8e6c9,color:#000
+    style B fill:#bbdefb,color:#000
+</pre>
+<blockquote>
+<p><strong>经验法则</strong>：实现 <code>From</code>，你免费获得 <code>Into</code>。调用者可以使用 whichever 读起来更好。</p>
+</blockquote>
+<h3 id="tryfrom-用于可能失败的转换"><a class="header" href="#tryfrom-用于可能失败的转换">TryFrom 用于可能失败的转换</a></h3>
+<pre><pre class="playground"><code class="language-rust">use std::convert::TryFrom;
+
+impl TryFrom&lt;i32&gt; for Temperature {
+    type Error = String;
+
+    fn try_from(value: i32) -&gt; Result&lt;Self, Self::Error&gt; {
+        if value &lt; -273 {
+            Err(format!("Temperature {}°C is below absolute zero", value))
+        } else {
+            Ok(Temperature { celsius: value as f64 })
+        }
+    }
+}
+
+fn main() {
+    match Temperature::try_from(-300) {
+        Ok(t) =&gt; println!("Valid: {:?}", t),
+        Err(e) =&gt; println!("Error: {}", e),
+    }
+}</code></pre></pre>
+<h3 id="字符串转换"><a class="header" href="#字符串转换">字符串转换</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 通过 Display trait 的 ToString
+impl std::fmt::Display for Temperature {
+    fn fmt(&amp;self, f: &amp;mut std::fmt::Formatter&lt;'_&gt;) -&gt; std::fmt::Result {
+        write!(f, "{:.1}°C", self.celsius)
+    }
+}
+
+// 现在 .to_string() 自动工作
+let s = Temperature::from(100.0).to_string(); // "100.0°C"
+
+// 用于解析的 FromStr
+use std::str::FromStr;
+
+impl FromStr for Temperature {
+    type Err = String;
+
+    fn from_str(s: &amp;str) -&gt; Result&lt;Self, Self::Err&gt; {
+        let s = s.trim_end_matches("°C").trim();
+        let celsius: f64 = s.parse().map_err(|e| format!("Invalid temp: {}", e))?;
+        Ok(Temperature { celsius })
+    }
+}
+
+let t: Temperature = "100.0°C".parse().unwrap();
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：货币转换器</strong>（点击展开）</summary>
+<p>创建一个 <code>Money</code> 结构体，演示完整的转换生态系统：</p>
+<ol>
+<li><code>Money { cents: i64 }</code>（以美分存储值以避免浮点问题）</li>
+<li>实现 <code>From&lt;i64&gt;</code>（将输入视为整美元 → <code>cents = dollars * 100</code>）</li>
+<li>实现 <code>TryFrom&lt;f64&gt;</code> —— 拒绝负金额，四舍五入到最近美分</li>
+<li>实现 <code>Display</code> 显示 <code>"$1.50"</code> 格式</li>
+<li>实现 <code>FromStr</code> 将 <code>"$1.50"</code> 或 <code>"1.50"</code> 解析回 <code>Money</code></li>
+<li>编写函数 <code>fn total(items: &amp;[impl Into&lt;Money&gt; + Copy]) -&gt; Money</code> 求和值</li>
+</ol>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><pre class="playground"><code class="language-rust">use std::fmt;
+use std::str::FromStr;
+
+#[derive(Debug, Clone, Copy)]
+struct Money { cents: i64 }
+
+impl From&lt;i64&gt; for Money {
+    fn from(dollars: i64) -&gt; Self {
+        Money { cents: dollars * 100 }
+    }
+}
+
+impl TryFrom&lt;f64&gt; for Money {
+    type Error = String;
+    fn try_from(value: f64) -&gt; Result&lt;Self, Self::Error&gt; {
+        if value &lt; 0.0 {
+            Err(format!("negative amount: {value}"))
+        } else {
+            Ok(Money { cents: (value * 100.0).round() as i64 })
+        }
+    }
+}
+
+impl fmt::Display for Money {
+    fn fmt(&amp;self, f: &amp;mut fmt::Formatter&lt;'_&gt;) -&gt; fmt::Result {
+        write!(f, "${}.{:02}", self.cents / 100, self.cents.abs() % 100)
+    }
+}
+
+impl FromStr for Money {
+    type Err = String;
+    fn from_str(s: &amp;str) -&gt; Result&lt;Self, Self::Err&gt; {
+        let s = s.trim_start_matches('$');
+        let val: f64 = s.parse().map_err(|e| format!("{e}"))?;
+        Money::try_from(val)
+    }
+}
+
+fn main() {
+    let a = Money::from(10);                       // $10.00
+    let b = Money::try_from(3.50).unwrap();         // $3.50
+    let c: Money = "$7.25".parse().unwrap();        // $7.25
+    println!("{a} + {b} + {c}");
+}</code></pre></pre>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch10-2-inheritance-vs-composition.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch12-closures-and-iterators.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch10-2-inheritance-vs-composition.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch12-closures-and-iterators.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

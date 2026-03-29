@@ -1,0 +1,499 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>生命周期深入 - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="生命周期告诉编译器引用活多久"><a class="header" href="#生命周期告诉编译器引用活多久">生命周期：告诉编译器引用活多久</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> 为什么生命周期存在（无 GC 意味着编译器需要证明），生命周期注解语法，
+省略规则，结构体生命周期，<code>'static</code> 生命周期，以及带修复的常见借用检查器错误。</p>
+<p><strong>难度：</strong> 🔴 高级</p>
+</blockquote>
+<p>C# 开发者从不考虑引用生命周期——垃圾回收器处理可达性。在 Rust 中，编译器需要<em>证明</em>每个引用在使用期间都是有效的。生命周期就是那个证明。</p>
+<h3 id="为什么生命周期存在"><a class="header" href="#为什么生命周期存在">为什么生命周期存在</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 这不会编译——编译器无法证明返回的引用有效
+fn longest(a: &amp;str, b: &amp;str) -&gt; &amp;str {
+    if a.len() &gt; b.len() { a } else { b }
+}
+// 错误：缺少生命周期注解——编译器不知道
+// 返回值是从 `a` 还是 `b` 借用
+<span class="boring">}</span></code></pre></pre>
+<h3 id="生命周期注解"><a class="header" href="#生命周期注解">生命周期注解</a></h3>
+<pre><pre class="playground"><code class="language-rust">// 生命周期 'a 说："返回值至少与两个输入活得一样长"
+fn longest&lt;'a&gt;(a: &amp;'a str, b: &amp;'a str) -&gt; &amp;'a str {
+    if a.len() &gt; b.len() { a } else { b }
+}
+
+fn main() {
+    let result;
+    let string1 = String::from("long string");
+    {
+        let string2 = String::from("xyz");
+        result = longest(&amp;string1, &amp;string2);
+        println!("Longest: {result}"); // ✅ 两个引用在这里仍然有效
+    }
+    // println!("{result}"); // ❌ 错误：string2 活得不够长
+}</code></pre></pre>
+<h3 id="c-比较"><a class="header" href="#c-比较">C# 比较</a></h3>
+<pre><code class="language-csharp">// C# —— GC 保持对象存活，只要任何引用存在
+string Longest(string a, string b) =&gt; a.Length &gt; b.Length ? a : b;
+
+// 无生命周期问题——GC 跟踪可达性自动
+// 但：GC 暂停，不可预测的内存使用，无编译时证明
+</code></pre>
+<h3 id="生命周期省略规则"><a class="header" href="#生命周期省略规则">生命周期省略规则</a></h3>
+<p>大多数时候你<strong>不需要写生命周期注解</strong>。编译器自动应用三条规则：</p>
+<div class="table-wrapper"><table><thead><tr><th>规则</th><th>描述</th><th>示例</th></tr></thead><tbody>
+<tr><td><strong>规则 1</strong></td><td>每个引用参数获得自己的生命周期</td><td><code>fn foo(x: &amp;str, y: &amp;str)</code> → <code>fn foo&lt;'a, 'b&gt;(x: &amp;'a str, y: &amp;'b str)</code></td></tr>
+<tr><td><strong>规则 2</strong></td><td>如果只有一个输入生命周期，它被分配给所有输出生命周期</td><td><code>fn first(s: &amp;str) -&gt; &amp;str</code> → <code>fn first&lt;'a&gt;(s: &amp;'a str) -&gt; &amp;'a str</code></td></tr>
+<tr><td><strong>规则 3</strong></td><td>如果一个输入是 <code>&amp;self</code> 或 <code>&amp;mut self</code>，该生命周期被分配给所有输出</td><td><code>fn name(&amp;self) -&gt; &amp;str</code> → 工作因为有 &amp;self</td></tr>
+</tbody></table>
+</div>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 这些是等价的——编译器自动添加生命周期：
+fn first_word(s: &amp;str) -&gt; &amp;str { /* ... */ }           // 省略
+fn first_word&lt;'a&gt;(s: &amp;'a str) -&gt; &amp;'a str { /* ... */ } // 显式
+
+// 但这需要显式注解——两个输入，输出从哪个借用？
+fn longest&lt;'a&gt;(a: &amp;'a str, b: &amp;'a str) -&gt; &amp;'a str { /* ... */ }
+<span class="boring">}</span></code></pre></pre>
+<h3 id="结构体生命周期"><a class="header" href="#结构体生命周期">结构体生命周期</a></h3>
+<pre><pre class="playground"><code class="language-rust">// 借用数据（而不是拥有它）的结构体
+struct Excerpt&lt;'a&gt; {
+    text: &amp;'a str,  // 从某个必须比这个结构体活得长的 String 借用
+}
+
+impl&lt;'a&gt; Excerpt&lt;'a&gt; {
+    fn new(text: &amp;'a str) -&gt; Self {
+        Excerpt { text }
+    }
+
+    fn first_sentence(&amp;self) -&gt; &amp;str {
+        self.text.split('.').next().unwrap_or(self.text)
+    }
+}
+
+fn main() {
+    let novel = String::from("Call me Ishmael. Some years ago...");
+    let excerpt = Excerpt::new(&amp;novel); // excerpt 从 novel 借用
+    println!("First sentence: {}", excerpt.first_sentence());
+    // novel 必须在 excerpt 存在时保持存活
+}</code></pre></pre>
+<pre><code class="language-csharp">// C# 等价物——无生命周期问题，但也无编译时保证
+class Excerpt
+{
+    public string Text { get; }
+    public Excerpt(string text) =&gt; Text = text;
+    public string FirstSentence() =&gt; Text.Split('.')[0];
+}
+// 如果字符串在其他地方被变异会怎样？运行时意外。
+</code></pre>
+<h3 id="static-生命周期"><a class="header" href="#static-生命周期"><code>'static</code> 生命周期</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 'static 意味着"活在整个程序持续期间"
+let s: &amp;'static str = "I'm a string literal"; // 存储在二进制中，总是有效
+
+// 你看到 'static 的常见地方：
+// 1. 字符串字面量
+// 2. 全局常量
+// 3. Thread::spawn 需要 'static（线程可能活得比调用者长）
+std::thread::spawn(move || {
+    // 发送到线程的闭包必须拥有它们的数据或使用 'static 引用
+    println!("{s}"); // 好：&amp;'static str
+});
+
+// 'static 不意味着"不朽"——它意味着"如果需要可以永远活"
+let owned = String::from("hello");
+// owned 不是 'static，但它可以被移动到线程中（所有权转移）
+<span class="boring">}</span></code></pre></pre>
+<h3 id="常见借用检查器错误和修复"><a class="header" href="#常见借用检查器错误和修复">常见借用检查器错误和修复</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>错误</th><th>原因</th><th>修复</th></tr></thead><tbody>
+<tr><td><code>missing lifetime specifier</code></td><td>多个输入引用，输出模糊</td><td>添加 <code>&lt;'a&gt;</code> 注解将输出绑定到正确的输入</td></tr>
+<tr><td><code>does not live long enough</code></td><td>引用活得比它指向的数据长</td><td>扩展数据的作用域，或返回_owned_数据代替</td></tr>
+<tr><td><code>cannot borrow as mutable</code></td><td>不可变借用仍然活动</td><td>在变异之前使用不可变引用，或重构</td></tr>
+<tr><td><code>cannot move out of borrowed content</code></td><td>尝试获取借用数据的所有权</td><td>使用 <code>.clone()</code>，或重构以避免移动</td></tr>
+<tr><td><code>lifetime may not live long enough</code></td><td>结构体借用活得比源长</td><td>确保源数据的作用域包含结构体的使用</td></tr>
+</tbody></table>
+</div>
+<h3 id="可视化生命周期作用域"><a class="header" href="#可视化生命周期作用域">可视化生命周期作用域</a></h3>
+<pre class="mermaid">graph TD
+    subgraph &quot;作用域可视化&quot;
+        direction TB
+        A[&quot;fn main()&quot;] --&gt; B[&quot;let s1 = String::from(&amp;quot;hello&amp;quot;)&quot;]
+        B --&gt; C[&quot;{ // 内部作用域&quot;]
+        C --&gt; D[&quot;let s2 = String::from(&amp;quot;world&amp;quot;)&quot;]
+        D --&gt; E[&quot;let r = longest(&amp;s1, &amp;s2)&quot;]
+        E --&gt; F[&quot;println!(&amp;quot;{r}&amp;quot;)  ✅ 两者都存活&quot;]
+        F --&gt; G[&quot;} // s2 在这里丢弃&quot;]
+        G --&gt; H[&quot;println!(&amp;quot;{r}&amp;quot;)  ❌ s2 没了！&quot;]
+    end
+
+    style F fill:#c8e6c9,color:#000
+    style H fill:#ffcdd2,color:#000
+</pre>
+<h3 id="多个生命周期参数"><a class="header" href="#多个生命周期参数">多个生命周期参数</a></h3>
+<p>有时引用来自不同源，有不同的生命周期：</p>
+<pre><pre class="playground"><code class="language-rust">// 两个独立的生命周期：返回值只从 'a 借用，不从 'b
+fn first_with_context&lt;'a, 'b&gt;(data: &amp;'a str, _context: &amp;'b str) -&gt; &amp;'a str {
+    // 返回值从 'data' 借用——'context' 可以有更短的生命周期
+    data.split(',').next().unwrap_or(data)
+}
+
+fn main() {
+    let data = String::from("alice,bob,charlie");
+    let result;
+    {
+        let context = String::from("user lookup"); // 更短的生命周期
+        result = first_with_context(&amp;data, &amp;context);
+    } // context 丢弃——但结果从 data 借用，不从 context ✅
+    println!("{result}");
+}</code></pre></pre>
+<pre><code class="language-csharp">// C# —— 无生命周期跟踪意味着你不能表达"从 A 借用但不从 B"
+string FirstWithContext(string data, string context) =&gt; data.Split(',')[0];
+// 对 GC 语言好，但 Rust 可以无需 GC 证明安全性
+</code></pre>
+<h3 id="现实世界生命周期模式"><a class="header" href="#现实世界生命周期模式">现实世界生命周期模式</a></h3>
+<p><strong>模式 1：返回引用的迭代器</strong></p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 从输入产生借用切片的解析器
+struct CsvRow&lt;'a&gt; {
+    fields: Vec&lt;&amp;'a str&gt;,
+}
+
+fn parse_csv_line(line: &amp;str) -&gt; CsvRow&lt;'_&gt; {
+    // '_ 告诉编译器"从输入推断生命周期"
+    CsvRow {
+        fields: line.split(',').collect(),
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>模式 2："有疑问时返回_owned_"</strong></p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 当生命周期变得复杂时，返回_owned_数据是实用的修复
+fn format_greeting(first: &amp;str, last: &amp;str) -&gt; String {
+    // 返回_owned_ String——不需要生命周期注解
+    format!("Hello, {first} {last}!")
+}
+
+// 仅当以下情况时借用：
+// 1. 性能重要（避免分配）
+// 2. 输入和输出生命周期之间的关系清晰
+<span class="boring">}</span></code></pre></pre>
+<p><strong>模式 3：泛型上的生命周期边界</strong></p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// "T 必须活得至少与 'a 一样长"
+fn store_reference&lt;'a, T: 'a&gt;(cache: &amp;mut Vec&lt;&amp;'a T&gt;, item: &amp;'a T) {
+    cache.push(item);
+}
+
+// 在 trait 对象中常见：Box&lt;dyn Display + 'a&gt;
+fn make_printer&lt;'a&gt;(text: &amp;'a str) -&gt; Box&lt;dyn std::fmt::Display + 'a&gt; {
+    Box::new(text)
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="何时使用-static"><a class="header" href="#何时使用-static">何时使用 <code>'static</code></a></h3>
+<div class="table-wrapper"><table><thead><tr><th>场景</th><th style="text-align: center">使用 <code>'static</code>？</th><th>替代方案</th></tr></thead><tbody>
+<tr><td>字符串字面量</td><td style="text-align: center">✅ 是——它们总是 <code>'static</code></td><td>—</td></tr>
+<tr><td><code>thread::spawn</code> 闭包</td><td style="text-align: center">通常——线程活得比调用者长</td><td>对借用数据使用 <code>thread::scope</code></td></tr>
+<tr><td>全局配置</td><td style="text-align: center">✅ <code>lazy_static!</code> 或 <code>OnceLock</code></td><td>通过参数传递引用</td></tr>
+<tr><td>长期存储的 trait 对象</td><td style="text-align: center">通常——<code>Box&lt;dyn Trait + 'static&gt;</code></td><td>用 <code>'a</code> 参数化容器</td></tr>
+<tr><td>临时借用</td><td style="text-align: center">❌ 从不——过度约束</td><td>使用实际生命周期</td></tr>
+</tbody></table>
+</div><details>
+<summary><strong>🏋️ 练习：生命周期注解</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：添加正确的生命周期注解使这个编译：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct Config {
+    db_url: String,
+    api_key: String,
+}
+
+// TODO: 添加生命周期注解
+fn get_connection_info(config: &amp;Config) -&gt; (&amp;str, &amp;str) {
+    (&amp;config.db_url, &amp;config.api_key)
+}
+
+// TODO: 这个结构体从 Config 借用——添加生命周期参数
+struct ConnectionInfo {
+    db_url: &amp;str,
+    api_key: &amp;str,
+}
+<span class="boring">}</span></code></pre></pre>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct Config {
+    db_url: String,
+    api_key: String,
+}
+
+// 规则 3 不适用（无 &amp;self），规则 2 适用（一个输入 → 输出）
+// 所以编译器自动处理这个——不需要注解！
+fn get_connection_info(config: &amp;Config) -&gt; (&amp;str, &amp;str) {
+    (&amp;config.db_url, &amp;config.api_key)
+}
+
+// 结构体生命周期注解需要：
+struct ConnectionInfo&lt;'a&gt; {
+    db_url: &amp;'a str,
+    api_key: &amp;'a str,
+}
+
+fn make_info&lt;'a&gt;(config: &amp;'a Config) -&gt; ConnectionInfo&lt;'a&gt; {
+    ConnectionInfo {
+        db_url: &amp;config.db_url,
+        api_key: &amp;config.api_key,
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>关键要点</strong>：生命周期省略通常 saves 你不必在函数上写注解，但借用数据的结构体总是需要显式 <code>&lt;'a&gt;</code>。</p>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch07-1-memory-safety-deep-dive.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch07-3-smart-pointers-beyond-single-ownership.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch07-1-memory-safety-deep-dive.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch07-3-smart-pointers-beyond-single-ownership.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

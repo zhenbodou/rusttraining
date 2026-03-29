@@ -1,0 +1,508 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>8. crate 和模块 - Rust for Python Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for Python Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="rust-模块-vs-python-包"><a class="header" href="#rust-模块-vs-python-包">Rust 模块 vs Python 包</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> <code>mod</code> 和 <code>use</code> vs <code>import</code>，可见性（<code>pub</code>）vs Python 的基于约定的隐私，
+Cargo.toml vs pyproject.toml，crates.io vs PyPI，以及 workspaces vs monorepos。</p>
+<p><strong>难度：</strong> 🟢 初学者</p>
+</blockquote>
+<h3 id="python-模块系统"><a class="header" href="#python-模块系统">Python 模块系统</a></h3>
+<pre><code class="language-python"># Python —— 文件是模块，带 __init__.py 的目录是包
+
+# myproject/
+# ├── __init__.py          # 使其成为包
+# ├── main.py
+# ├── utils/
+# │   ├── __init__.py      # 使 utils 成为子包
+# │   ├── helpers.py
+# │   └── validators.py
+# └── models/
+#     ├── __init__.py
+#     ├── user.py
+#     └── product.py
+
+# 导入：
+from myproject.utils.helpers import format_name
+from myproject.models.user import User
+import myproject.utils.validators as validators
+</code></pre>
+<h3 id="rust-模块系统"><a class="header" href="#rust-模块系统">Rust 模块系统</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— mod 声明创建模块树，文件提供内容
+
+// src/
+// ├── main.rs             # crate 根 —— 声明模块
+// ├── utils/
+// │   ├── mod.rs           # 模块声明（如 __init__.py）
+// │   ├── helpers.rs
+// │   └── validators.rs
+// └── models/
+//     ├── mod.rs
+//     ├── user.rs
+//     └── product.rs
+
+// 在 src/main.rs 中：
+mod utils;       # 告诉 Rust 查找 src/utils/mod.rs
+mod models;      # 告诉 Rust 查找 src/models/mod.rs
+
+use utils::helpers::format_name;
+use models::user::User;
+
+// 在 src/utils/mod.rs 中：
+pub mod helpers;      # 声明并重新导出 helpers.rs
+pub mod validators;   # 声明并重新导出 validators.rs
+<span class="boring">}</span></code></pre></pre>
+<pre class="mermaid">graph TD
+    A[&quot;main.rs&lt;br/&gt;（crate 根）&quot;] --&gt; B[&quot;mod utils&quot;]
+    A --&gt; C[&quot;mod models&quot;]
+    B --&gt; D[&quot;utils/mod.rs&quot;]
+    D --&gt; E[&quot;helpers.rs&quot;]
+    D --&gt; F[&quot;validators.rs&quot;]
+    C --&gt; G[&quot;models/mod.rs&quot;]
+    G --&gt; H[&quot;user.rs&quot;]
+    G --&gt; I[&quot;product.rs&quot;]
+    style A fill:#d4edda,stroke:#28a745
+    style D fill:#fff3cd,stroke:#ffc107
+    style G fill:#fff3cd,stroke:#ffc107
+</pre>
+<blockquote>
+<p><strong>Python 等价物</strong>：将 <code>mod.rs</code> 视为 <code>__init__.py</code> —— 它声明模块导出什么。crate 根（<code>main.rs</code> / <code>lib.rs</code>）如你的顶层包 <code>__init__.py</code>。</p>
+</blockquote>
+<h3 id="关键差异"><a class="header" href="#关键差异">关键差异</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>概念</th><th>Python</th><th>Rust</th></tr></thead><tbody>
+<tr><td>模块 = 文件</td><td>✅ 自动</td><td>必须用 <code>mod</code> 声明</td></tr>
+<tr><td>包 = 目录</td><td><code>__init__.py</code></td><td><code>mod.rs</code></td></tr>
+<tr><td>默认公共</td><td>✅ 一切</td><td>❌ 默认私有</td></tr>
+<tr><td>设为公共</td><td><code>_prefix</code> 约定</td><td><code>pub</code> 关键字</td></tr>
+<tr><td>导入语法</td><td><code>from x import y</code></td><td><code>use x::y;</code></td></tr>
+<tr><td>通配符导入</td><td><code>from x import *</code></td><td><code>use x::*;</code>（不鼓励）</td></tr>
+<tr><td>相对导入</td><td><code>from . import sibling</code></td><td><code>use super::sibling;</code></td></tr>
+<tr><td>重新导出</td><td><code>__all__</code> 或显式</td><td><code>pub use inner::Thing;</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="可见性--默认私有"><a class="header" href="#可见性--默认私有">可见性 —— 默认私有</a></h3>
+<pre><code class="language-python"># Python —— "我们都是成年人"
+class User:
+    def __init__(self):
+        self.name = "Alice"       # 公共（按约定）
+        self._age = 30            # "私有"（约定：单下划线）
+        self.__secret = "shhh"    # 名称修饰（不是真私有）
+
+# 没有什么能阻止你访问 _age 甚至 __secret
+print(user._age)                  # 可以工作
+print(user._User__secret)        # 也可以（名称修饰）
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 私有由编译器强制执行
+pub struct User {
+    pub name: String,      # 公共 —— 任何人都可以访问
+    age: i32,              # 私有 —— 只有这个模块可以访问
+}
+
+impl User {
+    pub fn new(name: &amp;str, age: i32) -&gt; Self {
+        User { name: name.to_string(), age }
+    }
+
+    pub fn age(&amp;self) -&gt; i32 {   # 公共 getter
+        self.age
+    }
+
+    fn validate(&amp;self) -&gt; bool { # 私有方法
+        self.age &gt; 0
+    }
+}
+
+<span class="boring">模块外：
+</span>let user = User::new("Alice", 30);
+println!("{}", user.name);        # ✅ 公共
+<span class="boring">println!("{}", user.age);      # ❌ 编译错误：字段私有
+</span>println!("{}", user.age());       # ✅ 公共方法（getter）
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="crate-vs-pypi-包"><a class="header" href="#crate-vs-pypi-包">crate vs PyPI 包</a></h2>
+<h3 id="python-包pypi"><a class="header" href="#python-包pypi">Python 包（PyPI）</a></h3>
+<pre><code class="language-bash"># Python
+pip install requests           # 从 PyPI 安装
+pip install "requests&gt;=2.28"   # 版本约束
+pip freeze &gt; requirements.txt  # 锁定版本
+pip install -r requirements.txt # 重现环境
+</code></pre>
+<h3 id="rust-cratecratesio"><a class="header" href="#rust-cratecratesio">Rust crate（crates.io）</a></h3>
+<pre><code class="language-bash"># Rust
+cargo add reqwest              # 从 crates.io 安装（添加到 Cargo.toml）
+cargo add reqwest@0.12         # 版本约束
+# Cargo.lock 自动生成 —— 无需手动步骤
+cargo build                    # 下载并编译依赖
+</code></pre>
+<h3 id="cargotoml-vs-pyprojecttoml"><a class="header" href="#cargotoml-vs-pyprojecttoml">Cargo.toml vs pyproject.toml</a></h3>
+<pre><code class="language-toml"># Rust — Cargo.toml
+[package]
+name = "my-project"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }  # 带特性标志
+reqwest = { version = "0.12", features = ["json"] }
+tokio = { version = "1", features = ["full"] }
+log = "0.4"
+
+[dev-dependencies]
+mockall = "0.13"
+</code></pre>
+<h3 id="python-开发者必备-crate"><a class="header" href="#python-开发者必备-crate">Python 开发者必备 crate</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Python 库</th><th>Rust crate</th><th>用途</th></tr></thead><tbody>
+<tr><td><code>requests</code></td><td><code>reqwest</code></td><td>HTTP 客户端</td></tr>
+<tr><td><code>json</code>（stdlib）</td><td><code>serde_json</code></td><td>JSON 解析</td></tr>
+<tr><td><code>pydantic</code></td><td><code>serde</code></td><td>序列化/验证</td></tr>
+<tr><td><code>pathlib</code></td><td><code>std::path</code>（stdlib）</td><td>路径处理</td></tr>
+<tr><td><code>os</code> / <code>shutil</code></td><td><code>std::fs</code>（stdlib）</td><td>文件操作</td></tr>
+<tr><td><code>re</code></td><td><code>regex</code></td><td>正则表达式</td></tr>
+<tr><td><code>logging</code></td><td><code>tracing</code> / <code>log</code></td><td>日志</td></tr>
+<tr><td><code>click</code> / <code>argparse</code></td><td><code>clap</code></td><td>CLI 参数解析</td></tr>
+<tr><td><code>asyncio</code></td><td><code>tokio</code></td><td>Async 运行时</td></tr>
+<tr><td><code>datetime</code></td><td><code>chrono</code></td><td>日期和时间</td></tr>
+<tr><td><code>pytest</code></td><td>内置 + <code>rstest</code></td><td>测试</td></tr>
+<tr><td><code>dataclasses</code></td><td><code>#[derive(...)]</code></td><td>数据结构</td></tr>
+<tr><td><code>typing.Protocol</code></td><td>trait</td><td>结构类型</td></tr>
+<tr><td><code>subprocess</code></td><td><code>std::process</code>（stdlib）</td><td>运行外部命令</td></tr>
+<tr><td><code>sqlite3</code></td><td><code>rusqlite</code></td><td>SQLite</td></tr>
+<tr><td><code>sqlalchemy</code></td><td><code>diesel</code> / <code>sqlx</code></td><td>ORM / SQL 工具包</td></tr>
+<tr><td><code>fastapi</code></td><td><code>axum</code> / <code>actix-web</code></td><td>Web 框架</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h2 id="workspaces-vs-monorepos"><a class="header" href="#workspaces-vs-monorepos">Workspaces vs Monorepos</a></h2>
+<h3 id="python-monorepo典型"><a class="header" href="#python-monorepo典型">Python Monorepo（典型）</a></h3>
+<pre><code class="language-text"># Python monorepo（各种方法，无标准）
+myproject/
+├── pyproject.toml           # 根项目
+├── packages/
+│   ├── core/
+│   │   ├── pyproject.toml   # 每个包有自己的配置
+│   │   └── src/core/...
+│   ├── api/
+│   │   ├── pyproject.toml
+│   │   └── src/api/...
+│   └── cli/
+│       ├── pyproject.toml
+│       └── src/cli/...
+# 工具：poetry workspaces、pip -e .、uv workspaces —— 无标准
+</code></pre>
+<h3 id="rust-workspace"><a class="header" href="#rust-workspace">Rust Workspace</a></h3>
+<pre><code class="language-toml"># Rust —— Cargo.toml 在根目录
+[workspace]
+members = [
+    "core",
+    "api",
+    "cli",
+]
+
+# workspace 共享依赖
+[workspace.dependencies]
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }
+</code></pre>
+<pre><code class="language-text"># Rust workspace 结构 —— 标准化，内置于 Cargo
+myproject/
+├── Cargo.toml               # workspace 根
+├── Cargo.lock               # 所有 crate 的单一锁定文件
+├── core/
+│   ├── Cargo.toml            # [dependencies] serde.workspace = true
+│   └── src/lib.rs
+├── api/
+│   ├── Cargo.toml
+│   └── src/lib.rs
+└── cli/
+    ├── Cargo.toml
+    └── src/main.rs
+</code></pre>
+<pre><code class="language-bash"># Workspace 命令
+cargo build                  # 构建一切
+cargo test                   # 测试一切
+cargo build -p core          # 仅构建 core crate
+cargo test -p api            # 仅测试 api crate
+cargo clippy --all           # lint 一切
+</code></pre>
+<blockquote>
+<p><strong>关键见解</strong>：Rust workspace 是一等公民，内置于 Cargo。Python monorepos
+需要第三方工具（poetry、uv、pants），支持程度不一。
+在 Rust workspace 中，所有 crate 共享单个 <code>Cargo.lock</code>，确保整个项目
+依赖版本一致。</p>
+</blockquote>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：模块可见性</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：给定此模块结构，预测哪些行编译通过，哪些不通过：</p>
+<pre><pre class="playground"><code class="language-rust">mod kitchen {
+    fn secret_recipe() -&gt; &amp;'static str { "42 spices" }
+    pub fn menu() -&gt; &amp;'static str { "Today's special" }
+
+    pub mod staff {
+        pub fn cook() -&gt; String {
+            format!("Cooking with {}", super::secret_recipe())
+        }
+    }
+}
+
+fn main() {
+    println!("{}", kitchen::menu());             # Line A
+    println!("{}", kitchen::secret_recipe());     # Line B
+    println!("{}", kitchen::staff::cook());       # Line C
+}</code></pre></pre>
+<details>
+<summary>🔑 解答</summary>
+<ul>
+<li><strong>Line A</strong>: ✅ 编译通过 —— <code>menu()</code> 是 <code>pub</code></li>
+<li><strong>Line B</strong>: ❌ 编译错误 —— <code>secret_recipe()</code> 对 <code>kitchen</code> 私有</li>
+<li><strong>Line C</strong>: ✅ 编译通过 —— <code>staff::cook()</code> 是 <code>pub</code>，<code>cook()</code> 可以通过 <code>super::</code> 访问 <code>secret_recipe()</code>（子模块可以访问父模块的私有项）</li>
+</ul>
+<p><strong>关键要点</strong>：在 Rust 中，子模块可以看到父模块的私有项（如 Python 的 <code>_private</code> 约定，但强制执行）。外部不能。这与 Python 相反，在 Python 中 <code>_private</code> 只是提示。</p>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch07-ownership-and-borrowing.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch09-error-handling.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch07-ownership-and-borrowing.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch09-error-handling.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,442 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>7. 验证边界 — 解析而非验证 - Type-Driven Correctness in Rust</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Type-Driven Correctness in Rust</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="验证边界--解析不要验证-"><a class="header" href="#验证边界--解析不要验证-">验证边界 —— 解析，不要验证 🟡</a></h1>
+<blockquote>
+<p><strong>你将学到：</strong> 如何在系统边界恰好验证一次数据，在专用类型中携带有效性证明，然后不再重新检查 —— 应用于 IPMI FRU 记录（扁平字节）、Redfish JSON（结构化文档）和 IPMI SEL 记录（多态二进制带嵌套分发），带有完整的端到端演练。</p>
+<p><strong>交叉引用：</strong> <a href="ch02-typed-command-interfaces-request-determi.html">ch02</a>（类型化命令）、<a href="ch06-dimensional-analysis-making-the-compiler.html">ch06</a>（量纲类型）、<a href="ch11-fourteen-tricks-from-the-trenches.html">ch11</a>（技巧 2 —— 密封 trait，技巧 3 —— <code>#[non_exhaustive]</code>，技巧 5 —— FromStr）、<a href="ch14-testing-type-level-guarantees.html">ch14</a>（proptest）</p>
+</blockquote>
+<h2 id="问题散弹枪验证"><a class="header" href="#问题散弹枪验证">问题：散弹枪验证</a></h2>
+<p>在典型代码中，验证分散在各处。每个接收数据的函数都重新检查它"以防万一"：</p>
+<pre><code class="language-c">// C —— 验证分散在代码库中
+int process_fru_data(uint8_t *data, int len) {
+    if (data == NULL) return -1;          // 检查：非空
+    if (len &lt; 8) return -1;              // 检查：最小长度
+    if (data[0] != 0x01) return -1;      // 检查：格式版本
+    if (checksum(data, len) != 0) return -1; // 检查：校验和
+
+    // ... 10 多个重复相同检查的函数 ...
+}
+</code></pre>
+<p>这种模式（"散弹枪验证"）有两个问题：</p>
+<ol>
+<li><strong>冗余</strong> —— 相同的检查出现在数十个地方</li>
+<li><strong>不完整</strong> —— 在一个地方忘记一个检查，你就有了 bug</li>
+</ol>
+<h2 id="解析不要验证"><a class="header" href="#解析不要验证">解析，不要验证</a></h2>
+<p>正确构造方法：<strong>在边界验证一次，然后在类型中携带有效性证明</strong>。</p>
+<pre><code class="language-rust ignore">/// 来自线路的原始字节 —— 尚未验证。
+#[derive(Debug)]
+pub struct RawFruData(Vec&lt;u8&gt;);</code></pre>
+<h3 id="案例研究ipmi-fru-数据"><a class="header" href="#案例研究ipmi-fru-数据">案例研究：IPMI FRU 数据</a></h3>
+<pre><code class="language-rust ignore"><span class="boring">#[derive(Debug)]
+</span><span class="boring">pub struct RawFruData(Vec&lt;u8&gt;);
+</span>
+/// 验证的 IPMI FRU 数据。只能通过 TryFrom 创建，
+/// 它强制执行所有不变量。一旦你有了 ValidFru，
+/// 所有数据都保证正确。
+#[derive(Debug)]
+pub struct ValidFru {
+    format_version: u8,
+    internal_area_offset: u8,
+    chassis_area_offset: u8,
+    board_area_offset: u8,
+    product_area_offset: u8,
+    data: Vec&lt;u8&gt;,
+}
+
+#[derive(Debug)]
+pub enum FruError {
+    TooShort { actual: usize, minimum: usize },
+    BadFormatVersion(u8),
+    ChecksumMismatch { expected: u8, actual: u8 },
+    InvalidAreaOffset { area: &amp;'static str, offset: u8 },
+}
+
+impl TryFrom&lt;RawFruData&gt; for ValidFru {
+    type Error = FruError;
+
+    fn try_from(raw: RawFruData) -&gt; Result&lt;Self, FruError&gt; {
+        let data = raw.0;
+
+        if data.len() &lt; 8 {
+            return Err(FruError::TooShort { actual: data.len(), minimum: 8 });
+        }
+        if data[0] != 0x01 {
+            return Err(FruError::BadFormatVersion(data[0]));
+        }
+
+        let checksum: u8 = data[..8].iter().fold(0u8, |acc, &amp;b| acc.wrapping_add(b));
+        if checksum != 0 {
+            return Err(FruError::ChecksumMismatch { expected: 0, actual: checksum });
+        }
+
+        for (name, idx) in [("internal", 1), ("chassis", 2), ("board", 3), ("product", 4)] {
+            let offset = data[idx];
+            if offset != 0 &amp;&amp; (offset as usize * 8) &gt;= data.len() {
+                return Err(FruError::InvalidAreaOffset { area: name, offset });
+            }
+        }
+
+        Ok(ValidFru {
+            format_version: data[0],
+            internal_area_offset: data[1],
+            chassis_area_offset: data[2],
+            board_area_offset: data[3],
+            product_area_offset: data[4],
+            data,
+        })
+    }
+}
+
+impl ValidFru {
+    pub fn board_area(&amp;self) -&gt; Option&lt;&amp;[u8]&gt; {
+        if self.board_area_offset == 0 { return None; }
+        let start = self.board_area_offset as usize * 8;
+        Some(&amp;self.data[start..])
+    }
+}</code></pre>
+<p>任何接受 <code>&amp;ValidFru</code> 的函数都<strong>知道</strong>数据格式良好。无需重新检查。</p>
+<h2 id="多态验证ipmi-sel-记录"><a class="header" href="#多态验证ipmi-sel-记录">多态验证：IPMI SEL 记录</a></h2>
+<p>IPMI SEL 记录是多态的：字节的含义取决于记录类型和传感器类型。</p>
+<h3 id="步骤-1--解析外框"><a class="header" href="#步骤-1--解析外框">步骤 1 —— 解析外框</a></h3>
+<pre><code class="language-rust ignore">pub struct RawSelRecord(pub [u8; 16]);
+
+pub enum ValidSelRecord {
+    SystemEvent(SystemEventRecord),
+    OemTimestamped(OemTimestampedRecord),
+    OemNonTimestamped(OemNonTimestampedRecord),
+}
+
+impl TryFrom&lt;RawSelRecord&gt; for ValidSelRecord {
+    type Error = SelParseError;
+
+    fn try_from(raw: RawSelRecord) -&gt; Result&lt;Self, SelParseError&gt; {
+        let d = &amp;raw.0;
+        let record_id = u16::from_le_bytes([d[0], d[1]]);
+
+        match d[2] {
+            0x02 =&gt; Ok(ValidSelRecord::SystemEvent(parse_system_event(record_id, d)?)),
+            0xC0..=0xDF =&gt; Ok(ValidSelRecord::OemTimestamped(OemTimestampedRecord {
+                record_id,
+                timestamp: u32::from_le_bytes([d[3], d[4], d[5], d[6]]),
+                manufacturer_id: [d[7], d[8], d[9]],
+                oem_data: [d[10], d[11], d[12], d[13], d[14], d[15]],
+            })),
+            0xE0..=0xFF =&gt; Ok(ValidSelRecord::OemNonTimestamped(OemNonTimestampedRecord {
+                record_id,
+                oem_data: [d[3], d[4], d[5], d[6], d[7], d[8], d[9], d[10], d[11], d[12], d[13], d[14], d[15]],
+            })),
+            other =&gt; Err(SelParseError::UnknownRecordType(other)),
+        }
+    }
+}</code></pre>
+<h3 id="步骤-2--类型化事件枚举"><a class="header" href="#步骤-2--类型化事件枚举">步骤 2 —— 类型化事件枚举</a></h3>
+<pre><code class="language-rust ignore">#[non_exhaustive]
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum SensorType {
+    Temperature, Voltage, Current, Fan, PhysicalSecurity,
+    Processor, PowerSupply, Memory, SystemEvent, Watchdog2,
+}
+
+#[derive(Debug)]
+pub enum TypedEvent {
+    Threshold(ThresholdEvent),
+    SensorSpecific(SensorSpecificEvent),
+    Discrete { offset: u8, event_data: [u8; 3] },
+}
+
+#[derive(Debug)]
+pub enum SensorSpecificEvent {
+    Temperature(TempEvent),
+    Voltage(VoltageEvent),
+    Fan(FanEvent),
+    Processor(ProcessorEvent),
+    PowerSupply(PowerSupplyEvent),
+    Memory(MemoryEvent),
+    PhysicalSecurity(PhysicalSecurityEvent),
+    Watchdog(WatchdogEvent),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum MemoryEvent {
+    CorrectableEcc, UncorrectableEcc, Parity, CriticalOvertemperature,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum PowerSupplyEvent {
+    PresenceDetected, Failure, PredictiveFailure, InputLost,
+}</code></pre>
+<h3 id="步骤-3--消费类型化-sel-记录"><a class="header" href="#步骤-3--消费类型化-sel-记录">步骤 3 —— 消费类型化 SEL 记录</a></h3>
+<pre><code class="language-rust ignore">fn should_alert(record: &amp;ValidSelRecord) -&gt; bool {
+    match record {
+        ValidSelRecord::SystemEvent(sys) =&gt; match &amp;sys.event {
+            TypedEvent::Threshold(t) =&gt; {
+                matches!(t.crossing,
+                    ThresholdCrossing::UpperCriticalLow | ThresholdCrossing::UpperCriticalHigh
+                    | ThresholdCrossing::LowerCriticalLow | ThresholdCrossing::LowerCriticalHigh
+                    | ThresholdCrossing::UpperNonRecoverableLow | ThresholdCrossing::UpperNonRecoverableHigh
+                )
+            }
+            TypedEvent::SensorSpecific(ss) =&gt; match ss {
+                SensorSpecificEvent::Memory(m) =&gt; matches!(m,
+                    MemoryEvent::UncorrectableEcc | MemoryEvent::Parity | MemoryEvent::CriticalOvertemperature
+                ),
+                SensorSpecificEvent::PowerSupply(p) =&gt; matches!(p,
+                    PowerSupplyEvent::Failure | PowerSupplyEvent::InputLost
+                ),
+                _ =&gt; false,
+            },
+            TypedEvent::Discrete { .. } =&gt; false,
+        },
+        ValidSelRecord::OemTimestamped(_) | ValidSelRecord::OemNonTimestamped(_) =&gt; false,
+    }
+}</code></pre>
+<h2 id="关键要点"><a class="header" href="#关键要点">关键要点</a></h2>
+<ol>
+<li><strong>在边界解析一次</strong> —— <code>TryFrom&lt;Raw&gt; for Valid</code> 是验证发生的地方。</li>
+<li><strong>多态数据变成嵌套枚举</strong> —— 编译器强制执行穷举处理。</li>
+<li><strong>下游代码从不重新验证</strong> —— <code>ValidFru</code> 和 <code>ValidSelRecord</code> 保证正确性。</li>
+<li><strong>从解析到 Redfish 健康的消费者管道</strong> —— SEL 记录通过解析 → 分类 → 线性化 → 聚合，生成 <code>TypedSelSummary</code> 用于 ch18 的健康汇总。</li>
+</ol>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch06-dimensional-analysis-making-the-compiler.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch08-capability-mixins-compile-time-hardware-.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch06-dimensional-analysis-making-the-compiler.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch08-capability-mixins-compile-time-hardware-.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

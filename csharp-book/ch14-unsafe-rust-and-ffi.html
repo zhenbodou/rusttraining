@@ -1,0 +1,607 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>14. Unsafe Rust 与 FFI - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="unsafe-rust"><a class="header" href="#unsafe-rust">Unsafe Rust</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> <code>unsafe</code> 允许什么（原始指针、FFI、未检查的强制转换），安全包装器模式，
+C# P/Invoke vs Rust FFI 用于调用原生代码，以及 <code>unsafe</code> 块的安全检查清单。</p>
+<p><strong>难度：</strong> 🔴 高级</p>
+</blockquote>
+<p>Unsafe Rust 允许你执行借用检查器无法验证的操作。少用并带有清晰的文档。</p>
+<blockquote>
+<p><strong>高级覆盖</strong>：对于 unsafe 代码上的安全抽象模式（arena 分配器、无锁结构、自定义 vtable），请参阅 <a href="../../rust-patterns-book/src/summary.html">Rust Patterns</a>。</p>
+</blockquote>
+<h3 id="何时需要-unsafe"><a class="header" href="#何时需要-unsafe">何时需要 Unsafe</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 1. 解引用原始指针
+let mut value = 42;
+let ptr = &amp;mut value as *mut i32;
+// 安全：ptr 指向有效、活动的局部变量。
+unsafe {
+    *ptr = 100; // 必须在 unsafe 块中
+}
+
+// 2. 调用 unsafe 函数
+unsafe fn dangerous() {
+    // 需要调用者维护不变量的内部实现
+}
+
+// 安全：此示例函数无需维护不变量。
+unsafe {
+    dangerous(); // 调用者承担责任
+}
+
+// 3. 访问可变静态变量
+static mut COUNTER: u32 = 0;
+// 安全：单线程上下文；无对 COUNTER 的并发访问。
+unsafe {
+    COUNTER += 1; // 不是线程安全——调用者必须确保同步
+}
+
+// 4. 实现 unsafe traits
+unsafe trait UnsafeTrait {
+    fn do_something(&amp;self);
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="c-比较unsafe-关键字"><a class="header" href="#c-比较unsafe-关键字">C# 比较：unsafe 关键字</a></h3>
+<pre><code class="language-csharp">// C# unsafe - 类似概念，不同范围
+unsafe void UnsafeExample()
+{
+    int value = 42;
+    int* ptr = &amp;value;
+    *ptr = 100;
+
+    // C# unsafe 是关于指针算术
+    // Rust unsafe 是关于所有权/借用规则放松
+}
+
+// C# fixed - 固定托管对象
+unsafe void PinnedExample()
+{
+    byte[] buffer = new byte[100];
+    fixed (byte* ptr = buffer)
+    {
+        // ptr 仅在此块内有效
+    }
+}
+</code></pre>
+<h3 id="安全包装器"><a class="header" href="#安全包装器">安全包装器</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>/// 关键模式：将 unsafe 代码包装在安全 API 中
+pub struct SafeBuffer {
+    data: Vec&lt;u8&gt;,
+}
+
+impl SafeBuffer {
+    pub fn new(size: usize) -&gt; Self {
+        SafeBuffer { data: vec![0; size] }
+    }
+
+    /// 安全 API——边界检查访问
+    pub fn get(&amp;self, index: usize) -&gt; Option&lt;u8&gt; {
+        self.data.get(index).copied()
+    }
+
+    /// 快速未检查访问——unsafe 但用边界检查安全包装
+    pub fn get_unchecked_safe(&amp;self, index: usize) -&gt; Option&lt;u8&gt; {
+        if index &lt; self.data.len() {
+            // 安全：我们刚检查了 index 在边界内
+            Some(unsafe { *self.data.get_unchecked(index) })
+        } else {
+            None
+        }
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="通过-ffi-与-c-互操作"><a class="header" href="#通过-ffi-与-c-互操作">通过 FFI 与 C# 互操作</a></h2>
+<p>Rust 可以暴露 C# 可以通过 P/Invoke 调用的 C 兼容函数。</p>
+<pre class="mermaid">graph LR
+    subgraph &quot;C# 进程&quot;
+        CS[&quot;C# 代码&quot;] --&gt;|&quot;P/Invoke&quot;| MI[&quot;Marshal 层&lt;br/&gt;UTF-16 → UTF-8&lt;br/&gt;结构体布局&quot;]
+    end
+    MI --&gt;|&quot;C ABI 调用&quot;| FFI[&quot;FFI 边界&quot;]
+    subgraph &quot;Rust cdylib (.so / .dll)&quot;
+        FFI --&gt; RF[&quot;extern \&quot;C\&quot; fn&lt;br/&gt;#[no_mangle]&quot;]
+        RF --&gt; Safe[&quot;Safe Rust&lt;br/&gt;内部&quot;]
+    end
+
+    style FFI fill:#fff9c4,color:#000
+    style MI fill:#bbdefb,color:#000
+    style Safe fill:#c8e6c9,color:#000
+</pre>
+<h3 id="rust-库编译为-cdylib"><a class="header" href="#rust-库编译为-cdylib">Rust 库（编译为 cdylib）</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// src/lib.rs
+#[no_mangle]
+pub extern "C" fn add_numbers(a: i32, b: i32) -&gt; i32 {
+    a + b
+}
+
+#[no_mangle]
+pub extern "C" fn process_string(input: *const std::os::raw::c_char) -&gt; i32 {
+    // 安全：input 非空（内部检查）并由调用者假定为 null 终止。
+    let c_str = unsafe {
+        if input.is_null() {
+            return -1;
+        }
+        std::ffi::CStr::from_ptr(input)
+    };
+
+    match c_str.to_str() {
+        Ok(s) =&gt; s.len() as i32,
+        Err(_) =&gt; -1,
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-toml"># Cargo.toml
+[lib]
+crate-type = ["cdylib"]
+</code></pre>
+<h3 id="c-消费者pinvoke"><a class="header" href="#c-消费者pinvoke">C# 消费者（P/Invoke）</a></h3>
+<pre><code class="language-csharp">using System.Runtime.InteropServices;
+
+public static class RustInterop
+{
+    [DllImport("my_rust_lib", CallingConvention = CallingConvention.Cdecl)]
+    public static extern int add_numbers(int a, int b);
+
+    [DllImport("my_rust_lib", CallingConvention = CallingConvention.Cdecl)]
+    public static extern int process_string(
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string input);
+}
+
+// 用法
+int sum = RustInterop.add_numbers(5, 3);  // 8
+int len = RustInterop.process_string("Hello from C#!");  // 15
+</code></pre>
+<h3 id="ffi-安全检查清单"><a class="header" href="#ffi-安全检查清单">FFI 安全检查清单</a></h3>
+<p>当向 C# 暴露 Rust 函数时，这些规则防止最常见的 bug：</p>
+<ol>
+<li>
+<p><strong>总是使用 <code>extern "C"</code></strong> —— 没有它，Rust 使用自己的（不稳定的）调用约定。C# P/Invoke 期望 C ABI。</p>
+</li>
+<li>
+<p><strong><code>#[no_mangle]</code></strong> —— 防止 Rust 编译器混淆函数名。没有它，C# 找不到符号。</p>
+</li>
+<li>
+<p><strong>永远不要让 panic 跨越 FFI 边界</strong> —— Rust panic 展开到 C# 中是<strong>未定义行为</strong>。在 FFI 入口点捕获 panic：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[no_mangle]
+pub extern "C" fn safe_ffi_function() -&gt; i32 {
+    match std::panic::catch_unwind(|| {
+        // 实际逻辑在这里
+        42
+    }) {
+        Ok(result) =&gt; result,
+        Err(_) =&gt; -1,  // 返回错误代码而不是 panic 到 C# 中
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+</li>
+<li>
+<p><strong>不透明 vs 透明结构体</strong> —— 如果 C# 只持有指针（不透明句柄），不需要 <code>#[repr(C)]</code>。如果 C# 通过 <code>StructLayout</code> 读取结构体字段，你<strong>必须</strong>使用 <code>#[repr(C)]</code>：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 不透明——C# 只持有 IntPtr。不需要 #[repr(C)]。
+pub struct Connection { /* 仅 Rust 字段 */ }
+
+// 透明——C# marshal 字段直接。必须使用 #[repr(C)]。
+#[repr(C)]
+pub struct Point { pub x: f64, pub y: f64 }
+<span class="boring">}</span></code></pre></pre>
+</li>
+<li>
+<p><strong>空指针检查</strong> —— 解引用前总是验证指针。C# 可以传递 <code>IntPtr.Zero</code>。</p>
+</li>
+<li>
+<p><strong>字符串编码</strong> —— C# 内部使用 UTF-16。<code>MarshalAs(UnmanagedType.LPUTF8Str)</code> 转换为 Rust 的 <code>CStr</code> 的 UTF-8。显式记录此契约。</p>
+</li>
+</ol>
+<h3 id="端到端示例带生命周期管理的不透明句柄"><a class="header" href="#端到端示例带生命周期管理的不透明句柄">端到端示例：带生命周期管理的不透明句柄</a></h3>
+<p>这个模式在生产中常见：Rust 拥有对象，C# 持有不透明句柄，显式的 create/destroy 函数管理生命周期。</p>
+<p><strong>Rust 端</strong>（<code>src/lib.rs</code>）：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::ffi::{c_char, CStr};
+
+pub struct ImageProcessor {
+    width: u32,
+    height: u32,
+    pixels: Vec&lt;u8&gt;,
+}
+
+/// 创建新处理器。如果维度无效则返回 null。
+#[no_mangle]
+pub extern "C" fn processor_new(width: u32, height: u32) -&gt; *mut ImageProcessor {
+    if width == 0 || height == 0 {
+        return std::ptr::null_mut();
+    }
+    let proc = ImageProcessor {
+        width,
+        height,
+        pixels: vec![0u8; (width * height * 4) as usize],
+    };
+    Box::into_raw(Box::new(proc)) // 在堆上分配，返回原始指针
+}
+
+/// 应用灰度滤镜。成功返回 0，空指针返回 -1。
+#[no_mangle]
+pub extern "C" fn processor_grayscale(ptr: *mut ImageProcessor) -&gt; i32 {
+    // 安全：ptr 由 Box::into_raw 创建（非空），仍然有效。
+    let proc = match unsafe { ptr.as_mut() } {
+        Some(p) =&gt; p,
+        None =&gt; return -1,
+    };
+    for chunk in proc.pixels.chunks_exact_mut(4) {
+        let gray = (0.299 * chunk[0] as f64
+                  + 0.587 * chunk[1] as f64
+                  + 0.114 * chunk[2] as f64) as u8;
+        chunk[0] = gray;
+        chunk[1] = gray;
+        chunk[2] = gray;
+    }
+    0
+}
+
+/// 销毁处理器。可以用 null 安全调用。
+#[no_mangle]
+pub extern "C" fn processor_free(ptr: *mut ImageProcessor) {
+    if !ptr.is_null() {
+        // 安全：ptr 由 processor_new 通过 Box::into_raw 创建
+        unsafe { drop(Box::from_raw(ptr)); }
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>C# 端</strong>：</p>
+<pre><code class="language-csharp">using System.Runtime.InteropServices;
+
+public sealed class ImageProcessor : IDisposable
+{
+    [DllImport("image_rust", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr processor_new(uint width, uint height);
+
+    [DllImport("image_rust", CallingConvention = CallingConvention.Cdecl)]
+    private static extern int processor_grayscale(IntPtr ptr);
+
+    [DllImport("image_rust", CallingConvention = CallingConvention.Cdecl)]
+    private static extern void processor_free(IntPtr ptr);
+
+    private IntPtr _handle;
+
+    public ImageProcessor(uint width, uint height)
+    {
+        _handle = processor_new(width, height);
+        if (_handle == IntPtr.Zero)
+            throw new ArgumentException("Invalid dimensions");
+    }
+
+    public void Grayscale()
+    {
+        if (processor_grayscale(_handle) != 0)
+            throw new InvalidOperationException("Processor is null");
+    }
+
+    public void Dispose()
+    {
+        if (_handle != IntPtr.Zero)
+        {
+            processor_free(_handle);
+            _handle = IntPtr.Zero;
+        }
+    }
+}
+
+// 用法——IDisposable 确保 Rust 内存被释放
+using var proc = new ImageProcessor(1920, 1080);
+proc.Grayscale();
+// proc.Dispose() 自动调用 → processor_free() → Rust drop Vec
+</code></pre>
+<blockquote>
+<p><strong>关键见解</strong>：这等效于 C# 的 <code>SafeHandle</code> 模式。Rust 的 <code>Box::into_raw</code> / <code>Box::from_raw</code> 跨 FFI 边界转移所有权，C# <code>IDisposable</code> 包装器确保清理。</p>
+</blockquote>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：原始指针的安全包装器</strong>（点击展开）</summary>
+<p>你从 C 库接收原始指针。编写安全 Rust 包装器：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 模拟 C API
+extern "C" {
+    fn lib_create_buffer(size: usize) -&gt; *mut u8;
+    fn lib_free_buffer(ptr: *mut u8);
+}
+<span class="boring">}</span></code></pre></pre>
+<p>要求：</p>
+<ol>
+<li>创建包装原始指针的 <code>SafeBuffer</code> 结构体</li>
+<li>实现 <code>Drop</code> 调用 <code>lib_free_buffer</code></li>
+<li>通过 <code>as_slice()</code> 提供安全 <code>&amp;[u8]</code> 视图</li>
+<li>如果指针为 null 则确保 <code>SafeBuffer::new()</code> 返回 <code>None</code></li>
+</ol>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><code class="language-rust ignore">struct SafeBuffer {
+    ptr: *mut u8,
+    len: usize,
+}
+
+impl SafeBuffer {
+    fn new(size: usize) -&gt; Option&lt;Self&gt; {
+        // 安全：lib_create_buffer 返回有效指针或 null（下面检查）。
+        let ptr = unsafe { lib_create_buffer(size) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(SafeBuffer { ptr, len: size })
+        }
+    }
+
+    fn as_slice(&amp;self) -&gt; &amp;[u8] {
+        // 安全：ptr 非空（在 new() 中检查），len 是
+        // 分配的大小，我们持有独占所有权。
+        unsafe { std::slice::from_raw_parts(self.ptr, self.len) }
+    }
+}
+
+impl Drop for SafeBuffer {
+    fn drop(&amp;mut self) {
+        // 安全：ptr 由 lib_create_buffer 分配
+        unsafe { lib_free_buffer(self.ptr); }
+    }
+}
+
+// 用法：所有 unsafe 包含在 SafeBuffer 中
+fn process(buf: &amp;SafeBuffer) {
+    let data = buf.as_slice(); // 完全安全的 API
+    println!("First byte: {}", data[0]);
+}</code></pre>
+<p><strong>关键模式</strong>：将 <code>unsafe</code> 封装在带 <code>// SAFETY:</code> 注释的小模块中。暴露 100% 安全的公共 API。这就是 Rust 标准库的工作方式——<code>Vec</code>、<code>String</code>、<code>HashMap</code> 内部都包含 unsafe 但呈现安全接口。</p>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch13-1-asyncawait-deep-dive.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch14-1-testing.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch13-1-asyncawait-deep-dive.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch14-1-testing.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

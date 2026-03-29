@@ -1,0 +1,691 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>12. Unsafe Rust —— 受控的危险 - Rust Patterns &amp; Engineering How-Tos</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust Patterns &amp; Engineering How-Tos</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="11-unsafe-rust--受控的危险-"><a class="header" href="#11-unsafe-rust--受控的危险-">11. Unsafe Rust —— 受控的危险 🔴</a></h1>
+<blockquote>
+<p><strong>你将学到：</strong></p>
+<ul>
+<li>五种 unsafe 超能力以及何时需要每种</li>
+<li>编写可靠的抽象：安全 API，unsafe 内部</li>
+<li>从 Rust 调用 C（以及返回）的 FFI 模式</li>
+<li>常见 UB 陷阱和 arena/slab 分配器模式</li>
+</ul>
+</blockquote>
+<h2 id="五种-unsafe-超能力"><a class="header" href="#五种-unsafe-超能力">五种 Unsafe 超能力</a></h2>
+<p><code>unsafe</code> 解锁编译器无法验证的五种操作：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 安全：每个操作在下面内联解释。
+unsafe {
+    // 1. 解引用原始指针
+    let ptr: *const i32 = &amp;42;
+    let value = *ptr; // 可能是悬垂/空指针
+
+    // 2. 调用 unsafe 函数
+    let layout = std::alloc::Layout::new::&lt;u64&gt;();
+    let mem = std::alloc::alloc(layout);
+
+    // 3. 访问可变静态变量
+    static mut COUNTER: u32 = 0;
+    COUNTER += 1; // 如果多个线程访问则数据竞争
+
+    // 4. 实现 unsafe trait
+    // unsafe impl Send for MyType {}
+
+    // 5. 访问 union 字段
+    // union IntOrFloat { i: i32, f: f32 }
+    // let u = IntOrFloat { i: 42 };
+    // let f = u.f; // 重新解释位——可能是垃圾
+}
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>关键原则</strong>：<code>unsafe</code> 不会关闭借用检查器或类型系统。
+它只解锁这五种特定能力。所有其他 Rust 规则仍然适用。</p>
+</blockquote>
+<h3 id="编写可靠的抽象"><a class="header" href="#编写可靠的抽象">编写可靠的抽象</a></h3>
+<p><code>unsafe</code> 的目的是在 unsafe 操作周围构建<strong>安全抽象</strong>：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>/// 固定容量栈分配缓冲区。
+/// 所有公共方法都是安全的——unsafe 被封装。
+pub struct StackBuf&lt;T, const N: usize&gt; {
+    data: [std::mem::MaybeUninit&lt;T&gt;; N],
+    len: usize,
+}
+
+impl&lt;T, const N: usize&gt; StackBuf&lt;T, N&gt; {
+    pub fn new() -&gt; Self {
+        StackBuf {
+            // 每个元素单独 MaybeUninit——无需 unsafe。
+            // `const { ... }` 块（Rust 1.79+）让我们重复非 Copy
+            // const 表达式 N 次。
+            data: [const { std::mem::MaybeUninit::uninit() }; N],
+            len: 0,
+        }
+    }
+
+    pub fn push(&amp;mut self, value: T) -&gt; Result&lt;(), T&gt; {
+        if self.len &gt;= N {
+            return Err(value); // 缓冲区满——返回值给调用者
+        }
+        // 安全：len &lt; N，所以 data[len] 在边界内。
+        // 我们将有效 T 写入 MaybeUninit 槽。
+        self.data[self.len] = std::mem::MaybeUninit::new(value);
+        self.len += 1;
+        Ok(())
+    }
+
+    pub fn get(&amp;self, index: usize) -&gt; Option&lt;&amp;T&gt; {
+        if index &lt; self.len {
+            // 安全：index &lt; len，且 data[0..len] 都初始化。
+            Some(unsafe { self.data[index].assume_init_ref() })
+        } else {
+            None
+        }
+    }
+}
+
+impl&lt;T, const N: usize&gt; Drop for StackBuf&lt;T, N&gt; {
+    fn drop(&amp;mut self) {
+        // 安全：data[0..len] 初始化——正确 drop 它们。
+        for i in 0..self.len {
+            unsafe { self.data[i].assume_init_drop(); }
+        }
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>可靠 unsafe 代码的三个规则</strong>：</p>
+<ol>
+<li><strong>文档化不变量</strong> —— 每个 <code>// SAFETY:</code> 注释解释为什么操作有效</li>
+<li><strong>封装</strong> —— unsafe 在安全 API 内；用户不能触发 UB</li>
+<li><strong>最小化</strong> —— 只有最小可能的块是 <code>unsafe</code></li>
+</ol>
+<h3 id="ffi-模式从-rust-调用-c"><a class="header" href="#ffi-模式从-rust-调用-c">FFI 模式：从 Rust 调用 C</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 声明 C 函数签名：
+extern "C" {
+    fn strlen(s: *const std::ffi::c_char) -&gt; usize;
+    fn printf(format: *const std::ffi::c_char, ...) -&gt; std::ffi::c_int;
+}
+
+// 安全包装器：
+fn safe_strlen(s: &amp;str) -&gt; usize {
+    let c_string = std::ffi::CString::new(s).expect("string contains null byte");
+    // 安全：c_string 是有效 null 终止字符串，在调用期间存活。
+    unsafe { strlen(c_string.as_ptr()) }
+}
+
+// 从 C 调用 Rust（导出函数）：
+#[no_mangle]
+pub extern "C" fn rust_add(a: i32, b: i32) -&gt; i32 {
+    a + b
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>常见 FFI 类型</strong>：</p>
+<div class="table-wrapper"><table><thead><tr><th>Rust</th><th>C</th><th>注意</th></tr></thead><tbody>
+<tr><td><code>i32</code> / <code>u32</code></td><td><code>int32_t</code> / <code>uint32_t</code></td><td>固定宽度，安全</td></tr>
+<tr><td><code>*const T</code> / <code>*mut T</code></td><td><code>const T*</code> / <code>T*</code></td><td>原始指针</td></tr>
+<tr><td><code>std::ffi::CStr</code></td><td><code>const char*</code>（借用）</td><td>Null 终止，借用</td></tr>
+<tr><td><code>std::ffi::CString</code></td><td><code>char*</code>（自有）</td><td>Null 终止，自有</td></tr>
+<tr><td><code>std::ffi::c_void</code></td><td><code>void</code></td><td>不透明指针目标</td></tr>
+<tr><td><code>Option&lt;fn(...)&gt;</code></td><td>可空函数指针</td><td><code>None</code> = NULL</td></tr>
+</tbody></table>
+</div>
+<h3 id="常见-ub-陷阱"><a class="header" href="#常见-ub-陷阱">常见 UB 陷阱</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>陷阱</th><th>示例</th><th>为什么是 UB</th></tr></thead><tbody>
+<tr><td>空解引用</td><td><code>*std::ptr::null::&lt;i32&gt;()</code></td><td>解引用空总是 UB</td></tr>
+<tr><td>悬垂指针</td><td><code>drop()</code> 后解引用</td><td>内存可能重用</td></tr>
+<tr><td>数据竞争</td><td>两个线程写入 <code>static mut</code></td><td>无同步并发写入</td></tr>
+<tr><td>错误 <code>assume_init</code></td><td><code>MaybeUninit::&lt;String&gt;::uninit().assume_init()</code></td><td>读取未初始化内存。<strong>注意</strong>：<code>[const { MaybeUninit::uninit() }; N]</code>（Rust 1.79+）是创建 <code>MaybeUninit</code> 数组的安全方式——无需 <code>unsafe</code> 或 <code>assume_init</code>（见上面 <code>StackBuf::new()</code>）。</td></tr>
+<tr><td>别名违反</td><td>创建两个 <code>&amp;mut</code> 到相同数据</td><td>违反 Rust 的别名模型</td></tr>
+<tr><td>无效 enum 值</td><td><code>std::mem::transmute::&lt;u8, bool&gt;(2)</code></td><td><code>bool</code> 只能是 0 或 1</td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p><strong>何时在生产中使用 <code>unsafe</code></strong>：</p>
+<ul>
+<li>FFI 边界（调用 C/C++ 代码）</li>
+<li>性能关键内部循环（避免边界检查）</li>
+<li>构建原语（<code>Vec</code>、<code>HashMap</code> —— 这些内部使用 unsafe）</li>
+<li>如果可以避免，从不在应用逻辑中</li>
+</ul>
+</blockquote>
+<h3 id="自定义分配器--arena-和-slab-模式"><a class="header" href="#自定义分配器--arena-和-slab-模式">自定义分配器 —— Arena 和 Slab 模式</a></h3>
+<p>在 C 中，你会为特定分配模式编写自定义 <code>malloc()</code> 替换——
+一次释放所有的 arena 分配器、固定大小对象的 slab 分配器、
+或高吞吐量系统的池分配器。Rust 通过 <code>GlobalAlloc</code> trait 和分配器 crate 提供相同能力，
+带生命周期作用域 arena 的额外好处，在<strong>编译时防止 use-after-free</strong>。</p>
+<h4 id="arena-分配器批量分配批量释放"><a class="header" href="#arena-分配器批量分配批量释放">Arena 分配器——批量分配，批量释放</a></h4>
+<p>Arena 通过向前推进指针分配。单个项不能释放——
+整个 arena 一次释放。这对请求作用域或帧作用域分配完美：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use bumpalo::Bump;
+
+fn process_sensor_frame(raw_data: &amp;[u8]) {
+    // 为此帧的分配创建 arena
+    let arena = Bump::new();
+
+    // 在 arena 中分配对象——每个约 2ns（只是指针推进）
+    let header = arena.alloc(parse_header(raw_data));
+    let readings: &amp;mut [f32] = arena.alloc_slice_fill_default(header.sensor_count);
+
+    for (i, chunk) in raw_data[header.payload_offset..].chunks(4).enumerate() {
+        if i &lt; readings.len() {
+            readings[i] = f32::from_le_bytes(chunk.try_into().unwrap());
+        }
+    }
+
+    // 使用 readings...
+    let avg = readings.iter().sum::&lt;f32&gt;() / readings.len() as f32;
+    println!("Frame avg: {avg:.2}");
+
+    // `arena` 在这里 drop —— 所有分配一次在 O(1) 释放
+    // 无每对象析构函数开销，无碎片
+}
+<span class="boring">fn parse_header(_: &amp;[u8]) -&gt; Header { Header { sensor_count: 4, payload_offset: 8 } }
+</span><span class="boring">struct Header { sensor_count: usize, payload_offset: usize }
+</span><span class="boring">}</span></code></pre></pre>
+<p><strong>Arena vs 标准分配器</strong>：</p>
+<div class="table-wrapper"><table><thead><tr><th>方面</th><th><code>Vec::new()</code> / <code>Box::new()</code></th><th><code>Bump</code> arena</th></tr></thead><tbody>
+<tr><td>分配速度</td><td>~25ns（malloc）</td><td>~2ns（指针推进）</td></tr>
+<tr><td>释放速度</td><td>每对象析构函数</td><td>O(1) 批量释放</td></tr>
+<tr><td>碎片</td><td>是（长生命周期进程）</td><td>arena 内无</td></tr>
+<tr><td>生命周期安全</td><td>堆——<code>Drop</code> 时释放</td><td>Arena 引用——编译时作用域</td></tr>
+<tr><td>用例</td><td>通用</td><td>请求/帧/批处理</td></tr>
+</tbody></table>
+</div>
+<h4 id="typed-arena--类型安全-arena"><a class="header" href="#typed-arena--类型安全-arena"><code>typed-arena</code> —— 类型安全 Arena</a></h4>
+<p>当所有 arena 对象是相同类型时，<code>typed-arena</code> 提供更简单 API，
+返回带 arena 生命周期的引用：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use typed_arena::Arena;
+
+struct AstNode&lt;'a&gt; {
+    value: i32,
+    children: Vec&lt;&amp;'a AstNode&lt;'a&gt;&gt;,
+}
+
+fn build_tree() {
+    let arena: Arena&lt;AstNode&lt;'_&gt;&gt; = Arena::new();
+
+    // 分配节点——返回绑定到 arena 生命周期的 &amp;AstNode
+    let root = arena.alloc(AstNode { value: 1, children: vec![] });
+    let left = arena.alloc(AstNode { value: 2, children: vec![] });
+    let right = arena.alloc(AstNode { value: 3, children: vec![] });
+
+    // 构建树——所有引用只要 `arena` 存活就有效
+    // （真正可变树需要内部可变性）
+
+    println!("Root: {}, Left: {}, Right: {}", root.value, left.value, right.value);
+
+    // `arena` 在这里 drop —— 所有节点一次释放
+}
+<span class="boring">}</span></code></pre></pre>
+<h4 id="slab-分配器固定大小对象池"><a class="header" href="#slab-分配器固定大小对象池">Slab 分配器——固定大小对象池</a></h4>
+<p>slab 分配器预分配固定大小槽的池。对象单独分配和返回，
+但所有槽大小相同——消除碎片并启用 O(1) 分配/释放：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use slab::Slab;
+
+struct Connection {
+    id: u64,
+    buffer: [u8; 1024],
+    active: bool,
+}
+
+fn connection_pool_example() {
+    // 为连接预分配 slab
+    let mut connections: Slab&lt;Connection&gt; = Slab::with_capacity(256);
+
+    // Insert 返回键（usize 索引）——O(1)
+    let key1 = connections.insert(Connection {
+        id: 1001,
+        buffer: [0; 1024],
+        active: true,
+    });
+
+    let key2 = connections.insert(Connection {
+        id: 1002,
+        buffer: [0; 1024],
+        active: true,
+    });
+
+    // 通过键访问——O(1)
+    if let Some(conn) = connections.get_mut(key1) {
+        conn.buffer[0..5].copy_from_slice(b"hello");
+    }
+
+    // Remove 返回值——O(1)，槽为下次 insert 重用
+    let removed = connections.remove(key2);
+    assert_eq!(removed.id, 1002);
+
+    // 下次 insert 重用释放的槽——无碎片
+    let key3 = connections.insert(Connection {
+        id: 1003,
+        buffer: [0; 1024],
+        active: true,
+    });
+    assert_eq!(key3, key2); // 相同槽重用！
+}
+<span class="boring">}</span></code></pre></pre>
+<h4 id="实现最小-arena用于-no_std"><a class="header" href="#实现最小-arena用于-no_std">实现最小 Arena（用于 <code>no_std</code>）</a></h4>
+<p>对于无法拉入 <code>bumpalo</code> 的裸机环境，这里是基于 <code>unsafe</code> 的最小 arena：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span>#![cfg_attr(not(test), no_std)]
+
+<span class="boring">fn main() {
+</span>use core::alloc::Layout;
+use core::cell::{Cell, UnsafeCell};
+
+/// 由固定大小字节数组支持的简单 bump 分配器。
+/// 非线程安全——对多线程上下文使用每核心或带锁。
+///
+/// **重要**：像 `bumpalo`，这个 arena 在 arena drop 时不调用分配项的析构函数。
+/// 带 `Drop` impl 的类型将泄漏其资源（文件句柄、套接字等）。
+/// 只分配无有意义 `Drop` impl 的类型，或在 arena 之前手动 drop 它们。
+pub struct FixedArena&lt;const N: usize&gt; {
+    // UnsafeCell 在这里必需：我们通过 `&amp;self` 变异 `buf`。
+    // 无 UnsafeCell，将 &amp;self.buf 转换为 *mut u8 将是 UB
+    // （违反 Rust 的别名模型——共享引用意味着不可变）。
+    buf: UnsafeCell&lt;[u8; N]&gt;,
+    offset: Cell&lt;usize&gt;, // &amp;self 分配的内部可变性
+}
+
+impl&lt;const N: usize&gt; FixedArena&lt;N&gt; {
+    pub const fn new() -&gt; Self {
+        FixedArena {
+            buf: UnsafeCell::new([0; N]),
+            offset: Cell::new(0),
+        }
+    }
+
+    /// 在 arena 中分配 `T`。如果空间不足返回 `None`。
+    pub fn alloc&lt;T&gt;(&amp;self, value: T) -&gt; Option&lt;&amp;mut T&gt; {
+        let layout = Layout::new::&lt;T&gt;();
+        let current = self.offset.get();
+
+        // 向上对齐
+        let aligned = (current + layout.align() - 1) &amp; !(layout.align() - 1);
+        let new_offset = aligned + layout.size();
+
+        if new_offset &gt; N {
+            return None; // Arena 满
+        }
+
+        self.offset.set(new_offset);
+
+        // 安全：
+        // - `aligned` 在 `buf` 边界内（上面检查）
+        // - 对齐正确（对齐到 T 的要求）
+        // - 无别名：每个 alloc 返回唯一、不重叠区域
+        // - UnsafeCell 授予通过 &amp;self 变异的权限
+        // - arena 比返回的引用存活更长（调用者必须确保）
+        let ptr = unsafe {
+            let base = (self.buf.get() as *mut u8).add(aligned);
+            let typed = base as *mut T;
+            typed.write(value);
+            &amp;mut *typed
+        };
+
+        Some(ptr)
+    }
+
+    /// 重置 arena —— 使所有先前分配无效。
+    ///
+    /// # 安全
+    /// 调用者必须确保不存在对 arena 分配数据的引用。
+    pub unsafe fn reset(&amp;self) {
+        self.offset.set(0);
+    }
+
+    pub fn used(&amp;self) -&gt; usize {
+        self.offset.get()
+    }
+
+    pub fn remaining(&amp;self) -&gt; usize {
+        N - self.offset.get()
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h4 id="选择分配器策略"><a class="header" href="#选择分配器策略">选择分配器策略</a></h4>
+<div class="table-wrapper"><table><thead><tr><th>C 模式</th><th>Rust 等价物</th><th>关键优势</th></tr></thead><tbody>
+<tr><td>自定义 <code>malloc()</code> 池</td><td><code>#[global_allocator]</code> impl</td><td>类型安全、可调试</td></tr>
+<tr><td><code>obstack</code>（GNU）</td><td><code>bumpalo::Bump</code></td><td>生命周期作用域、无 use-after-free</td></tr>
+<tr><td>内核 slab（<code>kmem_cache</code>）</td><td><code>slab::Slab&lt;T&gt;</code></td><td>类型安全、基于索引</td></tr>
+<tr><td>栈分配临时缓冲区</td><td><code>FixedArena&lt;N&gt;</code>（上面）</td><td>无堆、<code>const</code> 可构造</td></tr>
+<tr><td><code>alloca()</code></td><td><code>[T; N]</code> 或 <code>SmallVec</code></td><td>编译时大小、无 UB</td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p><strong>交叉引用</strong>：对于裸机分配器设置（带 <code>embedded-alloc</code> 的 <code>#[global_allocator]</code>），
+参见<em>Rust Training for C Programmers</em>，第 15.1 章"Global Allocator Setup"，
+涵盖嵌入式特定引导。</p>
+</blockquote>
+<blockquote>
+<p><strong>要点——Unsafe Rust</strong></p>
+<ul>
+<li>文档化不变量（<code>SAFETY:</code> 注释），封装在安全 API 后，最小化 unsafe 作用域</li>
+<li><code>[const { MaybeUninit::uninit() }; N]</code>（Rust 1.79+）替换旧 <code>assume_init</code> 反模式</li>
+<li>FFI 需要 <code>extern "C"</code>、<code>#[repr(C)]</code> 和仔细的空/生命周期处理</li>
+<li>Arena 和 slab 分配器用通用灵活性交换分配速度</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>另见：</strong> <a href="ch04-phantomdata-types-that-carry-no-data.html">第 4 章 — PhantomData</a> 了解方差和 drop-check 与 unsafe 代码的交互。<a href="ch08-smart-pointers-and-interior-mutability.html">第 8 章 — 智能指针</a> 了解 Pin 和自引用类型。</p>
+</blockquote>
+<hr />
+<h3 id="练习unsafe-的安全包装器-约-45-分钟"><a class="header" href="#练习unsafe-的安全包装器-约-45-分钟">练习：Unsafe 的安全包装器 ★★★（约 45 分钟）</a></h3>
+<p>编写 <code>FixedVec&lt;T, const N: usize&gt;</code> —— 固定容量、栈分配向量。
+要求：</p>
+<ul>
+<li><code>push(&amp;mut self, value: T) -&gt; Result&lt;(), T&gt;</code> 满时返回 <code>Err(value)</code></li>
+<li><code>pop(&amp;mut self) -&gt; Option&lt;T&gt;</code> 返回并移除最后一个元素</li>
+<li><code>as_slice(&amp;self) -&gt; &amp;[T]</code> 借用初始化元素</li>
+<li>所有公共方法必须安全；所有 unsafe 必须用 <code>SAFETY:</code> 注释封装</li>
+<li><code>Drop</code> 必须清理初始化元素</li>
+</ul>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><pre class="playground"><code class="language-rust">use std::mem::MaybeUninit;
+
+pub struct FixedVec&lt;T, const N: usize&gt; {
+    data: [MaybeUninit&lt;T&gt;; N],
+    len: usize,
+}
+
+impl&lt;T, const N: usize&gt; FixedVec&lt;T, N&gt; {
+    pub fn new() -&gt; Self {
+        FixedVec {
+            data: [const { MaybeUninit::uninit() }; N],
+            len: 0,
+        }
+    }
+
+    pub fn push(&amp;mut self, value: T) -&gt; Result&lt;(), T&gt; {
+        if self.len &gt;= N { return Err(value); }
+        // 安全：len &lt; N，所以 data[len] 在边界内。
+        self.data[self.len] = MaybeUninit::new(value);
+        self.len += 1;
+        Ok(())
+    }
+
+    pub fn pop(&amp;mut self) -&gt; Option&lt;T&gt; {
+        if self.len == 0 { return None; }
+        self.len -= 1;
+        // 安全：data[len] 初始化（len 在递减前 &gt; 0）。
+        Some(unsafe { self.data[self.len].assume_init_read() })
+    }
+
+    pub fn as_slice(&amp;self) -&gt; &amp;[T] {
+        // 安全：data[0..len] 都初始化，且 MaybeUninit&lt;T&gt;
+        // 与 T 布局相同。
+        unsafe { std::slice::from_raw_parts(self.data.as_ptr() as *const T, self.len) }
+    }
+
+    pub fn len(&amp;self) -&gt; usize { self.len }
+    pub fn is_empty(&amp;self) -&gt; bool { self.len == 0 }
+}
+
+impl&lt;T, const N: usize&gt; Drop for FixedVec&lt;T, N&gt; {
+    fn drop(&amp;mut self) {
+        // 安全：data[0..len] 初始化——drop 每个。
+        for i in 0..self.len {
+            unsafe { self.data[i].assume_init_drop(); }
+        }
+    }
+}
+
+fn main() {
+    let mut v = FixedVec::&lt;String, 4&gt;::new();
+    v.push("hello".into()).unwrap();
+    v.push("world".into()).unwrap();
+    assert_eq!(v.as_slice(), &amp;["hello", "world"]);
+    assert_eq!(v.pop(), Some("world".into()));
+    assert_eq!(v.len(), 1);
+}</code></pre></pre>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch11-serialization-zero-copy-and-binary-data.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch13-macros-code-that-writes-code.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch11-serialization-zero-copy-and-binary-data.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch13-macros-code-that-writes-code.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

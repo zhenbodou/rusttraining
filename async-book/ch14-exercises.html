@@ -1,0 +1,588 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>14. 练习 - Async Rust: From Futures to Production</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Async Rust: From Futures to Production</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<h3 id="练习-1异步-echo-服务器"><a class="header" href="#练习-1异步-echo-服务器">练习 1：异步 Echo 服务器</a></h3>
+<p>构建一个 TCP echo 服务器，并发处理多个客户端。</p>
+<p><strong>要求</strong>：</p>
+<ul>
+<li>监听 <code>127.0.0.1:8080</code></li>
+<li>接受连接并回显每一行</li>
+<li>优雅地处理客户端断开连接</li>
+<li>在客户端连接/断开时打印日志</li>
+</ul>
+<details>
+<summary>🔑 答案</summary>
+<pre><pre class="playground"><code class="language-rust">use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+use tokio::net::TcpListener;
+
+#[tokio::main]
+async fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    let listener = TcpListener::bind("127.0.0.1:8080").await?;
+    println!("Echo server listening on :8080");
+
+    loop {
+        let (socket, addr) = listener.accept().await?;
+        println!("[{addr}] Connected");
+
+        tokio::spawn(async move {
+            let (reader, mut writer) = socket.into_split();
+            let mut reader = BufReader::new(reader);
+            let mut line = String::new();
+
+            loop {
+                line.clear();
+                match reader.read_line(&amp;mut line).await {
+                    Ok(0) =&gt; {
+                        println!("[{addr}] Disconnected");
+                        break;
+                    }
+                    Ok(_) =&gt; {
+                        print!("[{addr}] Echo: {line}");
+                        if writer.write_all(line.as_bytes()).await.is_err() {
+                            println!("[{addr}] Write error, disconnecting");
+                            break;
+                        }
+                    }
+                    Err(e) =&gt; {
+                        eprintln!("[{addr}] Read error: {e}");
+                        break;
+                    }
+                }
+            }
+        });
+    }
+}</code></pre></pre>
+</details>
+<hr />
+<h3 id="练习-2带速率限制的并发-url-获取器"><a class="header" href="#练习-2带速率限制的并发-url-获取器">练习 2：带速率限制的并发 URL 获取器</a></h3>
+<p>并发获取 URL 列表，最多 5 个并发请求。</p>
+<details>
+<summary>🔑 答案</summary>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use futures::stream::{self, StreamExt};
+use tokio::time::{sleep, Duration};
+
+async fn fetch_urls(urls: Vec&lt;String&gt;) -&gt; Vec&lt;Result&lt;String, String&gt;&gt; {
+    // buffer_unordered(5) 确保最多 5 个 future 被 poll
+    // 并发——这里不需要单独的 Semaphore。
+    let results: Vec&lt;_&gt; = stream::iter(urls)
+        .map(|url| {
+            async move {
+                println!("Fetching: {url}");
+
+                match reqwest::get(&amp;url).await {
+                    Ok(resp) =&gt; match resp.text().await {
+                        Ok(body) =&gt; Ok(body),
+                        Err(e) =&gt; Err(format!("{url}: {e}")),
+                    },
+                    Err(e) =&gt; Err(format!("{url}: {e}")),
+                }
+            }
+        })
+        .buffer_unordered(5) // ← 这 alone 将并发限制为 5
+        .collect()
+        .await;
+
+    results
+}
+
+// 注意：当你需要在独立生成的任务之间限制并发时使用 Semaphore
+// （tokio::spawn）。当处理 stream 时使用 buffer_unordered。
+// 不要为相同的限制同时使用两者。
+<span class="boring">}</span></code></pre></pre>
+</details>
+<hr />
+<h3 id="练习-3带工作器池的优雅关闭"><a class="header" href="#练习-3带工作器池的优雅关闭">练习 3：带工作器池的优雅关闭</a></h3>
+<p>构建一个任务处理器，具有：</p>
+<ul>
+<li>基于 channel 的工作队列</li>
+<li>N 个从队列消费的工作器任务</li>
+<li>Ctrl+C 时优雅关闭：停止接受，完成进行中的工作</li>
+</ul>
+<details>
+<summary>🔑 答案</summary>
+<pre><pre class="playground"><code class="language-rust">use tokio::sync::{mpsc, watch};
+use tokio::time::{sleep, Duration};
+
+struct WorkItem {
+    id: u64,
+    payload: String,
+}
+
+#[tokio::main]
+async fn main() {
+    let (work_tx, work_rx) = mpsc::channel::&lt;WorkItem&gt;(100);
+    let (shutdown_tx, shutdown_rx) = watch::channel(false);
+
+    // 生成 4 个工作器
+    let mut worker_handles = Vec::new();
+    let work_rx = std::sync::Arc::new(tokio::sync::Mutex::new(work_rx));
+
+    for id in 0..4 {
+        let rx = work_rx.clone();
+        let mut shutdown = shutdown_rx.clone();
+        let handle = tokio::spawn(async move {
+            loop {
+                let item = {
+                    let mut rx = rx.lock().await;
+                    tokio::select! {
+                        item = rx.recv() =&gt; item,
+                        _ = shutdown.changed() =&gt; {
+                            if *shutdown.borrow() { None } else { continue }
+                        }
+                    }
+                };
+
+                match item {
+                    Some(work) =&gt; {
+                        println!("Worker {id}: processing item {}", work.id);
+                        sleep(Duration::from_millis(200)).await; // 模拟工作
+                        println!("Worker {id}: done with item {}", work.id);
+                    }
+                    None =&gt; {
+                        println!("Worker {id}: channel closed, exiting");
+                        break;
+                    }
+                }
+            }
+        });
+        worker_handles.push(handle);
+    }
+
+    // 生产者：提交一些工作
+    let producer = tokio::spawn(async move {
+        for i in 0..20 {
+            let _ = work_tx.send(WorkItem {
+                id: i,
+                payload: format!("task-{i}"),
+            }).await;
+            sleep(Duration::from_millis(50)).await;
+        }
+    });
+
+    // 等待 Ctrl+C
+    tokio::signal::ctrl_c().await.unwrap();
+    println!("\nShutdown signal received!");
+    shutdown_tx.send(true).unwrap();
+    producer.abort(); // 取消生产者任务
+
+    // 等待工作器完成
+    for handle in worker_handles {
+        let _ = handle.await;
+    }
+    println!("All workers shut down. Goodbye!");
+}</code></pre></pre>
+</details>
+<hr />
+<h3 id="练习-4从头构建一个简单的异步-mutex"><a class="header" href="#练习-4从头构建一个简单的异步-mutex">练习 4：从头构建一个简单的异步 Mutex</a></h3>
+<p>使用 channel 实现一个异步感知的 mutex（不使用 <code>tokio::sync::Mutex</code>）。</p>
+<p><em>提示</em>：使用容量为 1 的 <code>tokio::sync::mpsc</code> channel 作为信号量。</p>
+<details>
+<summary>🔑 答案</summary>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::cell::UnsafeCell;
+use std::sync::Arc;
+use tokio::sync::{OwnedSemaphorePermit, Semaphore};
+
+pub struct SimpleAsyncMutex&lt;T&gt; {
+    data: Arc&lt;UnsafeCell&lt;T&gt;&gt;,
+    semaphore: Arc&lt;Semaphore&gt;,
+}
+
+// 安全：对 T 的访问由信号量序列化（最多 1 个许可）。
+unsafe impl&lt;T: Send&gt; Send for SimpleAsyncMutex&lt;T&gt; {}
+unsafe impl&lt;T: Send&gt; Sync for SimpleAsyncMutex&lt;T&gt; {}
+
+pub struct SimpleGuard&lt;T&gt; {
+    data: Arc&lt;UnsafeCell&lt;T&gt;&gt;,
+    _permit: OwnedSemaphorePermit, // 在 guard drop 时 drop → 释放锁
+}
+
+impl&lt;T&gt; SimpleAsyncMutex&lt;T&gt; {
+    pub fn new(value: T) -&gt; Self {
+        SimpleAsyncMutex {
+            data: Arc::new(UnsafeCell::new(value)),
+            semaphore: Arc::new(Semaphore::new(1)),
+        }
+    }
+
+    pub async fn lock(&amp;self) -&gt; SimpleGuard&lt;T&gt; {
+        let permit = self.semaphore.clone().acquire_owned().await.unwrap();
+        SimpleGuard {
+            data: self.data.clone(),
+            _permit: permit,
+        }
+    }
+}
+
+impl&lt;T&gt; std::ops::Deref for SimpleGuard&lt;T&gt; {
+    type Target = T;
+    fn deref(&amp;self) -&gt; &amp;T {
+        // 安全：我们持有唯一的信号量许可，所以没有其他
+        // SimpleGuard 存在→保证独占访问。
+        unsafe { &amp;*self.data.get() }
+    }
+}
+
+impl&lt;T&gt; std::ops::DerefMut for SimpleGuard&lt;T&gt; {
+    fn deref_mut(&amp;mut self) -&gt; &amp;mut T {
+        // 安全：同样的推理——单个许可保证独占性。
+        unsafe { &amp;mut *self.data.get() }
+    }
+}
+
+// 当 SimpleGuard 被 drop 时，_permit 被 drop，
+// 这释放信号量许可——另一个 lock() 可以进行。
+
+// 用法：
+// let mutex = SimpleAsyncMutex::new(vec![1, 2, 3]);
+// {
+//     let mut guard = mutex.lock().await;
+//     guard.push(4);
+// } // 许可在这里释放
+<span class="boring">}</span></code></pre></pre>
+<p><strong>关键要点</strong>：异步 mutex 通常构建在信号量之上。信号量提供异步等待机制——当锁定时，<code>acquire()</code> 挂起任务直到许可被释放。这正是 <code>tokio::sync::Mutex</code> 内部的工作方式。</p>
+<blockquote>
+<p><strong>为什么是 <code>UnsafeCell</code> 而不是 <code>std::sync::Mutex</code>？</strong> 这个练习的先前版本使用
+<code>Arc&lt;Mutex&lt;T&gt;&gt;</code> 与 <code>Deref</code>/<code>DerefMut</code> 调用 <code>.lock().unwrap()</code>。
+这无法编译——返回的 <code>&amp;T</code> 从临时 <code>MutexGuard</code> 借用
+它立即被 drop。<code>UnsafeCell</code> 避免中间 guard，并且
+基于信号量的序列化使 <code>unsafe</code> 可靠。</p>
+</blockquote>
+</details>
+<hr />
+<h3 id="练习-5stream-管道"><a class="header" href="#练习-5stream-管道">练习 5：Stream 管道</a></h3>
+<p>使用 stream 构建一个数据处理管道：</p>
+<ol>
+<li>生成数字 1..=100</li>
+<li>过滤到偶数</li>
+<li>映射每个到它的平方</li>
+<li>一次并发处理 10 个（用睡眠模拟）</li>
+<li>收集结果</li>
+</ol>
+<details>
+<summary>🔑 答案</summary>
+<pre><pre class="playground"><code class="language-rust">use futures::stream::{self, StreamExt};
+use tokio::time::{sleep, Duration};
+
+#[tokio::main]
+async fn main() {
+    let results: Vec&lt;u64&gt; = stream::iter(1u64..=100)
+        // 步骤 2：过滤偶数
+        .filter(|x| futures::future::ready(x % 2 == 0))
+        // 步骤 3：平方每个
+        .map(|x| x * x)
+        // 步骤 4：并发处理（模拟异步工作）
+        .map(|x| async move {
+            sleep(Duration::from_millis(50)).await;
+            println!("Processed: {x}");
+            x
+        })
+        .buffer_unordered(10) // 10 个并发
+        // 步骤 5：收集
+        .collect()
+        .await;
+
+    println!("Got {} results", results.len());
+    println!("Sum: {}", results.iter().sum::&lt;u64&gt;());
+}</code></pre></pre>
+</details>
+<hr />
+<h3 id="练习-6实现带超时的-select"><a class="header" href="#练习-6实现带超时的-select">练习 6：实现带超时的 Select</a></h3>
+<p>不使用 <code>tokio::select!</code> 或 <code>tokio::time::timeout</code>，实现一个函数，将 future 与截止时间竞赛并返回 <code>Either::Left(result)</code> 或超时时返回 <code>Either::Right(())</code>。</p>
+<p><em>提示</em>：基于第 6 章的 <code>Select</code> 组合器和同一章的 <code>TimerFuture</code> 构建。</p>
+<details>
+<summary>🔑 答案</summary>
+<pre><code class="language-rust ignore">use std::future::Future;
+use std::pin::Pin;
+use std::task::{Context, Poll};
+use std::time::Duration;
+
+pub enum Either&lt;A, B&gt; {
+    Left(A),
+    Right(B),
+}
+
+pub struct Timeout&lt;F&gt; {
+    future: F,
+    timer: TimerFuture, // 来自第 6 章
+}
+
+impl&lt;F: Future + Unpin&gt; Timeout&lt;F&gt; {
+    pub fn new(future: F, duration: Duration) -&gt; Self {
+        Timeout {
+            future,
+            timer: TimerFuture::new(duration),
+        }
+    }
+}
+
+impl&lt;F: Future + Unpin&gt; Future for Timeout&lt;F&gt; {
+    type Output = Either&lt;F::Output, ()&gt;;
+
+    fn poll(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;'_&gt;) -&gt; Poll&lt;Self::Output&gt; {
+        // 检查主 future 是否完成
+        if let Poll::Ready(val) = Pin::new(&amp;mut self.future).poll(cx) {
+            return Poll::Ready(Either::Left(val));
+        }
+
+        // 检查计时器是否过期
+        if let Poll::Ready(()) = Pin::new(&amp;mut self.timer).poll(cx) {
+            return Poll::Ready(Either::Right(()));
+        }
+
+        Poll::Pending
+    }
+}
+
+// 用法：
+// match Timeout::new(fetch_data(), Duration::from_secs(5)).await {
+//     Either::Left(data) =&gt; println!("Got data: {data}"),
+//     Either::Right(()) =&gt; println!("Timed out!"),
+// }</code></pre>
+<p><strong>关键要点</strong>：<code>select</code>/<code>timeout</code> 只是 poll 两个 future 并看哪个先完成。整个异步生态系统建立在这个简单原语之上：poll、Pending/Ready、Waker。</p>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch13-production-patterns.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch15-summary-and-reference-card.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch13-production-patterns.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch15-summary-and-reference-card.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

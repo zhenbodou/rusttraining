@@ -1,0 +1,656 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>9. 错误处理 - Rust for C/C++ Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C/C++ Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="连接枚举到-option-和-result"><a class="header" href="#连接枚举到-option-和-result">连接枚举到 Option 和 Result</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> Rust 如何用 <code>Option&lt;T&gt;</code> 替换空指针，用 <code>Result&lt;T, E&gt;</code> 替换异常，以及 <code>?</code> 操作符如何使错误传播简洁。这是 Rust 最独特的模式——错误是值，而不是隐藏的控制流。</p>
+</blockquote>
+<ul>
+<li>还记得我们之前学过的 <code>enum</code> 类型吗？Rust 的 <code>Option</code> 和 <code>Result</code> 只是标准库中定义的枚举：</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 这就是 Option 在 std 中的定义：
+enum Option&lt;T&gt; {
+    Some(T),  // 包含值
+    None,     // 无值
+}
+
+// 以及 Result：
+enum Result&lt;T, E&gt; {
+    Ok(T),    // 成功并带有值
+    Err(E),   // 错误并带有详情
+}
+<span class="boring">}</span></code></pre></pre>
+<ul>
+<li>这意味着你学到的关于使用 <code>match</code> 进行模式匹配的所有内容都直接适用于 <code>Option</code> 和 <code>Result</code></li>
+<li>Rust 中<strong>没有空指针</strong>——<code>Option&lt;T&gt;</code> 是替代品，编译器强制你处理 <code>None</code> 情况</li>
+</ul>
+<h3 id="c-比较异常-vs-result"><a class="header" href="#c-比较异常-vs-result">C++ 比较：异常 vs Result</a></h3>
+<div class="table-wrapper"><table><thead><tr><th><strong>C++ 模式</strong></th><th><strong>Rust 等效</strong></th><th><strong>优势</strong></th></tr></thead><tbody>
+<tr><td><code>throw std::runtime_error(msg)</code></td><td><code>Err(MyError::Runtime(msg))</code></td><td>错误在返回类型中——不能忘记处理</td></tr>
+<tr><td><code>try { } catch (...) { }</code></td><td><code>match result { Ok(v) =&gt; ..., Err(e) =&gt; ... }</code></td><td>无隐藏控制流</td></tr>
+<tr><td><code>std::optional&lt;T&gt;</code></td><td><code>Option&lt;T&gt;</code></td><td>穷尽匹配必需——不能忘记 None</td></tr>
+<tr><td><code>noexcept</code> 注解</td><td>默认——所有 Rust 函数都是"noexcept"</td><td>异常不存在</td></tr>
+<tr><td><code>errno</code> / 返回码</td><td><code>Result&lt;T, E&gt;</code></td><td>类型安全，不能忽略</td></tr>
+</tbody></table>
+</div>
+<h1 id="rust-option-类型"><a class="header" href="#rust-option-类型">Rust Option 类型</a></h1>
+<ul>
+<li>Rust 的 <code>Option</code> 类型是一个只有两个变体的 <code>enum</code>：<code>Some&lt;T&gt;</code> 和 <code>None</code>
+<ul>
+<li>这个想法是它表示一个 <code>nullable</code> 类型，即它要么包含该类型的有效值（<code>Some&lt;T&gt;</code>），要么没有有效值（<code>None</code>）</li>
+<li><code>Option</code> 类型用于 API 结果，操作要么成功并返回有效值，要么失败（但具体错误无关紧要）。例如，考虑将字符串解析为整数值</li>
+</ul>
+</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    // 返回 Option&lt;usize&gt;
+    let a = "1234".find("1");
+    match a {
+        Some(a) =&gt; println!("在索引 {a} 处找到 1"),
+        None =&gt; println!("找不到 1")
+    }
+}</code></pre></pre>
+<h1 id="rust-option-类型-1"><a class="header" href="#rust-option-类型-1">Rust Option 类型</a></h1>
+<ul>
+<li>Rust 的 <code>Option</code> 可以用各种方式处理
+<ul>
+<li><code>unwrap()</code> 在 <code>Option&lt;T&gt;</code> 为 <code>None</code> 时 panic，否则返回 <code>T</code>，这是最不推荐的方法</li>
+<li><code>or()</code> 可用于返回替代值</li>
+<li><code>if let</code> 让我们测试 <code>Some&lt;T&gt;</code></li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><strong>生产模式</strong>：参见 <a href="ch17-2-avoiding-unchecked-indexing.html#safe-value-extraction-with-unwrap_or">使用 unwrap_or 安全地提取值</a> 和 <a href="ch17-2-avoiding-unchecked-indexing.html#functional-transforms-map-map_err-find_map">函数式转换：map、map_err、find_map</a> 获取来自生产 Rust 代码的真实示例。</p>
+</blockquote>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+  // 这返回 Option&lt;usize&gt;
+  let a = "1234".find("1");
+  println!("{a:?} {}", a.unwrap());
+  let a = "1234".find("5").or(Some(42));
+  println!("{a:?}");
+  if let Some(a) = "1234".find("1") {
+      println!("{a}");
+  } else {
+    println!("字符串中未找到");
+  }
+  // 这将 panic
+  // "1234".find("5").unwrap();
+}</code></pre></pre>
+<h1 id="rust-result-类型"><a class="header" href="#rust-result-类型">Rust Result 类型</a></h1>
+<ul>
+<li>Result 是一个类似于 <code>Option</code> 的 <code>enum</code> 类型，有两个变体：<code>Ok&lt;T&gt;</code> 或 <code>Err&lt;E&gt;</code>
+<ul>
+<li><code>Result</code> 在 Rust API 中广泛使用，可能失败。想法是在成功时，函数返回 <code>Ok&lt;T&gt;</code>，否则返回特定错误 <code>Err&lt;T&gt;</code></li>
+</ul>
+</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">  use std::num::ParseIntError;
+  fn main() {
+  let a : Result&lt;i32, ParseIntError&gt;  = "1234z".parse();
+  match a {
+      Ok(n) =&gt; println!("解析 {n}"),
+      Err(e) =&gt; println!("解析失败 {e:?}"),
+  }
+  let a : Result&lt;i32, ParseIntError&gt;  = "1234z".parse().or(Ok(-1));
+  println!("{a:?}");
+  if let Ok(a) = "1234".parse::&lt;i32&gt;() {
+    println!("Let OK {a}");
+  }
+  // 这将 panic
+  //"1234z".parse().unwrap();
+}</code></pre></pre>
+<h2 id="option-和-result同一枚硬币的两面"><a class="header" href="#option-和-result同一枚硬币的两面">Option 和 Result：同一枚硬币的两面</a></h2>
+<p><code>Option</code> 和 <code>Result</code> 密切相关——<code>Option&lt;T&gt;</code> 本质上是 <code>Result&lt;T, ()&gt;</code>（错误不携带信息的 result）：</p>
+<div class="table-wrapper"><table><thead><tr><th><code>Option&lt;T&gt;</code></th><th><code>Result&lt;T, E&gt;</code></th><th>含义</th></tr></thead><tbody>
+<tr><td><code>Some(value)</code></td><td><code>Ok(value)</code></td><td>成功——值存在</td></tr>
+<tr><td><code>None</code></td><td><code>Err(error)</code></td><td>失败——无值（Option）或错误详情（Result）</td></tr>
+</tbody></table>
+</div>
+<p><strong>在它们之间转换：</strong></p>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let opt: Option&lt;i32&gt; = Some(42);
+    let res: Result&lt;i32, &amp;str&gt; = opt.ok_or("value was None");  // Option → Result
+
+    let res: Result&lt;i32, &amp;str&gt; = Ok(42);
+    let opt: Option&lt;i32&gt; = res.ok();  // Result → Option（丢弃错误）
+
+    // 它们有许多相同的方法：
+    // .map()、.and_then()、.unwrap_or()、.unwrap_or_else()、.is_some()/is_ok()
+}</code></pre></pre>
+<blockquote>
+<p><strong>经验法则</strong>：当缺失是正常的时使用 <code>Option</code>（例如查找键）。当失败需要解释时使用 <code>Result</code>（例如文件 I/O、解析）。</p>
+</blockquote>
+<h1 id="练习使用-option-实现-log-函数"><a class="header" href="#练习使用-option-实现-log-函数">练习：使用 Option 实现 log() 函数</a></h1>
+<p>🟢 <strong>入门</strong></p>
+<ul>
+<li>实现一个 <code>log()</code> 函数，接受 <code>Option&lt;&amp;str&gt;</code> 参数。如果参数为 <code>None</code>，它应该打印默认字符串</li>
+<li>函数应该返回 <code>Result</code>，成功和错误都为 <code>()</code>（在这种情况下我们永远不会有错误）</li>
+</ul>
+<details><summary>解决方案（点击展开）</summary>
+<pre><pre class="playground"><code class="language-rust">fn log(message: Option&lt;&amp;str&gt;) -&gt; Result&lt;(), ()&gt; {
+    match message {
+        Some(msg) =&gt; println!("LOG: {msg}"),
+        None =&gt; println!("LOG: (未提供消息)"),
+    }
+    Ok(())
+}
+
+fn main() {
+    let _ = log(Some("系统已初始化"));
+    let _ = log(None);
+
+    // 或者使用 unwrap_or：
+    let msg: Option&lt;&amp;str&gt; = None;
+    println!("LOG: {}", msg.unwrap_or("(默认消息)"));
+}
+// 输出：
+// LOG: 系统已初始化
+// LOG: (未提供消息)
+// LOG: (默认消息)</code></pre></pre>
+</details>
+<hr />
+<h1 id="rust-错误处理"><a class="header" href="#rust-错误处理">Rust 错误处理</a></h1>
+<ul>
+<li>Rust 错误可以是不可恢复的（致命）或可恢复的。致命错误导致 ``panic```
+<ul>
+<li>一般来说，应该避免导致 <code>panics</code> 的情况。<code>panics</code> 是由程序中的 bug 引起的，包括超出索引边界、在 <code>Option&lt;None&gt;</code> 上调用 <code>unwrap()</code> 等</li>
+<li>对于应该不可能的情况，可以有显式的 <code>panics</code>。<code>panic!</code> 或 <code>assert!</code> 宏可用于健全性检查</li>
+</ul>
+</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+   let x : Option&lt;u32&gt; = None;
+   // println!("{x}", x.unwrap()); // 将 panic
+   println!("{}", x.unwrap_or(0));  // 确定——打印 0
+   let x = 41;
+   //assert!(x == 42); // 将 panic
+   //panic!("出了问题"); // 无条件 panic
+   let _a = vec![0, 1];
+   // println!("{}", a[2]); // 超出边界 panic；使用 a.get(2) 将返回 Option&lt;T&gt;
+}</code></pre></pre>
+<h2 id="错误处理c-vs-rust"><a class="header" href="#错误处理c-vs-rust">错误处理：C++ vs Rust</a></h2>
+<h3 id="c-基于异常的错误处理问题"><a class="header" href="#c-基于异常的错误处理问题">C++ 基于异常的错误处理问题</a></h3>
+<pre><code class="language-cpp">// C++ 错误处理——异常创建隐藏控制流
+#include &lt;fstream&gt;
+#include &lt;stdexcept&gt;
+
+std::string read_config(const std::string&amp; path) {
+    std::ifstream file(path);
+    if (!file.is_open()) {
+        throw std::runtime_error("无法打开：" + path);
+    }
+    std::string content;
+    // 如果 getline 抛出怎么办？文件是否正确关闭？
+    // 使用 RAII 是的，但其他资源呢？
+    std::getline(file, content);
+    return content;  // 如果调用者不 try/catch 怎么办？
+}
+
+int main() {
+    // 错误：忘记用 try/catch 包装！
+    auto config = read_config("nonexistent.txt");
+    // 异常静默传播，程序崩溃
+    // 函数签名中没有任何警告
+    return 0;
+}
+</code></pre>
+<pre class="mermaid">graph TD
+    subgraph &quot;C++ 错误处理问题&quot;
+        CF[&quot;函数调用&quot;]
+        CR[&quot;抛出异常&lt;br/&gt;或返回码&quot;]
+        CIGNORE[&quot;[错误] 异常未捕获&lt;br/&gt;或返回码被忽略&quot;]
+        CCHECK[&quot;try/catch 或检查&quot;]
+        CERROR[&quot;隐藏控制流&lt;br/&gt;throws 不在签名中&quot;]
+        CERRNO[&quot;无编译时&lt;br/&gt;强制执行&quot;]
+
+        CF --&gt; CR
+        CR --&gt; CIGNORE
+        CR --&gt; CCHECK
+        CCHECK --&gt; CERROR
+        CERROR --&gt; CERRNO
+
+        CPROBLEMS[&quot;[错误] 异常在类型中不可见&lt;br/&gt;[错误] 隐藏控制流&lt;br/&gt;[错误] 容易忘记 try/catch&lt;br/&gt;[错误] 异常安全很难&lt;br/&gt;[错误] noexcept 是可选的&quot;]
+    end
+
+    subgraph &quot;Rust Result&lt;T, E&gt; 系统&quot;
+        RF[&quot;函数调用&quot;]
+        RR[&quot;Result&lt;T, E&gt;&lt;br/&gt;Ok(value) | Err(error)&quot;]
+        RMUST[&quot;[确定] 必须处理&lt;br/&gt;如果忽略则编译错误&quot;]
+        RMATCH[&quot;模式匹配&lt;br/&gt;match, if let, ?&quot;]
+        RDETAIL[&quot;详细错误信息&lt;br/&gt;自定义错误类型&quot;]
+        RSAFE[&quot;类型安全&lt;br/&gt;无全局状态&quot;]
+
+        RF --&gt; RR
+        RR --&gt; RMUST
+        RMUST --&gt; RMATCH
+        RMATCH --&gt; RDETAIL
+        RDETAIL --&gt; RSAFE
+
+        RBENEFITS[&quot;[确定] 强制错误处理&lt;br/&gt;[确定] 类型安全错误&lt;br/&gt;[确定] 详细错误信息&lt;br/&gt;[确定] 可用？组合&lt;br/&gt;[确定] 零运行时成本&quot;]
+    end
+
+    style CPROBLEMS fill:#ff6b6b,color:#000
+    style RBENEFITS fill:#91e5a3,color:#000
+    style CIGNORE fill:#ff6b6b,color:#000
+    style RMUST fill:#91e5a3,color:#000
+</pre>
+<h3 id="resultt-e-可视化"><a class="header" href="#resultt-e-可视化"><code>Result&lt;T, E&gt;</code> 可视化</a></h3>
+<pre><pre class="playground"><code class="language-rust">// Rust 错误处理——全面且强制
+use std::fs::File;
+use std::io::Read;
+
+fn read_file_content(filename: &amp;str) -&gt; Result&lt;String, std::io::Error&gt; {
+    let mut file = File::open(filename)?;  // ? 自动传播错误
+    let mut contents = String::new();
+    file.read_to_string(&amp;mut contents)?;
+    Ok(contents)  // 成功情况
+}
+
+fn main() {
+    match read_file_content("example.txt") {
+        Ok(content) =&gt; println!("文件内容：{}", content),
+        Err(error) =&gt; println!("读取文件失败：{}", error),
+        // 编译器强制我们处理两种情况！
+    }
+}</code></pre></pre>
+<pre class="mermaid">graph TD
+    subgraph &quot;Result&lt;T, E&gt; 流程&quot;
+        START[&quot;函数开始&quot;]
+        OP1[&quot;File::open()&quot;]
+        CHECK1{{&quot;Result 检查&quot;}}
+        OP2[&quot;file.read_to_string()&quot;]
+        CHECK2{{&quot;Result 检查&quot;}}
+        SUCCESS[&quot;Ok(contents)&quot;]
+        ERROR1[&quot;Err(io::Error)&quot;]
+        ERROR2[&quot;Err(io::Error)&quot;]
+
+        START --&gt; OP1
+        OP1 --&gt; CHECK1
+        CHECK1 --&gt;|&quot;Ok(file)&quot;| OP2
+        CHECK1 --&gt;|&quot;Err(e)&quot;| ERROR1
+        OP2 --&gt; CHECK2
+        CHECK2 --&gt;|&quot;Ok(())&quot;| SUCCESS
+        CHECK2 --&gt;|&quot;Err(e)&quot;| ERROR2
+
+        ERROR1 --&gt; PROPAGATE[&quot;? 操作符&lt;br/&gt;传播错误&quot;]
+        ERROR2 --&gt; PROPAGATE
+        PROPAGATE --&gt; CALLER[&quot;调用者必须&lt;br/&gt;处理错误&quot;]
+    end
+
+    subgraph &quot;模式匹配选项&quot;
+        MATCH[&quot;match result&quot;]
+        IFLET[&quot;if let Ok(val) = result&quot;]
+        UNWRAP[&quot;result.unwrap()&lt;br/&gt;[警告] 错误时 Panic&quot;]
+        EXPECT[&quot;result.expect(msg)&lt;br/&gt;[警告] 带消息 Panic&quot;]
+        UNWRAP_OR[&quot;result.unwrap_or(default)&lt;br/&gt;[确定] 安全回退&quot;]
+        QUESTION[&quot;result?&lt;br/&gt;[确定] 提前返回&quot;]
+
+        MATCH --&gt; SAFE1[&quot;[确定] 处理两种情况&quot;]
+        IFLET --&gt; SAFE2[&quot;[确定] 处理错误情况&quot;]
+        UNWRAP_OR --&gt; SAFE3[&quot;[确定] 始终返回值&quot;]
+        QUESTION --&gt; SAFE4[&quot;[确定] 传播给调用者&quot;]
+        UNWRAP --&gt; UNSAFE1[&quot;[错误] 可能 panic&quot;]
+        EXPECT --&gt; UNSAFE2[&quot;[错误] 可能 panic&quot;]
+    end
+
+    style SUCCESS fill:#91e5a3,color:#000
+    style ERROR1 fill:#ffa07a,color:#000
+    style ERROR2 fill:#ffa07a,color:#000
+    style SAFE1 fill:#91e5a3,color:#000
+    style SAFE2 fill:#91e5a3,color:#000
+    style SAFE3 fill:#91e5a3,color:#000
+    style SAFE4 fill:#91e5a3,color:#000
+    style UNSAFE1 fill:#ff6b6b,color:#000
+    style UNSAFE2 fill:#ff6b6b,color:#000
+</pre>
+<h1 id="rust-错误处理-1"><a class="header" href="#rust-错误处理-1">Rust 错误处理</a></h1>
+<ul>
+<li>Rust 使用 <code>enum Result&lt;T, E&gt;</code> 枚举进行可恢复的错误处理
+<ul>
+<li><code>Ok&lt;T&gt;</code> 变体在成功时包含结果，<code>Err&lt;E&gt;</code> 包含错误</li>
+</ul>
+</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let x = "1234x".parse::&lt;u32&gt;();
+    match x {
+        Ok(x) =&gt; println!("解析数字 {x}"),
+        Err(e) =&gt; println!("解析错误 {e:?}"),
+    }
+    let x  = "1234".parse::&lt;u32&gt;();
+    // 与上面相同，但使用有效数字
+    if let Ok(x) = &amp;x {
+        println!("解析数字 {x}")
+    } else if let Err(e) = &amp;x {
+        println!("错误：{e:?}");
+    }
+}</code></pre></pre>
+<h1 id="rust-错误处理-2"><a class="header" href="#rust-错误处理-2">Rust 错误处理</a></h1>
+<ul>
+<li>try 操作符 <code>?</code> 是 <code>match</code> <code>Ok</code> / <code>Err</code> 模式的便捷简写
+<ul>
+<li>注意方法必须返回 <code>Result&lt;T, E&gt;</code> 才能使用 <code>?</code></li>
+<li><code>Result&lt;T, E&gt;</code> 的类型可以更改。在下面的示例中，我们返回与 <code>str::parse()</code> 返回的相同错误类型（<code>std::num::ParseIntError</code>）</li>
+</ul>
+</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">fn double_string_number(s : &amp;str) -&gt; Result&lt;u32, std::num::ParseIntError&gt; {
+   let x = s.parse::&lt;u32&gt;()?; // 在错误情况下立即返回
+   Ok(x*2)
+}
+fn main() {
+    let result = double_string_number("1234");
+    println!("{result:?}");
+    let result = double_string_number("1234x");
+    println!("{result:?}");
+}</code></pre></pre>
+<h1 id="rust-错误处理-3"><a class="header" href="#rust-错误处理-3">Rust 错误处理</a></h1>
+<ul>
+<li>错误可以映射到其他类型，或映射到默认值（https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap_or_default）</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 在错误情况下将错误类型更改为 ()
+fn double_string_number(s : &amp;str) -&gt; Result&lt;u32, ()&gt; {
+   let x = s.parse::&lt;u32&gt;().map_err(|_|())?; // 在错误情况下立即返回
+   Ok(x*2)
+}
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn double_string_number(s : &amp;str) -&gt; Result&lt;u32, ()&gt; {
+   let x = s.parse::&lt;u32&gt;().unwrap_or_default(); // 在解析错误情况下默认为 0
+   Ok(x*2)
+}
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn double_optional_number(x : Option&lt;u32&gt;) -&gt; Result&lt;u32, ()&gt; {
+    // ok_or 在以下情况下将 Option&lt;None&gt; 转换为 Result&lt;u32, ()&gt;
+    x.ok_or(()).map(|x|x*2) // .map() 仅应用于 Ok(u32)
+}
+<span class="boring">}</span></code></pre></pre>
+<h1 id="练习错误处理"><a class="header" href="#练习错误处理">练习：错误处理</a></h1>
+<p>🟡 <strong>中级</strong></p>
+<ul>
+<li>实现一个 <code>log()</code> 函数，带有一个 u32 参数。如果参数不是 42，返回错误。成功和错误类型的 <code>Result&lt;&gt;</code> 是 <code>()</code></li>
+<li>调用 <code>log()</code> 函数，如果 <code>log()</code> 返回错误则以相同的 <code>Result&lt;&gt;</code> 类型退出。否则打印消息说 log 已成功调用</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">fn log(x: u32) -&gt; ?? {
+
+}
+
+fn call_log(x: u32) -&gt; ?? {
+    // 调用 log(x)，如果返回错误则立即退出
+    println!("log 已成功调用");
+}
+
+fn main() {
+    call_log(42);
+    call_log(43);
+}</code></pre></pre>
+<details><summary>解决方案（点击展开）</summary>
+<pre><pre class="playground"><code class="language-rust">fn log(x: u32) -&gt; Result&lt;(), ()&gt; {
+    if x == 42 {
+        Ok(())
+    } else {
+        Err(())
+    }
+}
+
+fn call_log(x: u32) -&gt; Result&lt;(), ()&gt; {
+    log(x)?;  // 如果 log() 返回错误则立即退出
+    println!("log 已成功调用，参数为 {x}");
+    Ok(())
+}
+
+fn main() {
+    let _ = call_log(42);  // 打印：log 已成功调用，参数为 42
+    let _ = call_log(43);  // 返回 Err(()), 无打印
+}
+// 输出：
+// log 已成功调用，参数为 42</code></pre></pre>
+</details>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch08-1-testing-patterns.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch09-1-error-handling-best-practices.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch08-1-testing-patterns.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch09-1-error-handling-best-practices.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

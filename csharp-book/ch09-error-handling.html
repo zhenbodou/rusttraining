@@ -1,0 +1,559 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>9. 错误处理 - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="异常-vs-resultt-e"><a class="header" href="#异常-vs-resultt-e">异常 vs <code>Result&lt;T, E&gt;</code></a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> 为什么 Rust 用 <code>Result&lt;T, E&gt;</code> 和 <code>Option&lt;T&gt;</code> 替代异常，
+用于简洁错误传播的 <code>?</code> 运算符，以及显式错误处理如何消除困扰 C# <code>try</code>/<code>catch</code> 代码的隐藏控制流。</p>
+<p><strong>难度：</strong> 🟡 中级</p>
+<p><strong>另见</strong>：<a href="ch09-1-crate-level-error-types-and-result-alias.html">Crate 级错误类型</a> 了解生产错误模式与 <code>thiserror</code> 和 <code>anyhow</code>，以及 <a href="ch15-1-essential-crates-for-c-developers.html">基本 Crates</a> 了解错误 crate 生态系统。</p>
+</blockquote>
+<h3 id="c-基于异常的错误处理"><a class="header" href="#c-基于异常的错误处理">C# 基于异常的错误处理</a></h3>
+<pre><code class="language-csharp">// C# - 基于异常的错误处理
+public class UserService
+{
+    public User GetUser(int userId)
+    {
+        if (userId &lt;= 0)
+        {
+            throw new ArgumentException("User ID must be positive");
+        }
+
+        var user = database.FindUser(userId);
+        if (user == null)
+        {
+            throw new UserNotFoundException($"User {userId} not found");
+        }
+
+        return user;
+    }
+
+    public async Task&lt;string&gt; GetUserEmailAsync(int userId)
+    {
+        try
+        {
+            var user = GetUser(userId);
+            return user.Email ?? throw new InvalidOperationException("User has no email");
+        }
+        catch (UserNotFoundException ex)
+        {
+            logger.Warning("User not found: {UserId}", userId);
+            return "noreply@company.com";
+        }
+        catch (Exception ex)
+        {
+            logger.Error(ex, "Unexpected error getting user email");
+            throw; // 重新抛出
+        }
+    }
+}
+</code></pre>
+<h3 id="rust-基于-result-的错误处理"><a class="header" href="#rust-基于-result-的错误处理">Rust 基于 Result 的错误处理</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::fmt;
+
+#[derive(Debug)]
+pub enum UserError {
+    InvalidId(i32),
+    NotFound(i32),
+    NoEmail,
+    DatabaseError(String),
+}
+
+impl fmt::Display for UserError {
+    fn fmt(&amp;self, f: &amp;mut fmt::Formatter&lt;'_&gt;) -&gt; fmt::Result {
+        match self {
+            UserError::InvalidId(id) =&gt; write!(f, "Invalid user ID: {}", id),
+            UserError::NotFound(id) =&gt; write!(f, "User {} not found", id),
+            UserError::NoEmail =&gt; write!(f, "User has no email address"),
+            UserError::DatabaseError(msg) =&gt; write!(f, "Database error: {}", msg),
+        }
+    }
+}
+
+impl std::error::Error for UserError {}
+
+pub struct UserService {
+    // 数据库连接等
+}
+
+impl UserService {
+    pub fn get_user(&amp;self, user_id: i32) -&gt; Result&lt;User, UserError&gt; {
+        if user_id &lt;= 0 {
+            return Err(UserError::InvalidId(user_id));
+        }
+
+        // 模拟数据库查找
+        self.database_find_user(user_id)
+            .ok_or(UserError::NotFound(user_id))
+    }
+
+    pub fn get_user_email(&amp;self, user_id: i32) -&gt; Result&lt;String, UserError&gt; {
+        let user = self.get_user(user_id)?; // ? 运算符传播错误
+
+        user.email
+            .ok_or(UserError::NoEmail)
+    }
+
+    pub fn get_user_email_or_default(&amp;self, user_id: i32) -&gt; String {
+        match self.get_user_email(user_id) {
+            Ok(email) =&gt; email,
+            Err(UserError::NotFound(_)) =&gt; {
+                log::warn!("User not found: {}", user_id);
+                "noreply@company.com".to_string()
+            }
+            Err(err) =&gt; {
+                log::error!("Error getting user email: {}", err);
+                "error@company.com".to_string()
+            }
+        }
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<pre class="mermaid">graph TD
+    subgraph &quot;C# 异常模型&quot;
+        CS_CALL[&quot;方法调用&quot;]
+        CS_SUCCESS[&quot;成功路径&quot;]
+        CS_EXCEPTION[&quot;抛出异常&quot;]
+        CS_STACK[&quot;栈展开&lt;br/&gt;（运行时成本）&quot;]
+        CS_CATCH[&quot;try/catch 块&quot;]
+        CS_HIDDEN[&quot;[错误] 隐藏控制流&lt;br/&gt;[错误] 性能成本&lt;br/&gt;[错误] 容易忽略&quot;]
+
+        CS_CALL --&gt; CS_SUCCESS
+        CS_CALL --&gt; CS_EXCEPTION
+        CS_EXCEPTION --&gt; CS_STACK
+        CS_STACK --&gt; CS_CATCH
+        CS_EXCEPTION --&gt; CS_HIDDEN
+    end
+
+    subgraph &quot;Rust Result 模型&quot;
+        RUST_CALL[&quot;函数调用&quot;]
+        RUST_OK[&quot;Ok(value)&quot;]
+        RUST_ERR[&quot;Err(error)&quot;]
+        RUST_MATCH[&quot;match result&quot;]
+        RUST_QUESTION[&quot;? 运算符&lt;br/&gt;（提前返回）&quot;]
+        RUST_EXPLICIT[&quot;[好] 显式错误处理&lt;br/&gt;[好] 零运行时成本&lt;br/&gt;[好] 不能忽略错误&quot;]
+
+        RUST_CALL --&gt; RUST_OK
+        RUST_CALL --&gt; RUST_ERR
+        RUST_OK --&gt; RUST_MATCH
+        RUST_ERR --&gt; RUST_MATCH
+        RUST_ERR --&gt; RUST_QUESTION
+        RUST_MATCH --&gt; RUST_EXPLICIT
+        RUST_QUESTION --&gt; RUST_EXPLICIT
+    end
+
+    style CS_HIDDEN fill:#ffcdd2,color:#000
+    style RUST_EXPLICIT fill:#c8e6c9,color:#000
+    style CS_STACK fill:#fff3e0,color:#000
+    style RUST_QUESTION fill:#c8e6c9,color:#000
+</pre>
+<hr />
+<h3 id="-运算符简洁传播错误"><a class="header" href="#-运算符简洁传播错误"><code>?</code> 运算符：简洁传播错误</a></h3>
+<pre><code class="language-csharp">// C# - 异常传播（隐式）
+public async Task&lt;string&gt; ProcessFileAsync(string path)
+{
+    var content = await File.ReadAllTextAsync(path);  // 错误时抛出
+    var processed = ProcessContent(content);          // 错误时抛出
+    return processed;
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust - 使用 ? 传播错误
+fn process_file(path: &amp;str) -&gt; Result&lt;String, ConfigError&gt; {
+    let content = read_config(path)?;  // 如果是 Err 则 ? 传播错误
+    let processed = process_content(&amp;content)?;  // 如果是 Err 则 ? 传播错误
+    Ok(processed)  // 将成功值包装在 Ok 中
+}
+
+fn process_content(content: &amp;str) -&gt; Result&lt;String, ConfigError&gt; {
+    if content.is_empty() {
+        Err(ConfigError::InvalidFormat)
+    } else {
+        Ok(content.to_uppercase())
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="optiont-用于可空值"><a class="header" href="#optiont-用于可空值"><code>Option&lt;T&gt;</code> 用于可空值</a></h3>
+<pre><code class="language-csharp">// C# - 可空引用类型
+public string? FindUserName(int userId)
+{
+    var user = database.FindUser(userId);
+    return user?.Name;  // 如果用户未找到则返回 null
+}
+
+public void ProcessUser(int userId)
+{
+    string? name = FindUserName(userId);
+    if (name != null)
+    {
+        Console.WriteLine($"User: {name}");
+    }
+    else
+    {
+        Console.WriteLine("User not found");
+    }
+}
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust - Option&lt;T&gt; 用于可选值
+fn find_user_name(user_id: u32) -&gt; Option&lt;String&gt; {
+    // 模拟数据库查找
+    if user_id == 1 {
+        Some("Alice".to_string())
+    } else {
+        None
+    }
+}
+
+fn process_user(user_id: u32) {
+    match find_user_name(user_id) {
+        Some(name) =&gt; println!("User: {}", name),
+        None =&gt; println!("User not found"),
+    }
+
+    // 或使用 if let（模式匹配的简写）
+    if let Some(name) = find_user_name(user_id) {
+        println!("User: {}", name);
+    } else {
+        println!("User not found");
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="组合-option-和-result"><a class="header" href="#组合-option-和-result">组合 Option 和 Result</a></h3>
+<pre><pre class="playground"><code class="language-rust">fn safe_divide(a: f64, b: f64) -&gt; Option&lt;f64&gt; {
+    if b != 0.0 {
+        Some(a / b)
+    } else {
+        None
+    }
+}
+
+fn parse_and_divide(a_str: &amp;str, b_str: &amp;str) -&gt; Result&lt;Option&lt;f64&gt;, ParseFloatError&gt; {
+    let a: f64 = a_str.parse()?;  // 如果无效则返回解析错误
+    let b: f64 = b_str.parse()?;  // 如果无效则返回解析错误
+    Ok(safe_divide(a, b))         // 返回 Ok(Some(result)) 或 Ok(None)
+}
+
+use std::num::ParseFloatError;
+
+fn main() {
+    match parse_and_divide("10.0", "2.0") {
+        Ok(Some(result)) =&gt; println!("Result: {}", result),
+        Ok(None) =&gt; println!("Division by zero"),
+        Err(error) =&gt; println!("Parse error: {}", error),
+    }
+}</code></pre></pre>
+<hr />
+<details>
+<summary><strong>🏋️ 练习：构建 Crate 级错误类型</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：为文件处理应用程序创建 <code>AppError</code> 枚举，该程序可能因 I/O 错误、JSON 解析错误和验证错误而失败。实现 <code>From</code> 转换用于自动 <code>?</code> 传播。</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 起始代码
+use std::io;
+
+// TODO: 定义带变体的 AppError：
+//   Io(io::Error)、Json(serde_json::Error)、Validation(String)
+// TODO: 实现 Display 和 Error traits
+// TODO: 实现 From&lt;io::Error&gt; 和 From&lt;serde_json::Error&gt;
+// TODO: 定义类型别名：type Result&lt;T&gt; = std::result::Result&lt;T, AppError&gt;;
+
+fn load_config(path: &amp;str) -&gt; Result&lt;Config&gt; {
+    let content = std::fs::read_to_string(path)?;  // io::Error → AppError
+    let config: Config = serde_json::from_str(&amp;content)?;  // serde 错误 → AppError
+    if config.name.is_empty() {
+        return Err(AppError::Validation("name cannot be empty".into()));
+    }
+    Ok(config)
+}
+<span class="boring">}</span></code></pre></pre>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::io;
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum AppError {
+    #[error("I/O error: {0}")]
+    Io(#[from] io::Error),
+
+    #[error("JSON error: {0}")]
+    Json(#[from] serde_json::Error),
+
+    #[error("Validation: {0}")]
+    Validation(String),
+}
+
+pub type Result&lt;T&gt; = std::result::Result&lt;T, AppError&gt;;
+
+#[derive(serde::Deserialize)]
+struct Config {
+    name: String,
+    port: u16,
+}
+
+fn load_config(path: &amp;str) -&gt; Result&lt;Config&gt; {
+    let content = std::fs::read_to_string(path)?;
+    let config: Config = serde_json::from_str(&amp;content)?;
+    if config.name.is_empty() {
+        return Err(AppError::Validation("name cannot be empty".into()));
+    }
+    Ok(config)
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>关键要点</strong>：</p>
+<ul>
+<li><code>thiserror</code> 从属性生成 Display 和 Error impls</li>
+<li><code>#[from]</code> 生成 From<T> impls，启用自动 <code>?</code> 转换</li>
+<li><code>Result&lt;T&gt;</code> 别名消除整个 crate 中的样板代码</li>
+<li>与 C# 异常不同，错误类型在每个函数签名中可见</li>
+</ul>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch08-1-package-management-cargo-vs-nuget.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch09-1-crate-level-error-types-and-result-alias.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch08-1-package-management-cargo-vs-nuget.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch09-1-crate-level-error-types-and-result-alias.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,569 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>6. 依赖管理和供应链安全 - Rust Engineering Practices — Beyond cargo build</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust Engineering Practices — Beyond cargo build</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="依赖管理和供应链安全-"><a class="header" href="#依赖管理和供应链安全-">依赖管理和供应链安全 🟢</a></h1>
+<blockquote>
+<p><strong>你将学到：</strong></p>
+<ul>
+<li>使用 <code>cargo-audit</code> 扫描已知漏洞</li>
+<li>使用 <code>cargo-deny</code> 执行许可证、咨询、禁令和源策略</li>
+<li>使用 Mozilla 的 <code>cargo-vet</code> 进行供应链信任验证</li>
+<li>跟踪过时的依赖并检测破坏性 API 更改</li>
+<li>可视化和去重依赖树</li>
+</ul>
+<p><strong>交叉引用：</strong> <a href="ch07-release-profiles-and-binary-size.html">Release Profile</a> — <code>cargo-udeps</code> 修剪此处发现的未使用依赖 · <a href="ch11-putting-it-all-together-a-production-cic.html">CI/CD 流水线</a> — 流水线中的 audit 和 deny 作业 · <a href="ch01-build-scripts-buildrs-in-depth.html">构建脚本</a> — <code>build-dependencies</code> 也是你供应链的一部分</p>
+</blockquote>
+<p>Rust 二进制文件不仅包含你的代码 — 它还包含 <code>Cargo.lock</code> 中的每个传递依赖。
+该树中任何位置的漏洞、许可证违规或恶意 crate 都会成为<em>你的</em>问题。
+本章涵盖使依赖管理可审计和自动化的工具。</p>
+<h3 id="cargo-audit--已知漏洞扫描"><a class="header" href="#cargo-audit--已知漏洞扫描">cargo-audit — 已知漏洞扫描</a></h3>
+<p><a href="https://github.com/rustsec/rustsec/tree/main/cargo-audit"><code>cargo-audit</code></a>
+根据 <a href="https://rustsec.org/">RustSec Advisory Database</a> 检查你的 <code>Cargo.lock</code>，
+该数据库跟踪已发布 crate 中的已知漏洞。</p>
+<pre><code class="language-bash"># 安装
+cargo install cargo-audit
+
+# 扫描已知漏洞
+cargo audit
+
+# 输出：
+# Crate:     chrono
+# Version:   0.4.19
+# Title:     localtime_r 调用中的潜在段错误
+# Date:      2020-11-10
+# ID:        RUSTSEC-2020-0159
+# URL:       https://rustsec.org/advisories/RUSTSEC-2020-0159
+# Solution:  升级到 &gt;= 0.4.20
+
+# 检查并在存在漏洞时使 CI 失败
+cargo audit --deny warnings
+
+# 生成 JSON 输出用于自动处理
+cargo audit --json
+
+# 通过更新 Cargo.lock 修复漏洞
+cargo audit fix
+</code></pre>
+<p><strong>CI 集成：</strong></p>
+<pre><code class="language-yaml"># .github/workflows/audit.yml
+name: 安全审计
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 每日检查 — 咨询持续出现
+  push:
+    paths: ['Cargo.lock']
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rustsec/audit-check@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+</code></pre>
+<h3 id="cargo-deny--综合策略执行"><a class="header" href="#cargo-deny--综合策略执行">cargo-deny — 综合策略执行</a></h3>
+<p><a href="https://github.com/EmbarkStudios/cargo-deny"><code>cargo-deny</code></a> 远远超出漏洞扫描。
+它在四个维度上执行策略：</p>
+<ol>
+<li><strong>Advisories</strong> — 已知漏洞（类似 cargo-audit）</li>
+<li><strong>Licenses</strong> — 允许/拒绝的许可证列表</li>
+<li><strong>Bans</strong> — 禁止的 crate 或重复版本</li>
+<li><strong>Sources</strong> — 允许的注册表和 git 源</li>
+</ol>
+<pre><code class="language-bash"># 安装
+cargo install cargo-deny
+
+# 初始化配置
+cargo deny init
+# 创建带有文档默认值的 deny.toml
+
+# 运行所有检查
+cargo deny check
+
+# 运行特定检查
+cargo deny check advisories
+cargo deny check licenses
+cargo deny check bans
+cargo deny check sources
+</code></pre>
+<p><strong>示例 <code>deny.toml</code>：</strong></p>
+<pre><code class="language-toml"># deny.toml
+
+[advisories]
+vulnerability = "deny"        # 拒绝已知漏洞
+unmaintained = "warn"         # 警告未维护的 crate
+yanked = "deny"               # 拒绝被撤回的 crate
+notice = "warn"               # 警告信息性咨询
+
+[licenses]
+unlicensed = "deny"           # 所有 crate 必须有许可证
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Unicode-DFS-2016",
+]
+copyleft = "deny"             # 此项目中无 GPL/LGPL/AGPL
+default = "deny"              # 拒绝任何未明确允许的内容
+
+[bans]
+multiple-versions = "warn"    # 如果同一 crate 出现在 2 个版本则警告
+wildcards = "deny"            # 依赖中无 path = "*"
+highlight = "all"             # 显示所有重复项，而不仅仅是第一个
+
+# 禁止特定有问题的 crate
+deny = [
+    # openssl-sys 拉入 C OpenSSL — 优先使用 rustls
+    { name = "openssl-sys", wrappers = ["native-tls"] },
+]
+
+# 允许特定重复版本（当不可避免时）
+[[bans.skip]]
+name = "syn"
+version = "1.0"               # syn 1.x 和 2.x 经常共存
+
+[sources]
+unknown-registry = "deny"     # 仅允许 crates.io
+unknown-git = "deny"          # 无随机 git 依赖
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+</code></pre>
+<p><strong>许可证执行</strong> 对商业项目特别有价值：</p>
+<pre><code class="language-bash"># 检查依赖树中有哪些许可证
+cargo deny list
+
+# 输出：
+# MIT          — 127 crates
+# Apache-2.0   — 89 crates
+# BSD-3-Clause — 12 crates
+# MPL-2.0      — 3 crates   ← 可能需要法律审查
+# Unicode-DFS  — 1 crate
+</code></pre>
+<h3 id="cargo-vet--供应链信任验证"><a class="header" href="#cargo-vet--供应链信任验证">cargo-vet — 供应链信任验证</a></h3>
+<p><a href="https://github.com/mozilla/cargo-vet"><code>cargo-vet</code></a>（来自 Mozilla）解决一个不同的问题：
+不是"这个 crate 有已知 bug 吗？"而是"是否有可信的人实际审查过这段代码？"</p>
+<pre><code class="language-bash"># 安装
+cargo install cargo-vet
+
+# 初始化（创建 supply-chain/ 目录）
+cargo vet init
+
+# 检查哪些 crate 需要审查
+cargo vet
+
+# 审查 crate 后，认证它：
+cargo vet certify serde 1.0.203
+# 记录你已为你的标准审计了 serde 1.0.203
+
+# 从可信组织导入审计
+cargo vet import mozilla
+cargo vet import google
+cargo vet import bytecode-alliance
+</code></pre>
+<p><strong>工作原理：</strong></p>
+<pre><code class="language-text">supply-chain/
+├── audits.toml       ← 你团队的审计认证
+├── config.toml       ← 信任配置和标准
+└── imports.lock      ← 从其他组织固定的导入
+</code></pre>
+<p><code>cargo-vet</code> 对具有严格供应链要求的组织（政府、金融、基础设施）最有价值。
+对大多数团队来说，<code>cargo-deny</code> 提供足够的保护。</p>
+<h3 id="cargo-outdated-和-cargo-semver-checks"><a class="header" href="#cargo-outdated-和-cargo-semver-checks">cargo-outdated 和 cargo-semver-checks</a></h3>
+<p><strong><code>cargo-outdated</code></strong> — 查找有更新版本的依赖：</p>
+<pre><code class="language-bash">cargo install cargo-outdated
+
+cargo outdated --workspace
+# 输出：
+# Name        Project  Compat  Latest   Kind
+# serde       1.0.193  1.0.203 1.0.203  Normal
+# regex       1.9.6    1.10.4  1.10.4   Normal
+# thiserror   1.0.50   1.0.61  2.0.3    Normal  ← 主版本可用
+</code></pre>
+<p><strong><code>cargo-semver-checks</code></strong> — 在发布前检测破坏性 API 更改。
+对库 crate 至关重要：</p>
+<pre><code class="language-bash">cargo install cargo-semver-checks
+
+# 检查你的更改是否 semver 兼容
+cargo semver-checks
+
+# 输出：
+# ✗ 函数 `parse_gpu_csv` 现在是私有的（之前是公共的）
+#   → 这是破坏性更改。提升主版本。
+#
+# ✗ 结构体 `GpuInfo` 有新的必需字段 `power_limit_w`
+#   → 这是破坏性更改。提升主版本。
+#
+# ✓ 函数 `parse_gpu_csv_v2` 已添加（非破坏性）
+</code></pre>
+<h3 id="cargo-tree--依赖可视化和去重"><a class="header" href="#cargo-tree--依赖可视化和去重">cargo-tree — 依赖可视化和去重</a></h3>
+<p><code>cargo tree</code> 内置于 Cargo 中（无需安装），对于理解依赖图非常宝贵：</p>
+<pre><code class="language-bash"># 完整依赖树
+cargo tree
+
+# 查找为什么包含特定 crate
+cargo tree --invert --package openssl-sys
+# 显示从你的 crate 到 openssl-sys 的所有路径
+
+# 查找重复版本
+cargo tree --duplicates
+# 输出：
+# syn v1.0.109
+# └── serde_derive v1.0.193
+#
+# syn v2.0.48
+# ├── thiserror-impl v1.0.56
+# └── tokio-macros v2.2.0
+
+# 仅显示直接依赖
+cargo tree --depth 1
+
+# 显示依赖特性
+cargo tree --format "{p} {f}"
+
+# 计算总依赖数
+cargo tree | wc -l
+</code></pre>
+<p><strong>去重策略</strong>：当 <code>cargo tree --duplicates</code> 显示同一 crate 有两个主版本时，
+检查是否可以更新依赖链以统一它们。每个重复项都会增加编译时间和二进制大小。</p>
+<h3 id="应用多-crate-依赖卫生"><a class="header" href="#应用多-crate-依赖卫生">应用：多 Crate 依赖卫生</a></h3>
+<p>工作空间使用 <code>[workspace.dependencies]</code> 进行集中版本管理 — 这是一种极好的做法。
+结合用于大小分析的 <a href="ch07-release-profiles-and-binary-size.html"><code>cargo tree --duplicates</code></a>，
+这可以防止版本漂移并减少二进制膨胀：</p>
+<pre><code class="language-toml"># 根 Cargo.toml — 所有版本集中在一个地方固定
+[workspace.dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features = ["preserve_order"] }
+regex = "1.10"
+thiserror = "1.0"
+anyhow = "1.0"
+rayon = "1.8"
+</code></pre>
+<p><strong>项目推荐的补充：</strong></p>
+<pre><code class="language-bash"># 添加到 CI 流水线：
+cargo deny init              # 一次性设置
+cargo deny check             # 每个 PR — 许可证、咨询、禁令
+cargo audit --deny warnings  # 每次推送 — 漏洞扫描
+cargo outdated --workspace   # 每周 — 跟踪可用更新
+</code></pre>
+<p><strong>项目推荐的 <code>deny.toml</code>：</strong></p>
+<pre><code class="language-toml">[advisories]
+vulnerability = "deny"
+yanked = "deny"
+
+[licenses]
+allow = ["MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "Unicode-DFS-2016"]
+copyleft = "deny"     # 硬件诊断工具 — 无 copyleft
+
+[bans]
+multiple-versions = "warn"   # 跟踪重复项，暂时不阻止
+wildcards = "deny"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+</code></pre>
+<h3 id="供应链审计流水线"><a class="header" href="#供应链审计流水线">供应链审计流水线</a></h3>
+<pre class="mermaid">flowchart LR
+    PR[&quot;Pull Request&quot;] --&gt; AUDIT[&quot;cargo audit\n已知 CVE&quot;]
+    AUDIT --&gt; DENY[&quot;cargo deny check\n许可证 + 禁令 + 源&quot;]
+    DENY --&gt; OUTDATED[&quot;cargo outdated\n每周计划&quot;]
+    OUTDATED --&gt; SEMVER[&quot;cargo semver-checks\n仅库 crate&quot;]
+
+    AUDIT --&gt;|&quot;失败&quot;| BLOCK[&quot;❌ 阻止合并&quot;]
+    DENY --&gt;|&quot;失败&quot;| BLOCK
+    SEMVER --&gt;|&quot;破坏性更改&quot;| BUMP[&quot;提升主版本&quot;]
+
+    style BLOCK fill:#ff6b6b,color:#000
+    style BUMP fill:#ffd43b,color:#000
+    style PR fill:#e3f2fd,color:#000
+</pre>
+<h3 id="-练习"><a class="header" href="#-练习">🏋️ 练习</a></h3>
+<h4 id="-练习-1审计你的依赖"><a class="header" href="#-练习-1审计你的依赖">🟢 练习 1：审计你的依赖</a></h4>
+<p>在任何 Rust 项目上运行 <code>cargo audit</code> 和 <code>cargo deny init &amp;&amp; cargo deny check</code>。
+发现多少咨询？你的树中有多少许可证类别？</p>
+<details>
+<summary>解决方案</summary>
+<pre><code class="language-bash">cargo audit
+# 注意任何咨询 — 通常是 chrono、time 或较旧的 crate
+
+cargo deny init
+cargo deny list
+# 显示许可证细分：MIT (N)、Apache-2.0 (N) 等
+
+cargo deny check
+# 显示所有四个维度的完整审计
+</code></pre>
+</details>
+<h4 id="-练习-2查找并消除重复依赖"><a class="header" href="#-练习-2查找并消除重复依赖">🟡 练习 2：查找并消除重复依赖</a></h4>
+<p>在工作空间上运行 <code>cargo tree --duplicates</code>。找到出现在两个版本的 crate。
+你能更新 <code>Cargo.toml</code> 来统一它们吗？测量编译时间和二进制大小的影响。</p>
+<details>
+<summary>解决方案</summary>
+<pre><code class="language-bash">cargo tree --duplicates
+# 典型：syn 1.x 和 syn 2.x
+
+# 查找谁拉入旧版本：
+cargo tree --invert --package syn@1.0.109
+# 输出：serde_derive 1.0.xxx -&gt; syn 1.0.109
+
+# 检查是否有更新的 serde_derive 使用 syn 2.x：
+cargo update -p serde_derive
+cargo tree --duplicates
+# 如果 syn 1.x 消失了，你已经消除了一个重复项
+
+# 测量影响：
+time cargo build --release  # 之前和之后
+cargo bloat --release --crates | head -20
+</code></pre>
+</details>
+<h3 id="关键要点"><a class="header" href="#关键要点">关键要点</a></h3>
+<ul>
+<li><code>cargo audit</code> 捕获已知 CVE — 在每次推送和每日计划上运行它</li>
+<li><code>cargo deny</code> 执行四个策略维度：咨询、许可证、禁令和源</li>
+<li>在多 crate 工作空间中使用 <code>[workspace.dependencies]</code> 集中版本管理</li>
+<li><code>cargo tree --duplicates</code> 揭示膨胀；每个重复项都会增加编译时间和二进制大小</li>
+<li><code>cargo-vet</code> 用于高安全环境；<code>cargo-deny</code> 对大多数团队足够</li>
+</ul>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch05-miri-valgrind-and-sanitizers-verifying-u.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch07-release-profiles-and-binary-size.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch05-miri-valgrind-and-sanitizers-verifying-u.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch07-release-profiles-and-binary-size.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

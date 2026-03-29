@@ -1,0 +1,430 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>宏入门 - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="宏编写代码的代码"><a class="header" href="#宏编写代码的代码">宏：编写代码的代码</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> 为什么 Rust 需要宏（无重载、无可变参数），<code>macro_rules!</code> 基础，
+<code>!</code> 后缀约定，常见 derive 宏，以及用于快速调试的 <code>dbg!()</code>。</p>
+<p><strong>难度：</strong> 🟡 中级</p>
+</blockquote>
+<p>C# 没有直接等价于 Rust 宏的东西。理解它们为什么存在以及如何工作消除了 C# 开发者的主要困惑来源。</p>
+<h3 id="为什么宏存在于-rust-中"><a class="header" href="#为什么宏存在于-rust-中">为什么宏存在于 Rust 中</a></h3>
+<pre class="mermaid">graph LR
+    SRC[&quot;vec![1, 2, 3]&quot;] --&gt;|&quot;编译时&quot;| EXP[&quot;{
+  let mut v = Vec::new();
+  v.push(1);
+  v.push(2);
+  v.push(3);
+  v
+}&quot;]
+    EXP --&gt;|&quot;编译为&quot;| BIN[&quot;机器码&quot;]
+
+    style SRC fill:#fff9c4,color:#000
+    style EXP fill:#c8e6c9,color:#000
+</pre>
+<pre><code class="language-csharp">// C# 有使宏不必要的特性：
+Console.WriteLine("Hello");           // 方法重载（1-16 个参数）
+Console.WriteLine("{0}, {1}", a, b);  // 通过 params 数组的可变参数
+var list = new List&lt;int&gt; { 1, 2, 3 }; // 集合初始化器语法
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust 没有函数重载、没有可变参数、没有特殊语法。
+// 宏填补这些空白：
+println!("Hello");                    // 宏——在编译时处理 0+ 个参数
+println!("{}, {}", a, b);             // 宏——在编译时类型检查
+let list = vec![1, 2, 3];            // 宏——展开为 Vec::new() + push()
+<span class="boring">}</span></code></pre></pre>
+<h3 id="识别宏-后缀"><a class="header" href="#识别宏-后缀">识别宏：<code>!</code> 后缀</a></h3>
+<p>每个宏调用以 <code>!</code> 结尾。如果你看到 <code>!</code>，它是宏，不是函数：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>println!("hello");     // 宏——在编译时生成格式化字符串代码
+format!("{x}");        // 宏——返回 String，编译时格式检查
+vec![1, 2, 3];         // 宏——创建并填充 Vec
+todo!();               // 宏——panic 并显示"not yet implemented"
+dbg!(expression);      // 宏——打印文件：行 + 表达式 + 值，返回值
+assert_eq!(a, b);      // 宏——如果 a ≠ b 则 panic 并显示差异
+cfg!(target_os = "linux"); // 宏——编译时平台检测
+<span class="boring">}</span></code></pre></pre>
+<h3 id="使用-macro_rules-编写简单宏"><a class="header" href="#使用-macro_rules-编写简单宏">使用 <code>macro_rules!</code> 编写简单宏</a></h3>
+<pre><pre class="playground"><code class="language-rust">// 定义一个从键值对创建 HashMap 的宏
+macro_rules! hashmap {
+    // 模式：以逗号分隔的 key =&gt; value 对
+    ( $( $key:expr =&gt; $value:expr ),* $(,)? ) =&gt; {{
+        let mut map = std::collections::HashMap::new();
+        $( map.insert($key, $value); )*
+        map
+    }};
+}
+
+fn main() {
+    let scores = hashmap! {
+        "Alice" =&gt; 100,
+        "Bob"   =&gt; 85,
+        "Carol" =&gt; 92,
+    };
+    println!("{scores:?}");
+}</code></pre></pre>
+<h3 id="derive-宏自动实现-traits"><a class="header" href="#derive-宏自动实现-traits">Derive 宏：自动实现 Traits</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// #[derive] 是生成 trait 实现的过程宏
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+struct User {
+    name: String,
+    age: u32,
+}
+// 编译器通过检查结构体字段自动生成 Debug::fmt、Clone::clone、PartialEq::eq 等。
+<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-csharp">// C# 等价物：无——你会手动实现 IEquatable、ICloneable 等。
+// 或使用 records：public record User(string Name, int Age);
+// records 自动生成 Equals、GetHashCode、ToString——类似想法！
+</code></pre>
+<h3 id="常见-derive-宏"><a class="header" href="#常见-derive-宏">常见 Derive 宏</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Derive</th><th>用途</th><th>C# 等价物</th></tr></thead><tbody>
+<tr><td><code>Debug</code></td><td><code>{:?}</code> 格式化字符串输出</td><td><code>ToString()</code> 重写</td></tr>
+<tr><td><code>Clone</code></td><td>通过 <code>.clone()</code> 深拷贝</td><td><code>ICloneable</code></td></tr>
+<tr><td><code>Copy</code></td><td>隐式按位拷贝（无需 <code>.clone()</code>）</td><td>值类型（<code>struct</code>）语义</td></tr>
+<tr><td><code>PartialEq</code>、<code>Eq</code></td><td><code>==</code> 比较</td><td><code>IEquatable&lt;T&gt;</code></td></tr>
+<tr><td><code>PartialOrd</code>、<code>Ord</code></td><td><code>&lt;</code>、<code>&gt;</code> 比较 + 排序</td><td><code>IComparable&lt;T&gt;</code></td></tr>
+<tr><td><code>Hash</code></td><td>用于 <code>HashMap</code> 键的哈希</td><td><code>GetHashCode()</code></td></tr>
+<tr><td><code>Default</code></td><td>通过 <code>Default::default()</code> 默认值</td><td>无参数构造函数</td></tr>
+<tr><td><code>Serialize</code>、<code>Deserialize</code></td><td>JSON/TOML 等（serde）</td><td><code>[JsonProperty]</code> 属性</td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p><strong>经验法则</strong>：在每个类型上从 <code>#[derive(Debug)]</code> 开始。需要时添加 <code>Clone</code>、<code>PartialEq</code>。为任何跨越边界（API、文件、数据库）的类型添加 <code>Serialize, Deserialize</code>。</p>
+</blockquote>
+<h3 id="过程和属性宏认知级别"><a class="header" href="#过程和属性宏认知级别">过程和属性宏（认知级别）</a></h3>
+<p>Derive 宏是一种<strong>过程宏</strong>——在编译时运行以生成代码的代码。你会遇到另外两种形式：</p>
+<p><strong>属性宏</strong>——附加到项与 <code>#[...]</code>：</p>
+<pre><pre class="playground"><code class="language-rust">#[tokio::main]          // 将 main() 转换为异步运行时入口点
+async fn main() { }
+
+#[test]                 // 标记函数为单元测试
+fn it_works() { assert_eq!(2 + 2, 4); }
+
+#[cfg(test)]            // 仅在测试期间条件编译此模块
+mod tests { /* ... */ }</code></pre></pre>
+<p><strong>函数状宏</strong>——看起来像函数调用：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// sqlx::query! 在编译时针对数据库验证你的 SQL
+let users = sqlx::query!("SELECT id, name FROM users WHERE active = $1", true)
+    .fetch_all(&amp;pool)
+    .await?;
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>C# 开发者的关键见解</strong>：你很少<em>编写</em>过程宏——它们是高级库作者工具。但你<em>使用</em>它们不断（<code>#[derive(...)]</code>、<code>#[tokio::main]</code>、<code>#[test]</code>）。将它们视为 C# 源生成器：你受益于它们而无需实现它们。</p>
+</blockquote>
+<h3 id="带-cfg-的条件编译"><a class="header" href="#带-cfg-的条件编译">带 <code>#[cfg]</code> 的条件编译</a></h3>
+<p>Rust 的 <code>#[cfg]</code> 属性类似 C# 的 <code>#if DEBUG</code> 预处理器指令，但类型检查：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 仅在 Linux 上编译此函数
+#[cfg(target_os = "linux")]
+fn platform_specific() {
+    println!("Running on Linux");
+}
+
+// 仅调试断言（类似 C# Debug.Assert）
+#[cfg(debug_assertions)]
+fn expensive_check(data: &amp;[u8]) {
+    assert!(data.len() &lt; 1_000_000, "data unexpectedly large");
+}
+
+// 功能标志（类似 C# #if FEATURE_X，但在 Cargo.toml 中声明）
+#[cfg(feature = "json")]
+pub fn to_json&lt;T: Serialize&gt;(val: &amp;T) -&gt; String {
+    serde_json::to_string(val).unwrap()
+}
+<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-csharp">// C# 等价物
+#if DEBUG
+    Debug.Assert(data.Length &lt; 1_000_000);
+#endif
+</code></pre>
+<h3 id="dbg--调试的最佳朋友"><a class="header" href="#dbg--调试的最佳朋友"><code>dbg!()</code> —— 调试的最佳朋友</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn calculate(x: i32) -&gt; i32 {
+    let intermediate = dbg!(x * 2);     // 打印：[src/main.rs:3] x * 2 = 10
+    let result = dbg!(intermediate + 1); // 打印：[src/main.rs:4] intermediate + 1 = 11
+    result
+}
+// dbg! 打印到 stderr，包括文件：行，并返回值
+// 对于调试比 Console.WriteLine 有用得多！
+<span class="boring">}</span></code></pre></pre>
+<details>
+<summary><strong>🏋️ 练习：编写 min! 宏</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：编写一个 <code>min!</code> 宏，接受 2 个或更多参数并返回最小值。</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 应该像这样工作：
+let smallest = min!(5, 3, 8, 1, 4); // → 1
+let pair = min!(10, 20);             // → 10
+<span class="boring">}</span></code></pre></pre>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><pre class="playground"><code class="language-rust">macro_rules! min {
+    // 基本情况：单个值
+    ($x:expr) =&gt; ($x);
+    // 递归：将第一个与其余的最小值比较
+    ($x:expr, $($rest:expr),+) =&gt; {{
+        let first = $x;
+        let rest = min!($($rest),+);
+        if first &lt; rest { first } else { rest }
+    }};
+}
+
+fn main() {
+    assert_eq!(min!(5, 3, 8, 1, 4), 1);
+    assert_eq!(min!(10, 20), 10);
+    assert_eq!(min!(42), 42);
+    println!("All assertions passed!");
+}</code></pre></pre>
+<p><strong>关键要点</strong>：<code>macro_rules!</code> 对令牌树使用模式匹配——它像 <code>match</code> 但用于代码结构而不是值。</p>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch12-closures-and-iterators.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch13-concurrency.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch12-closures-and-iterators.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch13-concurrency.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

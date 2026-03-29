@@ -1,0 +1,1224 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>3. Newtype 和 Type-State 模式 - Rust Patterns &amp; Engineering How-Tos</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust Patterns &amp; Engineering How-Tos</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="3-newtype-和-type-state-模式-"><a class="header" href="#3-newtype-和-type-state-模式-">3. Newtype 和 Type-State 模式 🟡</a></h1>
+<blockquote>
+<p><strong>你将学到：</strong></p>
+<ul>
+<li>newtype 模式用于零成本编译时类型安全</li>
+<li>Type-state 模式：使非法状态转换不可表示</li>
+<li>带有 type-state 的构建器模式用于编译时强制构造</li>
+<li>Config trait 模式用于控制泛型参数爆炸</li>
+</ul>
+</blockquote>
+<h2 id="newtype零成本类型安全"><a class="header" href="#newtype零成本类型安全">Newtype：零成本类型安全</a></h2>
+<p>newtype 模式将现有类型包装在单字段元组结构体中，创建一个不同的类型，零运行时开销：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 没有 newtype——容易混淆：
+fn create_user(name: String, email: String, age: u32, employee_id: u32) { }
+// create_user(name, email, age, id);  —— 但如果我们交换 age 和 id 怎么办？
+// create_user(name, email, id, age);  —— 编译正常，BUG
+
+// 使用 newtype——编译器捕获错误：
+struct UserName(String);
+struct Email(String);
+struct Age(u32);
+struct EmployeeId(u32);
+
+fn create_user(name: UserName, email: Email, age: Age, id: EmployeeId) { }
+// create_user(name, email, EmployeeId(42), Age(30));
+// ❌ 编译错误：期望 Age，得到 EmployeeId
+<span class="boring">}</span></code></pre></pre>
+<h3 id="impl-deref-用于-newtype能力和陷阱"><a class="header" href="#impl-deref-用于-newtype能力和陷阱"><code>impl Deref</code> 用于 Newtype——能力和陷阱</a></h3>
+<p>在 newtype 上实现 <code>Deref</code> 让它自动转换为内部类型的引用，让你"免费"获得内部类型的所有方法：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::ops::Deref;
+
+struct Email(String);
+
+impl Email {
+    fn new(raw: &amp;str) -&gt; Result&lt;Self, &amp;'static str&gt; {
+        if raw.contains('@') {
+            Ok(Email(raw.to_string()))
+        } else {
+            Err("invalid email: missing @")
+        }
+    }
+}
+
+impl Deref for Email {
+    type Target = str;
+    fn deref(&amp;self) -&gt; &amp;str { &amp;self.0 }
+}
+
+// 现在 Email 自动解引用为 &amp;str：
+let email = Email::new("user@example.com").unwrap();
+println!("Length: {}", email.len()); // 通过 Deref 使用 str::len
+<span class="boring">}</span></code></pre></pre>
+<p>这很方便——但它实际上<strong>在你的 newtype 抽象边界上打了一个洞</strong>，因为目标类型上的<em>每个</em>方法都可以在你的包装器上调用。</p>
+<h4 id="何时-deref-是合适的"><a class="header" href="#何时-deref-是合适的">何时 <code>Deref</code> 是合适的</a></h4>
+<div class="table-wrapper"><table><thead><tr><th>场景</th><th>示例</th><th>为什么没问题</th></tr></thead><tbody>
+<tr><td>智能指针包装器</td><td><code>Box&lt;T&gt;</code>、<code>Arc&lt;T&gt;</code>、<code>MutexGuard&lt;T&gt;</code></td><td>包装器的整个目的就是表现得像 <code>T</code></td></tr>
+<tr><td>透明"薄"包装器</td><td><code>String</code> → <code>str</code>、<code>PathBuf</code> → <code>Path</code>、<code>Vec&lt;T&gt;</code> → <code>[T]</code></td><td>包装器 IS-A 目标类型的超集</td></tr>
+<tr><td>你的 newtype 确实是内部类型</td><td><code>struct Hostname(String)</code> 你总是想要完整字符串操作</td><td>限制 API 不会增加价值</td></tr>
+</tbody></table>
+</div>
+<h4 id="何时-deref-是反模式"><a class="header" href="#何时-deref-是反模式">何时 <code>Deref</code> 是反模式</a></h4>
+<div class="table-wrapper"><table><thead><tr><th>场景</th><th>问题</th></tr></thead><tbody>
+<tr><td><strong>带有不变量的领域类型</strong></td><td><code>Email</code> 解引用为 <code>&amp;str</code>，所以调用者可以调用 <code>.split_at()</code>、<code>.trim()</code> 等——都不保持"必须包含 @"不变量。如果有人存储修剪后的 <code>&amp;str</code> 并重建，不变量丢失。</td></tr>
+<tr><td><strong>你想要限制 API 的类型</strong></td><td><code>struct Password(String)</code> 带 <code>Deref&lt;Target = str&gt;</code> 泄漏 <code>.as_bytes()</code>、<code>.chars()</code>、<code>Debug</code> 输出——正是你试图隐藏的。</td></tr>
+<tr><td><strong>假继承</strong></td><td>使用 <code>Deref</code> 让 <code>ManagerWidget</code> 自动解引用为 <code>Widget</code> 模拟 OOP 继承。这被明确不鼓励——参见 Rust API 指南（C-DEREF）。</td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p><strong>经验法则</strong>：如果你的 newtype 存在是为了<em>添加类型安全</em>或<em>限制 API</em>，不要实现 <code>Deref</code>。如果它存在是为了<em>添加能力</em>同时保持内部类型的完整表面（如智能指针），<code>Deref</code> 是正确的选择。</p>
+</blockquote>
+<h4 id="derefmut--双倍风险"><a class="header" href="#derefmut--双倍风险"><code>DerefMut</code> —— 双倍风险</a></h4>
+<p>如果你也实现 <code>DerefMut</code>，调用者可以<em>直接变异</em>内部值，绕过构造函数中的任何验证：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::ops::{Deref, DerefMut};
+
+struct PortNumber(u16);
+
+impl Deref for PortNumber {
+    type Target = u16;
+    fn deref(&amp;self) -&gt; &amp;u16 { &amp;self.0 }
+}
+
+impl DerefMut for PortNumber {
+    fn deref_mut(&amp;mut self) -&gt; &amp;mut u16 { &amp;mut self.0 }
+}
+
+let mut port = PortNumber(443);
+*port = 0; // 绕过任何验证——现在是无效端口
+<span class="boring">}</span></code></pre></pre>
+<p>仅当内部类型没有不变量需要保护时才实现 <code>DerefMut</code>。</p>
+<h4 id="优先显式委托"><a class="header" href="#优先显式委托">优先显式委托</a></h4>
+<p>当你只想要内部类型的<em>一些</em>方法时，显式委托：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct Email(String);
+
+impl Email {
+    fn new(raw: &amp;str) -&gt; Result&lt;Self, &amp;'static str&gt; {
+        if raw.contains('@') { Ok(Email(raw.to_string())) }
+        else { Err("missing @") }
+    }
+
+    // 只暴露有意义的：
+    pub fn as_str(&amp;self) -&gt; &amp;str { &amp;self.0 }
+    pub fn len(&amp;self) -&gt; usize { self.0.len() }
+    pub fn domain(&amp;self) -&gt; &amp;str {
+        self.0.split('@').nth(1).unwrap_or("")
+    }
+    // .split_at()、.trim()、.replace() —— 不暴露
+}
+<span class="boring">}</span></code></pre></pre>
+<h4 id="clippy-和生态系统"><a class="header" href="#clippy-和生态系统">Clippy 和生态系统</a></h4>
+<ul>
+<li><strong><code>clippy::wrong_self_convention</code></strong> 当 <code>Deref</code> 强制
+使方法解析令人惊讶时可能触发（例如 <code>is_empty()</code> 解析为内部类型的版本
+而非你打算覆盖的版本）。</li>
+<li><strong>Rust API 指南</strong>（C-DEREF）指出：<em>"只有智能指针应该实现 <code>Deref</code>。"</em> 将此视为强默认；仅在明确理由下偏离。</li>
+<li>如果你需要 trait 兼容性（例如传递 <code>Email</code> 给期望 <code>&amp;str</code> 的函数），考虑实现 <code>AsRef&lt;str&gt;</code> 和 <code>Borrow&lt;str&gt;</code> 代替——它们是显式转换，无自动强制意外。</li>
+</ul>
+<h4 id="决策矩阵"><a class="header" href="#决策矩阵">决策矩阵</a></h4>
+<pre><code class="language-text">你希望内部类型的所有方法都可调用吗？
+  ├─ 是 → 你的类型强制执行不变量或限制 API 吗？
+  │    ├─ 否  → impl Deref ✅  （智能指针/透明包装器）
+  │    └─ 是 → 不要 impl Deref ❌（不变量泄漏）
+  └─ 否  → 不要 impl Deref ❌  （使用 AsRef / 显式委托）
+</code></pre>
+<h3 id="type-state编译时协议强制"><a class="header" href="#type-state编译时协议强制">Type-State：编译时协议强制</a></h3>
+<p>type-state 模式使用类型系统强制操作按正确顺序发生。无效状态变得<strong>不可表示</strong>。</p>
+<pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Disconnected: new()
+    Disconnected --&gt; Connected: connect()
+    Connected --&gt; Authenticated: authenticate()
+    Authenticated --&gt; Authenticated: request()
+    Authenticated --&gt; [*]: drop
+
+    Disconnected --&gt; Disconnected: ❌ request() 不会编译
+    Connected --&gt; Connected: ❌ request() 不会编译
+</pre>
+<blockquote>
+<p>每个转换<em>消耗</em> <code>self</code> 并返回新类型——编译器强制有效排序。</p>
+</blockquote>
+<pre><pre class="playground"><code class="language-rust">// 问题：一个网络连接必须：
+// 1. 创建
+// 2. 连接
+// 3. 认证
+// 4. 然后用于请求
+// 在 authenticate() 之前调用 request() 应该是编译错误。
+
+// --- Type-state 标记（零大小类型）---
+struct Disconnected;
+struct Connected;
+struct Authenticated;
+
+// --- 按状态参数化的连接 ---
+struct Connection&lt;State&gt; {
+    address: String,
+    _state: std::marker::PhantomData&lt;State&gt;,
+}
+
+// 只有 Disconnected 连接可以连接：
+impl Connection&lt;Disconnected&gt; {
+    fn new(address: &amp;str) -&gt; Self {
+        Connection {
+            address: address.to_string(),
+            _state: std::marker::PhantomData,
+        }
+    }
+
+    fn connect(self) -&gt; Connection&lt;Connected&gt; {
+        println!("Connecting to {}...", self.address);
+        Connection {
+            address: self.address,
+            _state: std::marker::PhantomData,
+        }
+    }
+}
+
+// 只有 Connected 连接可以认证：
+impl Connection&lt;Connected&gt; {
+    fn authenticate(self, _token: &amp;str) -&gt; Connection&lt;Authenticated&gt; {
+        println!("Authenticating...");
+        Connection {
+            address: self.address,
+            _state: std::marker::PhantomData,
+        }
+    }
+}
+
+// 只有 Authenticated 连接可以发出请求：
+impl Connection&lt;Authenticated&gt; {
+    fn request(&amp;self, path: &amp;str) -&gt; String {
+        format!("GET {} from {}", path, self.address)
+    }
+}
+
+fn main() {
+    let conn = Connection::new("api.example.com");
+    // conn.request("/data"); // ❌ 编译错误：Connection&lt;Disconnected&gt; 上没有方法 `request`
+
+    let conn = conn.connect();
+    // conn.request("/data"); // ❌ 编译错误：Connection&lt;Connected&gt; 上没有方法 `request`
+
+    let conn = conn.authenticate("secret-token");
+    let response = conn.request("/data"); // ✅ 只在认证后工作
+    println!("{response}");
+}</code></pre></pre>
+<blockquote>
+<p><strong>关键洞察</strong>：每个状态转换<em>消耗</em> <code>self</code> 并返回新类型。
+转换后不能使用旧状态——编译器强制它。
+零运行时成本——<code>PhantomData</code> 是零大小的，状态在编译时擦除。</p>
+</blockquote>
+<p><strong>与 C++/C# 比较</strong>：在 C++ 或 C# 中，你会用运行时检查强制这个（<code>if (!authenticated) throw ...</code>）。Rust type-state 模式将这些检查移到编译时——无效状态在类型系统中字面上不可表示。</p>
+<h3 id="带有-type-states-的构建器模式"><a class="header" href="#带有-type-states-的构建器模式">带有 Type States 的构建器模式</a></h3>
+<p>一个实际应用——强制执行必需字段的构建器：</p>
+<pre><pre class="playground"><code class="language-rust">use std::marker::PhantomData;
+
+// 必需字段的标记类型
+struct NeedsName;
+struct NeedsPort;
+struct Ready;
+
+struct ServerConfig&lt;State&gt; {
+    name: Option&lt;String&gt;,
+    port: Option&lt;u16&gt;,
+    max_connections: usize, // 可选，有默认值
+    _state: PhantomData&lt;State&gt;,
+}
+
+impl ServerConfig&lt;NeedsName&gt; {
+    fn new() -&gt; Self {
+        ServerConfig {
+            name: None,
+            port: None,
+            max_connections: 100,
+            _state: PhantomData,
+        }
+    }
+
+    fn name(self, name: &amp;str) -&gt; ServerConfig&lt;NeedsPort&gt; {
+        ServerConfig {
+            name: Some(name.to_string()),
+            port: self.port,
+            max_connections: self.max_connections,
+            _state: PhantomData,
+        }
+    }
+}
+
+impl ServerConfig&lt;NeedsPort&gt; {
+    fn port(self, port: u16) -&gt; ServerConfig&lt;Ready&gt; {
+        ServerConfig {
+            name: self.name,
+            port: Some(port),
+            max_connections: self.max_connections,
+            _state: PhantomData,
+        }
+    }
+}
+
+impl ServerConfig&lt;Ready&gt; {
+    fn max_connections(mut self, n: usize) -&gt; Self {
+        self.max_connections = n;
+        self
+    }
+
+    fn build(self) -&gt; Server {
+        Server {
+            name: self.name.unwrap(),
+            port: self.port.unwrap(),
+            max_connections: self.max_connections,
+        }
+    }
+}
+
+struct Server {
+    name: String,
+    port: u16,
+    max_connections: usize,
+}
+
+fn main() {
+    // 必须提供 name，然后 port，然后可以 build：
+    let server = ServerConfig::new()
+        .name("my-server")
+        .port(8080)
+        .max_connections(500)
+        .build();
+
+    // ServerConfig::new().port(8080); // ❌ 编译错误：NeedsName 上没有方法 `port`
+    // ServerConfig::new().name("x").build(); // ❌ 编译错误：NeedsPort 上没有方法 `build`
+}</code></pre></pre>
+<hr />
+<h2 id="案例研究类型安全连接池"><a class="header" href="#案例研究类型安全连接池">案例研究：类型安全连接池</a></h2>
+<p>真实系统需要连接池，其中连接通过明确定义的状态移动。这是 typestate 模式如何在生产池中强制正确性：</p>
+<pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Idle: pool.acquire()
+    Idle --&gt; Active: conn.begin_transaction()
+    Active --&gt; Active: conn.execute(query)
+    Active --&gt; Idle: conn.commit() / conn.rollback()
+    Idle --&gt; [*]: pool.release(conn)
+
+    Active --&gt; [*]: ❌ 不能在事务中途释放
+</pre>
+<pre><pre class="playground"><code class="language-rust">use std::marker::PhantomData;
+
+// 状态
+struct Idle;
+struct InTransaction;
+
+struct PooledConnection&lt;State&gt; {
+    id: u32,
+    _state: PhantomData&lt;State&gt;,
+}
+
+struct Pool {
+    next_id: u32,
+}
+
+impl Pool {
+    fn new() -&gt; Self { Pool { next_id: 0 } }
+
+    fn acquire(&amp;mut self) -&gt; PooledConnection&lt;Idle&gt; {
+        self.next_id += 1;
+        println!("[pool] Acquired connection #{}", self.next_id);
+        PooledConnection { id: self.next_id, _state: PhantomData }
+    }
+
+    // 只有 idle 连接可以释放——防止事务中泄漏
+    fn release(&amp;self, conn: PooledConnection&lt;Idle&gt;) {
+        println!("[pool] Released connection #{}", conn.id);
+    }
+}
+
+impl PooledConnection&lt;Idle&gt; {
+    fn begin_transaction(self) -&gt; PooledConnection&lt;InTransaction&gt; {
+        println!("[conn #{}] BEGIN", self.id);
+        PooledConnection { id: self.id, _state: PhantomData }
+    }
+}
+
+impl PooledConnection&lt;InTransaction&gt; {
+    fn execute(&amp;self, query: &amp;str) {
+        println!("[conn #{}] EXEC: {}", self.id, query);
+    }
+
+    fn commit(self) -&gt; PooledConnection&lt;Idle&gt; {
+        println!("[conn #{}] COMMIT", self.id);
+        PooledConnection { id: self.id, _state: PhantomData }
+    }
+
+    fn rollback(self) -&gt; PooledConnection&lt;Idle&gt; {
+        println!("[conn #{}] ROLLBACK", self.id);
+        PooledConnection { id: self.id, _state: PhantomData }
+    }
+}
+
+fn main() {
+    let mut pool = Pool::new();
+
+    let conn = pool.acquire();
+    let conn = conn.begin_transaction();
+    conn.execute("INSERT INTO users VALUES ('Alice')");
+    conn.execute("INSERT INTO orders VALUES (1, 42)");
+    let conn = conn.commit(); // 回到 Idle
+    pool.release(conn);       // ✅ 只在 Idle 连接上工作
+
+    // pool.release(conn_active); // ❌ 编译错误：不能释放 InTransaction
+}</code></pre></pre>
+<p><strong>为什么这在生产中重要</strong>：事务中泄漏的连接无限期持有数据库锁。
+typestate 模式使这不可能——你字面上不能将连接返回到池，直到事务提交或回滚。</p>
+<hr />
+<h2 id="config-trait-模式控制泛型参数爆炸"><a class="header" href="#config-trait-模式控制泛型参数爆炸">Config Trait 模式——控制泛型参数爆炸</a></h2>
+<h3 id="问题"><a class="header" href="#问题">问题</a></h3>
+<p>当结构体承担更多责任时，每个由 trait 约束的泛型支持，
+类型签名变得笨拙：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait SpiBus   { fn spi_transfer(&amp;self, tx: &amp;[u8], rx: &amp;mut [u8]) -&gt; Result&lt;(), BusError&gt;; }
+trait ComPort  { fn com_send(&amp;self, data: &amp;[u8]) -&gt; Result&lt;usize, BusError&gt;; }
+trait I3cBus   { fn i3c_read(&amp;self, addr: u8, buf: &amp;mut [u8]) -&gt; Result&lt;(), BusError&gt;; }
+trait SmBus    { fn smbus_read_byte(&amp;self, addr: u8, cmd: u8) -&gt; Result&lt;u8, BusError&gt;; }
+trait GpioBus  { fn gpio_set(&amp;self, pin: u32, high: bool); }
+
+// ❌ 每个新总线 trait 添加另一个泛型参数
+struct DiagController&lt;S: SpiBus, C: ComPort, I: I3cBus, M: SmBus, G: GpioBus&gt; {
+    spi: S,
+    com: C,
+    i3c: I,
+    smbus: M,
+    gpio: G,
+}
+// impl 块、函数签名和调用者都重复完整列表。
+// 添加第 6 个总线意味着编辑每个 DiagController&lt;S, C, I, M, G&gt; 提及。
+<span class="boring">}</span></code></pre></pre>
+<p>这通常被称为**"泛型参数爆炸。"**它在 <code>impl</code> 块、
+函数参数和下游消费者中复合——每个都必须重复完整参数列表。</p>
+<h3 id="解决方案config-trait"><a class="header" href="#解决方案config-trait">解决方案：Config Trait</a></h3>
+<p>将所有关联类型捆绑到单个 trait 中。结构体然后有<strong>一个</strong>泛型参数，无论它包含多少组件类型：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug)]
+enum BusError {
+    Timeout,
+    NakReceived,
+    HardwareFault(String),
+}
+
+// --- 总线 trait（不变）---
+trait SpiBus {
+    fn spi_transfer(&amp;self, tx: &amp;[u8], rx: &amp;mut [u8]) -&gt; Result&lt;(), BusError&gt;;
+    fn spi_write(&amp;self, data: &amp;[u8]) -&gt; Result&lt;(), BusError&gt;;
+}
+
+trait ComPort {
+    fn com_send(&amp;self, data: &amp;[u8]) -&gt; Result&lt;usize, BusError&gt;;
+    fn com_recv(&amp;self, buf: &amp;mut [u8], timeout_ms: u32) -&gt; Result&lt;usize, BusError&gt;;
+}
+
+trait I3cBus {
+    fn i3c_read(&amp;self, addr: u8, buf: &amp;mut [u8]) -&gt; Result&lt;(), BusError&gt;;
+    fn i3c_write(&amp;self, addr: u8, data: &amp;[u8]) -&gt; Result&lt;(), BusError&gt;;
+}
+
+// --- Config trait：每个组件一个关联类型 ---
+trait BoardConfig {
+    type Spi: SpiBus;
+    type Com: ComPort;
+    type I3c: I3cBus;
+}
+
+// --- DiagController 恰好有一个泛型参数 ---
+struct DiagController&lt;Cfg: BoardConfig&gt; {
+    spi: Cfg::Spi,
+    com: Cfg::Com,
+    i3c: Cfg::I3c,
+}
+<span class="boring">}</span></code></pre></pre>
+<p><code>DiagController&lt;Cfg&gt;</code> 永远不会获得另一个泛型参数。
+添加第 4 个总线意味着在 <code>BoardConfig</code> 中添加一个关联类型和在 <code>DiagController</code> 中添加一个字段——无下游签名更改。</p>
+<h3 id="实现控制器"><a class="header" href="#实现控制器">实现控制器</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl&lt;Cfg: BoardConfig&gt; DiagController&lt;Cfg&gt; {
+    fn new(spi: Cfg::Spi, com: Cfg::Com, i3c: Cfg::I3c) -&gt; Self {
+        DiagController { spi, com, i3c }
+    }
+
+    fn read_flash_id(&amp;self) -&gt; Result&lt;u32, BusError&gt; {
+        let cmd = [0x9F]; // JEDEC Read ID
+        let mut id = [0u8; 4];
+        self.spi.spi_transfer(&amp;cmd, &amp;mut id)?;
+        Ok(u32::from_be_bytes(id))
+    }
+
+    fn send_bmc_command(&amp;self, cmd: &amp;[u8]) -&gt; Result&lt;Vec&lt;u8&gt;, BusError&gt; {
+        self.com.com_send(cmd)?;
+        let mut resp = vec![0u8; 256];
+        let n = self.com.com_recv(&amp;mut resp, 1000)?;
+        resp.truncate(n);
+        Ok(resp)
+    }
+
+    fn read_sensor_temp(&amp;self, sensor_addr: u8) -&gt; Result&lt;i16, BusError&gt; {
+        let mut buf = [0u8; 2];
+        self.i3c.i3c_read(sensor_addr, &amp;mut buf)?;
+        Ok(i16::from_be_bytes(buf))
+    }
+
+    fn run_full_diag(&amp;self) -&gt; Result&lt;DiagReport, BusError&gt; {
+        let flash_id = self.read_flash_id()?;
+        let bmc_resp = self.send_bmc_command(b"VERSION\n")?;
+        let cpu_temp = self.read_sensor_temp(0x48)?;
+        let gpu_temp = self.read_sensor_temp(0x49)?;
+
+        Ok(DiagReport {
+            flash_id,
+            bmc_version: String::from_utf8_lossy(&amp;bmc_resp).to_string(),
+            cpu_temp_c: cpu_temp,
+            gpu_temp_c: gpu_temp,
+        })
+    }
+}
+
+#[derive(Debug)]
+struct DiagReport {
+    flash_id: u32,
+    bmc_version: String,
+    cpu_temp_c: i16,
+    gpu_temp_c: i16,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="生产接线"><a class="header" href="#生产接线">生产接线</a></h3>
+<p>一个 <code>impl BoardConfig</code> 选择具体硬件驱动：</p>
+<pre><pre class="playground"><code class="language-rust">struct PlatformSpi  { dev: String, speed_hz: u32 }
+struct UartCom      { dev: String, baud: u32 }
+struct LinuxI3c     { dev: String }
+
+impl SpiBus for PlatformSpi {
+    fn spi_transfer(&amp;self, tx: &amp;[u8], rx: &amp;mut [u8]) -&gt; Result&lt;(), BusError&gt; {
+        // 生产中 ioctl(SPI_IOC_MESSAGE)
+        rx[0..4].copy_from_slice(&amp;[0xEF, 0x40, 0x18, 0x00]);
+        Ok(())
+    }
+    fn spi_write(&amp;self, _data: &amp;[u8]) -&gt; Result&lt;(), BusError&gt; { Ok(()) }
+}
+
+impl ComPort for UartCom {
+    fn com_send(&amp;self, _data: &amp;[u8]) -&gt; Result&lt;usize, BusError&gt; { Ok(0) }
+    fn com_recv(&amp;self, buf: &amp;mut [u8], _timeout: u32) -&gt; Result&lt;usize, BusError&gt; {
+        let resp = b"BMC v2.4.1\n";
+        buf[..resp.len()].copy_from_slice(resp);
+        Ok(resp.len())
+    }
+}
+
+impl I3cBus for LinuxI3c {
+    fn i3c_read(&amp;self, _addr: u8, buf: &amp;mut [u8]) -&gt; Result&lt;(), BusError&gt; {
+        buf[0] = 0x00; buf[1] = 0x2D; // 45°C
+        Ok(())
+    }
+    fn i3c_write(&amp;self, _addr: u8, _data: &amp;[u8]) -&gt; Result&lt;(), BusError&gt; { Ok(()) }
+}
+
+// ✅ 一个结构体，一个 impl——所有具体类型在这里解析
+struct ProductionBoard;
+impl BoardConfig for ProductionBoard {
+    type Spi = PlatformSpi;
+    type Com = UartCom;
+    type I3c = LinuxI3c;
+}
+
+fn main() {
+    let ctrl = DiagController::&lt;ProductionBoard&gt;::new(
+        PlatformSpi { dev: "/dev/spidev0.0".into(), speed_hz: 10_000_000 },
+        UartCom     { dev: "/dev/ttyS0".into(),     baud: 115200 },
+        LinuxI3c    { dev: "/dev/i3c-0".into() },
+    );
+    let report = ctrl.run_full_diag().unwrap();
+    println!("{report:#?}");
+}</code></pre></pre>
+<h3 id="使用-mock-测试接线"><a class="header" href="#使用-mock-测试接线">使用 Mock 测试接线</a></h3>
+<p>通过定义不同的 <code>BoardConfig</code> 交换整个硬件层：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct MockSpi  { flash_id: [u8; 4] }
+struct MockCom  { response: Vec&lt;u8&gt; }
+struct MockI3c  { temps: std::collections::HashMap&lt;u8, i16&gt; }
+
+impl SpiBus for MockSpi {
+    fn spi_transfer(&amp;self, _tx: &amp;[u8], rx: &amp;mut [u8]) -&gt; Result&lt;(), BusError&gt; {
+        rx[..4].copy_from_slice(&amp;self.flash_id);
+        Ok(())
+    }
+    fn spi_write(&amp;self, _data: &amp;[u8]) -&gt; Result&lt;(), BusError&gt; { Ok(()) }
+}
+
+impl ComPort for MockCom {
+    fn com_send(&amp;self, _data: &amp;[u8]) -&gt; Result&lt;usize, BusError&gt; { Ok(0) }
+    fn com_recv(&amp;self, buf: &amp;mut [u8], _timeout: u32) -&gt; Result&lt;usize, BusError&gt; {
+        let n = self.response.len().min(buf.len());
+        buf[..n].copy_from_slice(&amp;self.response[..n]);
+        Ok(n)
+    }
+}
+
+impl I3cBus for MockI3c {
+    fn i3c_read(&amp;self, addr: u8, buf: &amp;mut [u8]) -&gt; Result&lt;(), BusError&gt; {
+        let temp = self.temps.get(&amp;addr).copied().unwrap_or(0);
+        buf[..2].copy_from_slice(&amp;temp.to_be_bytes());
+        Ok(())
+    }
+    fn i3c_write(&amp;self, _addr: u8, _data: &amp;[u8]) -&gt; Result&lt;(), BusError&gt; { Ok(()) }
+}
+
+struct TestBoard;
+impl BoardConfig for TestBoard {
+    type Spi = MockSpi;
+    type Com = MockCom;
+    type I3c = MockI3c;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn make_test_controller() -&gt; DiagController&lt;TestBoard&gt; {
+        let mut temps = std::collections::HashMap::new();
+        temps.insert(0x48, 45i16);
+        temps.insert(0x49, 72i16);
+
+        DiagController::&lt;TestBoard&gt;::new(
+            MockSpi  { flash_id: [0xEF, 0x40, 0x18, 0x00] },
+            MockCom  { response: b"BMC v2.4.1\n".to_vec() },
+            MockI3c  { temps },
+        )
+    }
+
+    #[test]
+    fn test_flash_id() {
+        let ctrl = make_test_controller();
+        assert_eq!(ctrl.read_flash_id().unwrap(), 0xEF401800);
+    }
+
+    #[test]
+    fn test_sensor_temps() {
+        let ctrl = make_test_controller();
+        assert_eq!(ctrl.read_sensor_temp(0x48).unwrap(), 45);
+        assert_eq!(ctrl.read_sensor_temp(0x49).unwrap(), 72);
+    }
+
+    #[test]
+    fn test_full_diag() {
+        let ctrl = make_test_controller();
+        let report = ctrl.run_full_diag().unwrap();
+        assert_eq!(report.flash_id, 0xEF401800);
+        assert_eq!(report.cpu_temp_c, 45);
+        assert_eq!(report.gpu_temp_c, 72);
+        assert!(report.bmc_version.contains("2.4.1"));
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="以后添加新总线"><a class="header" href="#以后添加新总线">以后添加新总线</a></h3>
+<p>当你需要第 4 个总线时，只有两件事改变——<code>BoardConfig</code> 和 <code>DiagController</code>。
+<strong>无下游签名更改。</strong> 泛型参数计数保持为 1：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait SmBus {
+    fn smbus_read_byte(&amp;self, addr: u8, cmd: u8) -&gt; Result&lt;u8, BusError&gt;;
+}
+
+// 1. 添加一个关联类型：
+trait BoardConfig {
+    type Spi: SpiBus;
+    type Com: ComPort;
+    type I3c: I3cBus;
+    type Smb: SmBus;     // ← 新
+}
+
+// 2. 添加一个字段：
+struct DiagController&lt;Cfg: BoardConfig&gt; {
+    spi: Cfg::Spi,
+    com: Cfg::Com,
+    i3c: Cfg::I3c,
+    smb: Cfg::Smb,       // ← 新
+}
+
+// 3. 在每个 config impl 中提供具体类型：
+impl BoardConfig for ProductionBoard {
+    type Spi = PlatformSpi;
+    type Com = UartCom;
+    type I3c = LinuxI3c;
+    type Smb = LinuxSmbus; // ← 新
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="何时使用此模式"><a class="header" href="#何时使用此模式">何时使用此模式</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>情况</th><th style="text-align: center">使用 Config Trait？</th><th>替代方案</th></tr></thead><tbody>
+<tr><td>结构体上 3+ trait 约束泛型</td><td style="text-align: center">✅ 是</td><td>—</td></tr>
+<tr><td>需要交换整个硬件/平台层</td><td style="text-align: center">✅ 是</td><td>—</td></tr>
+<tr><td>只有 1-2 个泛型</td><td style="text-align: center">❌ 过度</td><td>直接泛型</td></tr>
+<tr><td>需要运行时多态</td><td style="text-align: center">❌</td><td><code>dyn Trait</code> 对象</td></tr>
+<tr><td>开放式插件系统</td><td style="text-align: center">❌</td><td>Type-map / <code>Any</code></td></tr>
+<tr><td>组件 trait 形成自然组（板、平台）</td><td style="text-align: center">✅ 是</td><td>—</td></tr>
+</tbody></table>
+</div>
+<h3 id="关键属性"><a class="header" href="#关键属性">关键属性</a></h3>
+<ul>
+<li><strong>永远一个泛型参数</strong> —— <code>DiagController&lt;Cfg&gt;</code> 永远不会获得更多 <code>&lt;A, B, C, ...&gt;</code></li>
+<li><strong>完全静态 dispatch</strong> —— 无 vtable，无 <code>dyn</code>，无 trait 对象的堆分配</li>
+<li><strong>干净测试交换</strong> —— 定义 <code>TestBoard</code> 带 mock impl，零条件编译</li>
+<li><strong>编译时安全</strong> —— 忘记关联类型 → 编译错误，而非运行时崩溃</li>
+<li><strong>久经考验</strong> —— 这是 Substrate/Polkadot 的 frame 系统使用的模式
+通过单个 <code>Config</code> trait 管理 20+ 关联类型</li>
+</ul>
+<blockquote>
+<p><strong>要点——Newtype 和 Type-State</strong></p>
+<ul>
+<li>Newtype 提供编译时类型安全，零运行时成本</li>
+<li>Type-state 使非法状态转换成为编译错误，而非运行时 bug</li>
+<li>Config trait 控制大型系统中的泛型参数爆炸</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>另见：</strong> <a href="ch04-phantomdata-types-that-carry-no-data.html">第 4 章 — PhantomData</a> 了解驱动 type-state 的零大小标记。<a href="ch02-traits-in-depth.html">第 2 章 — trait 深入讲解</a> 了解 config trait 模式中使用的关联类型。</p>
+</blockquote>
+<hr />
+<h2 id="案例研究双轴-typestate--供应商--协议状态"><a class="header" href="#案例研究双轴-typestate--供应商--协议状态">案例研究：双轴 Typestate —— 供应商 × 协议状态</a></h2>
+<p>上面的模式一次处理一个轴：typestate 强制<em>协议顺序</em>，
+trait 抽象处理<em>多个供应商</em>。真实系统通常需要<strong>两者同时</strong>：一个包装器 <code>Handle&lt;Vendor, State&gt;</code> 其中可用方法依赖于<em>插入哪个供应商</em><strong>和</strong><em>手柄处于哪个状态</em>。</p>
+<p>本节展示<strong>双轴条件 <code>impl</code></strong> 模式——其中 <code>impl</code> 块同时由供应商 trait 约束和状态标记 trait 门控。</p>
+<h3 id="二维问题"><a class="header" href="#二维问题">二维问题</a></h3>
+<p>考虑调试探针接口（JTAG/SWD）。多个制造商生产探针，
+每个探针必须解锁后寄存器才可访问。一些供应商额外支持直接内存读取——但仅在<em>扩展解锁</em>配置内存访问端口后：</p>
+<pre class="mermaid">graph LR
+    subgraph &quot;所有供应商&quot;
+        L[&quot;🔒 Locked&quot;] -- &quot;unlock()&quot; --&gt; U[&quot;🔓 Unlocked&quot;]
+    end
+    subgraph &quot;仅支持内存的供应商&quot;
+        U -- &quot;extended_unlock()&quot; --&gt; E[&quot;🔓🧠 ExtendedUnlocked&quot;]
+    end
+
+    U -. &quot;read_reg() / write_reg()&quot; .-&gt; U
+    E -. &quot;read_reg() / write_reg()&quot; .-&gt; E
+    E -. &quot;read_memory() / write_memory()&quot; .-&gt; E
+
+    style L fill:#fee,stroke:#c33
+    style U fill:#efe,stroke:#3a3
+    style E fill:#eef,stroke:#33c
+</pre>
+<p><strong>能力矩阵</strong> —— 哪些方法存在于哪些（供应商，状态）组合——是二维的：</p>
+<pre class="mermaid">block-beta
+    columns 4
+    space header1[&quot;Locked&quot;] header2[&quot;Unlocked&quot;] header3[&quot;ExtendedUnlocked&quot;]
+    basic[&quot;基础供应商&quot;]:1 b1[&quot;unlock()&quot;] b2[&quot;read_reg()\nwrite_reg()&quot;] b3[&quot;— 不可达 —&quot;]
+    memory[&quot;内存供应商&quot;]:1 m1[&quot;unlock()&quot;] m2[&quot;read_reg()\nwrite_reg()\nextended_unlock()&quot;] m3[&quot;read_reg()\nwrite_reg()\nread_memory()\nwrite_memory()&quot;]
+
+    style b1 fill:#ffd,stroke:#aa0
+    style b2 fill:#efe,stroke:#3a3
+    style b3 fill:#eee,stroke:#999,stroke-dasharray: 5 5
+    style m1 fill:#ffd,stroke:#aa0
+    style m2 fill:#efe,stroke:#3a3
+    style m3 fill:#eef,stroke:#33c
+</pre>
+<p>挑战：<strong>完全在编译时</strong>表达这个矩阵，使用静态 dispatch，
+所以在基础探针上调用 <code>extended_unlock()</code> 或在解锁但未扩展的手柄上调用 <code>read_memory()</code> 是编译错误。</p>
+<h3 id="解决方案带-marker-trait-的-jtagv-s"><a class="header" href="#解决方案带-marker-trait-的-jtagv-s">解决方案：带 Marker Trait 的 <code>Jtag&lt;V, S&gt;</code></a></h3>
+<p><strong>步骤 1 —— 状态令牌和能力标记：</strong></p>
+<pre><code class="language-rust ignore">use std::marker::PhantomData;
+
+// 零大小状态令牌——无运行时成本
+struct Locked;
+struct Unlocked;
+struct ExtendedUnlocked;
+
+// Marker trait 表达每个状态有哪些能力
+trait HasRegAccess {}
+impl HasRegAccess for Unlocked {}
+impl HasRegAccess for ExtendedUnlocked {}
+
+trait HasMemAccess {}
+impl HasMemAccess for ExtendedUnlocked {}</code></pre>
+<blockquote>
+<p><strong>为什么是 marker trait，不只是具体状态？</strong>
+编写 <code>impl&lt;V, S: HasRegAccess&gt; Jtag&lt;V, S&gt;</code> 意味着 <code>read_reg()</code> 在<em>任何</em>有寄存器访问的状态工作——今天是 <code>Unlocked</code> 和 <code>ExtendedUnlocked</code>，
+但如果明天添加 <code>DebugHalted</code>，你只添加一行：
+<code>impl HasRegAccess for DebugHalted {}</code>。每个寄存器函数自动与它一起工作——零代码更改。</p>
+</blockquote>
+<p><strong>步骤 2 —— 供应商 trait（原始操作）：</strong></p>
+<pre><code class="language-rust ignore">// 每个探针供应商实现这些
+trait JtagVendor {
+    fn raw_unlock(&amp;mut self);
+    fn raw_read_reg(&amp;self, addr: u32) -&gt; u32;
+    fn raw_write_reg(&amp;mut self, addr: u32, val: u32);
+}
+
+// 有内存访问的供应商也实现这个超 trait
+trait JtagMemoryVendor: JtagVendor {
+    fn raw_extended_unlock(&amp;mut self);
+    fn raw_read_memory(&amp;self, addr: u64, buf: &amp;mut [u8]);
+    fn raw_write_memory(&amp;mut self, addr: u64, data: &amp;[u8]);
+}</code></pre>
+<p><strong>步骤 3 —— 带条件 <code>impl</code> 块的包装器：</strong></p>
+<pre><code class="language-rust ignore">struct Jtag&lt;V, S = Locked&gt; {
+    vendor: V,
+    _state: PhantomData&lt;S&gt;,
+}
+
+// 构造——总是从 Locked 开始
+impl&lt;V: JtagVendor&gt; Jtag&lt;V, Locked&gt; {
+    fn new(vendor: V) -&gt; Self {
+        Jtag { vendor, _state: PhantomData }
+    }
+
+    fn unlock(mut self) -&gt; Jtag&lt;V, Unlocked&gt; {
+        self.vendor.raw_unlock();
+        Jtag { vendor: self.vendor, _state: PhantomData }
+    }
+}
+
+// 寄存器 I/O —— 任何供应商，任何有 HasRegAccess 的状态
+impl&lt;V: JtagVendor, S: HasRegAccess&gt; Jtag&lt;V, S&gt; {
+    fn read_reg(&amp;self, addr: u32) -&gt; u32 {
+        self.vendor.raw_read_reg(addr)
+    }
+    fn write_reg(&amp;mut self, addr: u32, val: u32) {
+        self.vendor.raw_write_reg(addr, val);
+    }
+}
+
+// 扩展解锁——仅内存能力供应商，仅从 Unlocked
+impl&lt;V: JtagMemoryVendor&gt; Jtag&lt;V, Unlocked&gt; {
+    fn extended_unlock(mut self) -&gt; Jtag&lt;V, ExtendedUnlocked&gt; {
+        self.vendor.raw_extended_unlock();
+        Jtag { vendor: self.vendor, _state: PhantomData }
+    }
+}
+
+// 内存 I/O —— 仅内存能力供应商，仅 ExtendedUnlocked
+impl&lt;V: JtagMemoryVendor, S: HasMemAccess&gt; Jtag&lt;V, S&gt; {
+    fn read_memory(&amp;self, addr: u64, buf: &amp;mut [u8]) {
+        self.vendor.raw_read_memory(addr, buf);
+    }
+    fn write_memory(&amp;mut self, addr: u64, data: &amp;[u8]) {
+        self.vendor.raw_write_memory(addr, data);
+    }
+}</code></pre>
+<p>每个 <code>impl</code> 块编码能力矩阵的一个单元格（或行）。
+编译器强制矩阵——任何地方都无运行时检查。</p>
+<h3 id="供应商实现"><a class="header" href="#供应商实现">供应商实现</a></h3>
+<p>添加供应商意味着在<strong>一个结构体</strong>上实现原始方法——无每个状态的结构体复制，无委托样板：</p>
+<pre><code class="language-rust ignore">// 供应商 A：基础探针——仅寄存器访问
+struct BasicProbe { port: u16 }
+
+impl JtagVendor for BasicProbe {
+    fn raw_unlock(&amp;mut self)                    { /* TAP 复位序列 */ }
+    fn raw_read_reg(&amp;self, addr: u32) -&gt; u32    { /* DR 扫描 */  0 }
+    fn raw_write_reg(&amp;mut self, addr: u32, val: u32) { /* DR 扫描 */ }
+}
+// BasicProbe 不实现 JtagMemoryVendor。
+// extended_unlock() 不会在 Jtag&lt;BasicProbe, _&gt; 上编译。
+
+// 供应商 B：全功能探针——寄存器 + 内存
+struct DapProbe { serial: String }
+
+impl JtagVendor for DapProbe {
+    fn raw_unlock(&amp;mut self)                    { /* SWD 切换，读取 DPIDR */ }
+    fn raw_read_reg(&amp;self, addr: u32) -&gt; u32    { /* AP 寄存器读取 */ 0 }
+    fn raw_write_reg(&amp;mut self, addr: u32, val: u32) { /* AP 寄存器写入 */ }
+}
+
+impl JtagMemoryVendor for DapProbe {
+    fn raw_extended_unlock(&amp;mut self)           { /* 选择 MEM-AP，上电 */ }
+    fn raw_read_memory(&amp;self, addr: u64, buf: &amp;mut [u8])  { /* MEM-AP 读取 */ }
+    fn raw_write_memory(&amp;mut self, addr: u64, data: &amp;[u8]) { /* MEM-AP 写入 */ }
+}</code></pre>
+<h3 id="编译器防止什么"><a class="header" href="#编译器防止什么">编译器防止什么</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>尝试</th><th>错误</th><th>为什么</th></tr></thead><tbody>
+<tr><td><code>Jtag&lt;_, Locked&gt;::read_reg()</code></td><td>无方法 <code>read_reg</code></td><td><code>Locked</code> 不实现 <code>HasRegAccess</code></td></tr>
+<tr><td><code>Jtag&lt;BasicProbe, _&gt;::extended_unlock()</code></td><td>无方法 <code>extended_unlock</code></td><td><code>BasicProbe</code> 不实现 <code>JtagMemoryVendor</code></td></tr>
+<tr><td><code>Jtag&lt;_, Unlocked&gt;::read_memory()</code></td><td>无方法 <code>read_memory</code></td><td><code>Unlocked</code> 不实现 <code>HasMemAccess</code></td></tr>
+<tr><td>调用 <code>unlock()</code> 两次</td><td>移动后使用值</td><td><code>unlock()</code> 消耗 <code>self</code></td></tr>
+</tbody></table>
+</div>
+<p>所有四个错误在<strong>编译时</strong>捕获。无 panic，无 <code>Option</code>，无运行时状态 enum。</p>
+<h3 id="编写泛型函数"><a class="header" href="#编写泛型函数">编写泛型函数</a></h3>
+<p>函数只绑定它们关心的轴：</p>
+<pre><code class="language-rust ignore">/// 适用于任何供应商，任何授予寄存器访问的状态。
+fn read_idcode&lt;V: JtagVendor, S: HasRegAccess&gt;(jtag: &amp;Jtag&lt;V, S&gt;) -&gt; u32 {
+    jtag.read_reg(0x00)
+}
+
+/// 仅对 ExtendedUnlocked 状态中的内存能力供应商编译。
+fn dump_firmware&lt;V: JtagMemoryVendor, S: HasMemAccess&gt;(jtag: &amp;Jtag&lt;V, S&gt;) {
+    let mut buf = [0u8; 256];
+    jtag.read_memory(0x0800_0000, &amp;mut buf);
+}</code></pre>
+<p><code>read_idcode</code> 不关心你是否在 <code>Unlocked</code> 或 <code>ExtendedUnlocked</code> ——
+它只要求 <code>HasRegAccess</code>。这是 marker trait 超过在签名中硬编码特定状态的回报。</p>
+<h3 id="相同模式不同领域存储后端"><a class="header" href="#相同模式不同领域存储后端">相同模式，不同领域：存储后端</a></h3>
+<p>双轴技术不是硬件特定的。这是相同结构用于存储层，其中一些后端支持事务：</p>
+<pre><code class="language-rust ignore">// 状态
+struct Closed;
+struct Open;
+struct InTransaction;
+
+trait HasReadWrite {}
+impl HasReadWrite for Open {}
+impl HasReadWrite for InTransaction {}
+
+// 供应商 trait
+trait StorageBackend {
+    fn raw_open(&amp;mut self);
+    fn raw_read(&amp;self, key: &amp;[u8]) -&gt; Option&lt;Vec&lt;u8&gt;&gt;;
+    fn raw_write(&amp;mut self, key: &amp;[u8], value: &amp;[u8]);
+}
+
+trait TransactionalBackend: StorageBackend {
+    fn raw_begin(&amp;mut self);
+    fn raw_commit(&amp;mut self);
+    fn raw_rollback(&amp;mut self);
+}
+
+// 包装器
+struct Store&lt;B, S = Closed&gt; { backend: B, _s: PhantomData&lt;S&gt; }
+
+impl&lt;B: StorageBackend&gt; Store&lt;B, Closed&gt; {
+    fn open(mut self) -&gt; Store&lt;B, Open&gt; { self.backend.raw_open(); /* ... */ todo!() }
+}
+impl&lt;B: StorageBackend, S: HasReadWrite&gt; Store&lt;B, S&gt; {
+    fn read(&amp;self, key: &amp;[u8]) -&gt; Option&lt;Vec&lt;u8&gt;&gt;  { self.backend.raw_read(key) }
+    fn write(&amp;mut self, key: &amp;[u8], val: &amp;[u8])    { self.backend.raw_write(key, val) }
+}
+impl&lt;B: TransactionalBackend&gt; Store&lt;B, Open&gt; {
+    fn begin(mut self) -&gt; Store&lt;B, InTransaction&gt;   { /* ... */ todo!() }
+}
+impl&lt;B: TransactionalBackend&gt; Store&lt;B, InTransaction&gt; {
+    fn commit(mut self) -&gt; Store&lt;B, Open&gt;           { /* ... */ todo!() }
+    fn rollback(mut self) -&gt; Store&lt;B, Open&gt;         { /* ... */ todo!() }
+}</code></pre>
+<p>平面文件后端只实现 <code>StorageBackend</code> —— <code>begin()</code> 不会编译。
+数据库后端添加 <code>TransactionalBackend</code> —— 完整 <code>Open → InTransaction → Open</code> 周期变得可用。</p>
+<h3 id="何时使用此模式-1"><a class="header" href="#何时使用此模式-1">何时使用此模式</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>信号</th><th>为什么双轴适合</th></tr></thead><tbody>
+<tr><td>两个独立轴："谁提供它"和"它处于什么状态"</td><td><code>impl</code> 块矩阵直接编码两者</td></tr>
+<tr><td>一些供应商严格比其他有更多能力</td><td>超 trait（<code>MemoryVendor: Vendor</code>）+ 条件 <code>impl</code></td></tr>
+<tr><td>误用状态或能力是安全/正确性 bug</td><td>编译时预防 &gt; 运行时检查</td></tr>
+<tr><td>你想要静态 dispatch（无 vtable）</td><td><code>PhantomData</code> + 泛型 = 零成本</td></tr>
+</tbody></table>
+</div><div class="table-wrapper"><table><thead><tr><th>信号</th><th>考虑更简单的东西</th></tr></thead><tbody>
+<tr><td>只有一个轴变化（状态或供应商，不是两者）</td><td>单轴 typestate 或普通 trait 对象</td></tr>
+<tr><td>三个或更多独立轴</td><td>Config Trait Pattern（上面）将轴捆绑到关联类型</td></tr>
+<tr><td>运行时多态可接受</td><td><code>enum</code> 状态 + <code>dyn</code> dispatch 更简单</td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p><strong>当两个轴变成三个或更多时：</strong>
+如果你发现自己写 <code>Handle&lt;V, S, D, T&gt;</code> —— 供应商、状态、调试级别、传输 —— 泛型参数列表在告诉你一些事情。
+考虑将<em>供应商</em>轴折叠到关联类型 config trait（本章前面的 <a href="#config-trait-pattern--taming-generic-parameter-explosion">Config Trait Pattern</a>），只保留<em>状态</em>轴作为泛型参数：<code>Handle&lt;Cfg, S&gt;</code>。
+Config trait 将 <code>type Vendor</code>、<code>type Transport</code> 等捆绑到一个参数中，状态轴保留其编译时转换保证。
+这是自然演进，而非重写——你将供应商相关类型提升到 <code>Cfg</code>，保持 typestate 机制不变。</p>
+</blockquote>
+<blockquote>
+<p><strong>要点：</strong> 双轴模式是 typestate 和基于 trait 抽象的交集。每个 <code>impl</code> 块映射到（供应商 × 状态）矩阵的一个单元格。编译器强制整个矩阵——无运行时状态检查，无不可能状态 panic，无成本。</p>
+</blockquote>
+<hr />
+<h3 id="练习类型安全状态机-约-30-分钟"><a class="header" href="#练习类型安全状态机-约-30-分钟">练习：类型安全状态机 ★★（约 30 分钟）</a></h3>
+<p>使用 type-state 模式构建交通灯状态机。灯必须按 <code>Red → Green → Yellow → Red</code> 转换，其他顺序都不可能。</p>
+<details>
+<summary>🔑 解决方案</summary>
+<pre><pre class="playground"><code class="language-rust">use std::marker::PhantomData;
+
+struct Red;
+struct Green;
+struct Yellow;
+
+struct TrafficLight&lt;State&gt; {
+    _state: PhantomData&lt;State&gt;,
+}
+
+impl TrafficLight&lt;Red&gt; {
+    fn new() -&gt; Self {
+        println!("🔴 Red — STOP");
+        TrafficLight { _state: PhantomData }
+    }
+
+    fn go(self) -&gt; TrafficLight&lt;Green&gt; {
+        println!("🟢 Green — GO");
+        TrafficLight { _state: PhantomData }
+    }
+}
+
+impl TrafficLight&lt;Green&gt; {
+    fn caution(self) -&gt; TrafficLight&lt;Yellow&gt; {
+        println!("🟡 Yellow — CAUTION");
+        TrafficLight { _state: PhantomData }
+    }
+}
+
+impl TrafficLight&lt;Yellow&gt; {
+    fn stop(self) -&gt; TrafficLight&lt;Red&gt; {
+        println!("🔴 Red — STOP");
+        TrafficLight { _state: PhantomData }
+    }
+}
+
+fn main() {
+    let light = TrafficLight::new(); // Red
+    let light = light.go();          // Green
+    let light = light.caution();     // Yellow
+    let _light = light.stop();       // Red
+
+    // light.caution(); // ❌ 编译错误：Red 上没有方法 `caution`
+    // TrafficLight::new().stop(); // ❌ 编译错误：Red 上没有方法 `stop`
+}</code></pre></pre>
+<p><strong>要点</strong>：无效转换是编译错误，而非运行时 panic。</p>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch02-traits-in-depth.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch04-phantomdata-types-that-carry-no-data.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch02-traits-in-depth.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch04-phantomdata-types-that-carry-no-data.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

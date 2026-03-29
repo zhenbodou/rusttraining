@@ -1,0 +1,560 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>7. 执行器和运行时 - Async Rust: From Futures to Production</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Async Rust: From Futures to Production</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="7-执行器和运行时-"><a class="header" href="#7-执行器和运行时-">7. 执行器和运行时 🟡</a></h1>
+<blockquote>
+<p><strong>你将学到什么：</strong></p>
+<ul>
+<li>执行器做什么：poll + 高效睡眠</li>
+<li>六个主要运行时：mio、io_uring、tokio、async-std、smol、embassy</li>
+<li>选择正确运行时的决策树</li>
+<li>为什么运行时无关的库设计很重要</li>
+</ul>
+</blockquote>
+<h2 id="执行器做什么"><a class="header" href="#执行器做什么">执行器做什么</a></h2>
+<p>执行器有两个工作：</p>
+<ol>
+<li><strong>poll future</strong> 当它们准备好取得进展时</li>
+<li><strong>高效睡眠</strong> 当没有 future 就绪时（使用 OS I/O 通知 API）</li>
+</ol>
+<pre class="mermaid">graph TB
+    subgraph Executor[&quot;执行器（例如 tokio）&quot;]
+        QUEUE[&quot;任务队列&quot;]
+        POLLER[&quot;I/O Poller&lt;br/&gt;(epoll/kqueue/io_uring)&quot;]
+        THREADS[&quot;工作线程池&quot;]
+    end
+
+    subgraph Tasks
+        T1[&quot;任务 1&lt;br/&gt;(HTTP 请求)&quot;]
+        T2[&quot;任务 2&lt;br/&gt;(数据库查询)&quot;]
+        T3[&quot;任务 3&lt;br/&gt;(文件读取)&quot;]
+    end
+
+    subgraph OS[&quot;操作系统&quot;]
+        NET[&quot;网络栈&quot;]
+        DISK[&quot;磁盘 I/O&quot;]
+    end
+
+    T1 --&gt; QUEUE
+    T2 --&gt; QUEUE
+    T3 --&gt; QUEUE
+    QUEUE --&gt; THREADS
+    THREADS --&gt;|&quot;poll()&quot;| T1
+    THREADS --&gt;|&quot;poll()&quot;| T2
+    THREADS --&gt;|&quot;poll()&quot;| T3
+    POLLER &lt;--&gt;|&quot;注册/通知&quot;| NET
+    POLLER &lt;--&gt;|&quot;注册/通知&quot;| DISK
+    POLLER --&gt;|&quot;唤醒任务&quot;| QUEUE
+
+    style Executor fill:#e3f2fd,color:#000
+    style OS fill:#f3e5f5,color:#000
+</pre>
+<h3 id="mio基础层"><a class="header" href="#mio基础层">mio：基础层</a></h3>
+<p><a href="https://github.com/tokio-rs/mio">mio</a>（Metal I/O）不是一个执行器——它是最低级的跨平台 I/O 通知库。它包装了 <code>epoll</code>（Linux）、<code>kqueue</code>（macOS/BSD）和 IOCP（Windows）。</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// mio 用法的概念（简化）：
+use mio::{Events, Interest, Poll, Token};
+use mio::net::TcpListener;
+
+let mut poll = Poll::new()?;
+let mut events = Events::with_capacity(128);
+
+let mut server = TcpListener::bind("0.0.0.0:8080")?;
+poll.registry().register(&amp;mut server, Token(0), Interest::READABLE)?;
+
+// 事件循环——阻塞直到有事情发生
+loop {
+    poll.poll(&amp;mut events, None)?; // 睡眠直到 I/O 事件
+    for event in events.iter() {
+        match event.token() {
+            Token(0) =&gt; { /* 服务器有新连接 */ }
+            _ =&gt; { /* 其他 I/O 就绪 */ }
+        }
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>大多数开发者从不直接触碰 mio——tokio 和 smol 在它之上构建。</p>
+<h3 id="io_uring基于完成的-future"><a class="header" href="#io_uring基于完成的-future">io_uring：基于完成的 Future</a></h3>
+<p>Linux 的 <code>io_uring</code>（内核 5.1+）代表了从 mio/epoll 使用的基于就绪的 I/O 模型的根本转变：</p>
+<pre><code class="language-text">基于就绪（epoll / mio / tokio）：
+  1. 问："这个 socket 可读吗？"     → epoll_wait()
+  2. 内核："是的，它已就绪"           → EPOLLIN 事件
+  3. 应用：read(fd, buf)                → 可能仍然短暂阻塞！
+
+基于完成（io_uring）：
+  1. 提交："从这个 socket 读取到这个缓冲区"  → SQE
+  2. 内核：异步执行读取
+  3. 应用：获取完成的结果和数据            → CQE
+</code></pre>
+<pre class="mermaid">graph LR
+    subgraph &quot;基于就绪模型 (epoll)&quot;
+        A1[&quot;应用：它就绪了吗？&quot;] --&gt; K1[&quot;内核：是的&quot;]
+        K1 --&gt; A2[&quot;应用：现在 read()&quot;]
+        A2 --&gt; K2[&quot;内核：这是数据&quot;]
+    end
+
+    subgraph &quot;基于完成模型 (io_uring)&quot;
+        B1[&quot;应用：为我读取这个&quot;] --&gt; K3[&quot;内核：工作中...&quot;]
+        K3 --&gt; B2[&quot;应用：得到结果 + 数据&quot;]
+    end
+
+    style B1 fill:#c8e6c9,color:#000
+    style B2 fill:#c8e6c9,color:#000
+</pre>
+<p><strong>所有权挑战</strong>：io_uring 要求内核在操作完成之前拥有缓冲区。这与 Rust 标准 <code>AsyncRead</code> trait 借用缓冲区冲突。这就是为什么 <code>tokio-uring</code> 有不同的 I/O trait：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 标准 tokio（基于就绪）——借用缓冲区：
+let n = stream.read(&amp;mut buf).await?;  // buf 被借用
+
+// tokio-uring（基于完成）——获得缓冲区所有权：
+let (result, buf) = stream.read(buf).await;  // buf 被移入，返回回来
+let n = result?;
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust">// Cargo.toml: tokio-uring = "0.5"
+// 注意：仅限 Linux，需要内核 5.1+
+
+fn main() {
+    tokio_uring::start(async {
+        let file = tokio_uring::fs::File::open("data.bin").await.unwrap();
+        let buf = vec![0u8; 4096];
+        let (result, buf) = file.read_at(buf, 0).await;
+        let bytes_read = result.unwrap();
+        println!("Read {} bytes: {:?}", bytes_read, &amp;buf[..bytes_read]);
+    });
+}</code></pre></pre>
+<div class="table-wrapper"><table><thead><tr><th>方面</th><th>epoll (tokio)</th><th>io_uring (tokio-uring)</th></tr></thead><tbody>
+<tr><td><strong>模型</strong></td><td>就绪通知</td><td>完成通知</td></tr>
+<tr><td><strong>系统调用</strong></td><td>epoll_wait + read/write</td><td>批处理 SQE/CQE ring</td></tr>
+<tr><td><strong>缓冲区所有权</strong></td><td>应用保留 (&amp;mut buf)</td><td>所有权转移 (move buf)</td></tr>
+<tr><td><strong>平台</strong></td><td>Linux、macOS (kqueue)、Windows (IOCP)</td><td>仅 Linux 5.1+</td></tr>
+<tr><td><strong>零拷贝</strong></td><td>否（用户空间拷贝）</td><td>是（注册的缓冲区）</td></tr>
+<tr><td><strong>成熟度</strong></td><td>生产就绪</td><td>实验性</td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p><strong>何时使用 io_uring</strong>：高吞吐量文件 I/O 或网络，其中系统调用开销是瓶颈（数据库、存储引擎、代理服务 100k+ 连接）。对于大多数应用，带有 epoll 的标准 tokio 是正确的选择。</p>
+</blockquote>
+<h3 id="tokio功能齐全的运行时"><a class="header" href="#tokio功能齐全的运行时">tokio：功能齐全的运行时</a></h3>
+<p>Rust 生态系统中占主导地位的异步运行时。被 Axum、Hyper、Tonic 和大多数生产 Rust 服务器使用。</p>
+<pre><pre class="playground"><code class="language-rust">// Cargo.toml:
+// [dependencies]
+// tokio = { version = "1", features = ["full"] }
+
+#[tokio::main]
+async fn main() {
+    // 生成一个带有工作窃取调度器的多线程运行时
+    let handle = tokio::spawn(async {
+        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+        "done"
+    });
+
+    let result = handle.await.unwrap();
+    println!("{result}");
+}</code></pre></pre>
+<p><strong>tokio 特性</strong>：计时器、I/O、TCP/UDP、Unix socket、信号处理、同步原语（Mutex、RwLock、Semaphore、channel）、fs、process、tracing 集成。</p>
+<h3 id="async-std标准库镜像"><a class="header" href="#async-std标准库镜像">async-std：标准库镜像</a></h3>
+<p>镜像 <code>std</code> API 带有异步版本。不如 tokio 流行但对初学者更简单。</p>
+<pre><pre class="playground"><code class="language-rust">// Cargo.toml:
+// [dependencies]
+// async-std = { version = "1", features = ["attributes"] }
+
+#[async_std::main]
+async fn main() {
+    use async_std::fs;
+    let content = fs::read_to_string("hello.txt").await.unwrap();
+    println!("{content}");
+}</code></pre></pre>
+<h3 id="smol最小主义运行时"><a class="header" href="#smol最小主义运行时">smol：最小主义运行时</a></h3>
+<p>小型、零依赖异步运行时。非常适合想要异步但不想引入 tokio 的库。</p>
+<pre><pre class="playground"><code class="language-rust">// Cargo.toml:
+// [dependencies]
+// smol = "2"
+
+fn main() {
+    smol::block_on(async {
+        let result = smol::unblock(|| {
+            // 在线程池上运行阻塞代码
+            std::fs::read_to_string("hello.txt")
+        }).await.unwrap();
+        println!("{result}");
+    });
+}</code></pre></pre>
+<h3 id="embassy嵌入式异步-no_std"><a class="header" href="#embassy嵌入式异步-no_std">embassy：嵌入式异步 (no_std)</a></h3>
+<p>用于嵌入式系统的异步运行时。不需要堆分配，不需要 <code>std</code>。</p>
+<pre><pre class="playground"><code class="language-rust">// 运行在微控制器上（例如 STM32、nRF52、RP2040）
+#[embassy_executor::main]
+async fn main(spawner: embassy_executor::Spawner) {
+    // 使用 async/await 闪烁 LED——不需要 RTOS！
+    let mut led = Output::new(p.PA5, Level::Low, Speed::Low);
+    loop {
+        led.set_high();
+        Timer::after(Duration::from_millis(500)).await;
+        led.set_low();
+        Timer::after(Duration::from_millis(500)).await;
+    }
+}</code></pre></pre>
+<h3 id="运行时决策树"><a class="header" href="#运行时决策树">运行时决策树</a></h3>
+<pre class="mermaid">graph TD
+    START[&quot;选择运行时&quot;]
+
+    Q1{&quot;构建&lt;br/&gt;网络服务器？&quot;}
+    Q2{&quot;需要 tokio 生态系统&lt;br/&gt;（Axum、Tonic、Hyper）？&quot;}
+    Q3{&quot;构建库？&quot;}
+    Q4{&quot;嵌入式 /&lt;br/&gt;no_std？&quot;}
+    Q5{&quot;想要最小&lt;br/&gt;依赖？&quot;}
+
+    TOKIO[&quot;🟢 tokio&lt;br/&gt;最佳生态系统，最流行&quot;]
+    SMOL[&quot;🔵 smol&lt;br/&gt;最小，无生态系统锁定&quot;]
+    EMBASSY[&quot;🟠 embassy&lt;br/&gt;嵌入式优先，无 alloc&quot;]
+    ASYNC_STD[&quot;🟣 async-std&lt;br/&gt;类似 std 的 API，适合学习&quot;]
+    AGNOSTIC[&quot;🔵 运行时无关&lt;br/&gt;仅使用 futures crate&quot;]
+
+    START --&gt; Q1
+    Q1 --&gt;|是 | Q2
+    Q1 --&gt;|否 | Q3
+    Q2 --&gt;|是 | TOKIO
+    Q2 --&gt;|否 | Q5
+    Q3 --&gt;|是 | AGNOSTIC
+    Q3 --&gt;|否 | Q4
+    Q4 --&gt;|是 | EMBASSY
+    Q4 --&gt;|否 | Q5
+    Q5 --&gt;|是 | SMOL
+    Q5 --&gt;|否 | ASYNC_STD
+
+    style TOKIO fill:#c8e6c9,color:#000
+    style SMOL fill:#bbdefb,color:#000
+    style EMBASSY fill:#ffe0b2,color:#000
+    style ASYNC_STD fill:#e1bee7,color:#000
+    style AGNOSTIC fill:#bbdefb,color:#000
+</pre>
+<h3 id="运行时比较表"><a class="header" href="#运行时比较表">运行时比较表</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>特性</th><th>tokio</th><th>async-std</th><th>smol</th><th>embassy</th></tr></thead><tbody>
+<tr><td><strong>生态系统</strong></td><td>主导</td><td>小</td><td>最小</td><td>嵌入式</td></tr>
+<tr><td><strong>多线程</strong></td><td>✅ 工作窃取</td><td>✅</td><td>✅</td><td>❌（单核）</td></tr>
+<tr><td><strong>no_std</strong></td><td>❌</td><td>❌</td><td>❌</td><td>✅</td></tr>
+<tr><td><strong>计时器</strong></td><td>✅ 内置</td><td>✅ 内置</td><td>通过 <code>async-io</code></td><td>✅ 基于 HAL</td></tr>
+<tr><td><strong>I/O</strong></td><td>✅ 自有抽象</td><td>✅ std 镜像</td><td>✅ 通过 <code>async-io</code></td><td>✅ HAL 驱动</td></tr>
+<tr><td><strong>Channel</strong></td><td>✅ 丰富集合</td><td>✅</td><td>通过 <code>async-channel</code></td><td>✅</td></tr>
+<tr><td><strong>学习曲线</strong></td><td>中等</td><td>低</td><td>低</td><td>高（硬件）</td></tr>
+<tr><td><strong>二进制大小</strong></td><td>大</td><td>中等</td><td>小</td><td>微小</td></tr>
+</tbody></table>
+</div><details>
+<summary><strong>🏋️ 练习：运行时比较</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：使用三个不同的运行时（tokio、smol 和 async-std）编写相同的程序。程序应该：</p>
+<ol>
+<li>获取 URL（用睡眠模拟）</li>
+<li>读取文件（用睡眠模拟）</li>
+<li>打印两个结果</li>
+</ol>
+<p>这个练习表明 async/await 代码是相同的——只有运行时设置不同。</p>
+<details>
+<summary>🔑 答案</summary>
+<pre><pre class="playground"><code class="language-rust">// ----- tokio 版本 -----
+// Cargo.toml: tokio = { version = "1", features = ["full"] }
+#[tokio::main]
+async fn main() {
+    let (url_result, file_result) = tokio::join!(
+        async {
+            tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+            "Response from URL"
+        },
+        async {
+            tokio::time::sleep(std::time::Duration::from_millis(50)).await;
+            "Contents of file"
+        },
+    );
+    println!("URL: {url_result}, File: {file_result}");
+}
+
+// ----- smol 版本 -----
+// Cargo.toml: smol = "2", futures-lite = "2"
+fn main() {
+    smol::block_on(async {
+        let (url_result, file_result) = futures_lite::future::zip(
+            async {
+                smol::Timer::after(std::time::Duration::from_millis(100)).await;
+                "Response from URL"
+            },
+            async {
+                smol::Timer::after(std::time::Duration::from_millis(50)).await;
+                "Contents of file"
+            },
+        ).await;
+        println!("URL: {url_result}, File: {file_result}");
+    });
+}
+
+// ----- async-std 版本 -----
+// Cargo.toml: async-std = { version = "1", features = ["attributes"] }
+#[async_std::main]
+async fn main() {
+    let (url_result, file_result) = futures::future::join(
+        async {
+            async_std::task::sleep(std::time::Duration::from_millis(100)).await;
+            "Response from URL"
+        },
+        async {
+            async_std::task::sleep(std::time::Duration::from_millis(50)).await;
+            "Contents of file"
+        },
+    ).await;
+    println!("URL: {url_result}, File: {file_result}");
+}</code></pre></pre>
+<p><strong>关键要点</strong>：异步业务逻辑在所有运行时中都是相同的。只有入口点和计时器/I/O API 不同。这就是为什么编写运行时无关的库（仅使用 <code>std::future::Future</code>）是有价值的。</p>
+</details>
+</details>
+<blockquote>
+<p><strong>关键要点 — 执行器和运行时</strong></p>
+<ul>
+<li>执行器的工作：在被唤醒时 poll future，使用 OS I/O API 高效睡眠</li>
+<li><strong>tokio</strong> 是服务器的默认选择；<strong>smol</strong> 用于最小占用；<strong>embassy</strong> 用于嵌入式</li>
+<li>你的业务逻辑应该依赖于 <code>std::future::Future</code>，而不是特定的运行时</li>
+<li>io_uring（Linux 5.1+）是高性能 I/O 的未来，但生态系统仍在成熟中</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>另见：</strong> <a href="ch08-tokio-deep-dive.html">第 8 章 — Tokio 深度解析</a> 了解 tokio  specifics，<a href="ch09-when-tokio-isnt-the-right-fit.html">第 9 章 — 何时 Tokio 不是最佳选择</a> 了解替代方案</p>
+</blockquote>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch06-building-futures-by-hand.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch08-tokio-deep-dive.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch06-building-futures-by-hand.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch08-tokio-deep-dive.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

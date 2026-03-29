@@ -1,0 +1,718 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>14. Unsafe Rust 和 FFI - Rust for Python Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for Python Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="何时以及为何使用-unsafe"><a class="header" href="#何时以及为何使用-unsafe">何时以及为何使用 Unsafe</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> <code>unsafe</code> 允许什么以及为何存在，使用 PyO3 编写 Python 扩展（对 Python 开发者的杀手级功能），
+Rust 的测试框架 vs pytest，使用 mockall 模拟，以及基准测试。</p>
+<p><strong>难度：</strong> 🔴 高级</p>
+</blockquote>
+<p>Rust 中的 <code>unsafe</code> 是逃生舱 —— 它告诉编译器"我在做一些
+你无法验证的事情，但我保证它是正确的。"Python 没有等价物，因为
+Python 从不给你直接内存访问。</p>
+<pre class="mermaid">flowchart TB
+    subgraph Safe [&quot;Safe Rust（99% 代码）&quot;]
+        S1[&quot;你的应用逻辑&quot;]
+        S2[&quot;pub fn safe_api(&amp;self) -&gt; Result&quot;]
+    end
+    subgraph Unsafe [&quot;unsafe 块（最小，审计）&quot;]
+        U1[&quot;原始指针解引用&quot;]
+        U2[&quot;FFI 调用 C/Python&quot;]
+    end
+    subgraph External [&quot;外部（C / Python / OS）&quot;]
+        E1[&quot;libc / PyO3 / 系统调用&quot;]
+    end
+    S1 --&gt; S2
+    S2 --&gt; U1
+    S2 --&gt; U2
+    U1 --&gt; E1
+    U2 --&gt; E1
+    style Safe fill:#d4edda,stroke:#28a745
+    style Unsafe fill:#fff3cd,stroke:#ffc107
+    style External fill:#f8d7da,stroke:#dc3545
+</pre>
+<blockquote>
+<p><strong>模式</strong>：安全 API 包装小的 <code>unsafe</code> 块。调用者从不看到 <code>unsafe</code>。Python 的 <code>ctypes</code> 没有这样的边界 —— 每个 FFI 调用隐式 unsafe。</p>
+<p>📌 <strong>另见</strong>：<a href="ch13-concurrency.html">第 13 章 — 并发</a> 涵盖 <code>Send</code>/<code>Sync</code> trait，它们是编译器检查线程安全的 <code>unsafe</code> 自动 trait。</p>
+</blockquote>
+<h3 id="unsafe-允许什么"><a class="header" href="#unsafe-允许什么">Unsafe 允许什么</a></h3>
+<pre><pre class="playground"><code class="language-rust">// unsafe 让你做五件安全 Rust 禁止的事情：
+// 1. 解引用原始指针
+// 2. 调用 unsafe 函数/方法
+// 3. 访问可变静态变量
+// 4. 实现 unsafe trait
+// 5. 访问 union 字段
+
+// 示例：调用 C 函数
+extern "C" {
+    fn abs(input: i32) -&gt; i32;
+}
+
+fn main() {
+    // SAFETY：abs() 是定义良好的 C 标准库函数。
+    let result = unsafe { abs(-42) };  # 安全 Rust 无法验证 C 代码
+    println!("{result}");               # 42
+}</code></pre></pre>
+<h3 id="何时使用-unsafe"><a class="header" href="#何时使用-unsafe">何时使用 unsafe</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 1. FFI —— 调用 C 库（最常见原因）
+// 2. 性能关键内部循环（罕见）
+// 3. borrow checker 无法表达的数据结构（罕见）
+
+// 作为 Python 开发者，你主要在以下遇到 unsafe：
+// - PyO3 内部（Python ↔ Rust 桥）
+// - C 库绑定
+// - 低级系统调用
+
+// 经验法则：如果你在编写应用代码（不是库代码），
+// 你几乎从不应该需要 unsafe。如果你认为需要，先在
+// Rust 社区询问 —— 通常有安全替代方案。
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="pyo3rust-为-python-编写的扩展"><a class="header" href="#pyo3rust-为-python-编写的扩展">PyO3：Rust 为 Python 编写的扩展</a></h2>
+<p>PyO3 是 Python 和 Rust 之间的桥梁。它让你编写可从 Python 调用的 Rust 函数和
+类 —— 完美替换慢的 Python 热点。</p>
+<h3 id="在-rust-中创建-python-扩展"><a class="header" href="#在-rust-中创建-python-扩展">在 Rust 中创建 Python 扩展</a></h3>
+<pre><code class="language-bash"># 设置
+pip install maturin    # 用于 Rust Python 扩展的构建工具
+maturin init           # 创建项目结构
+
+# 项目结构：
+# my_extension/
+# ├── Cargo.toml
+# ├── pyproject.toml
+# └── src/
+#     └── lib.rs
+</code></pre>
+<pre><code class="language-toml"># Cargo.toml
+[package]
+name = "my_extension"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]    # Python 的共享库
+
+[dependencies]
+pyo3 = { version = "0.22", features = ["extension-module"] }
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// src/lib.rs —— 可从 Python 调用的 Rust 函数
+use pyo3::prelude::*;
+
+/// 用 Rust 编写的快速 Fibonacci 函数。
+#[pyfunction]
+fn fibonacci(n: u64) -&gt; u64 {
+    let (mut a, mut b) = (0u64, 1u64);
+    for _ in 0..n {
+        let temp = b;
+        b = a.wrapping_add(b);
+        a = temp;
+    }
+    a
+}
+
+/// 找到所有不超过 n 的素数（埃拉托斯特尼筛法）。
+#[pyfunction]
+fn primes_up_to(n: usize) -&gt; Vec&lt;usize&gt; {
+    let mut is_prime = vec![true; n + 1];
+    is_prime[0] = false;
+    if n &gt; 0 { is_prime[1] = false; }
+    for i in 2..=((n as f64).sqrt() as usize) {
+        if is_prime[i] {
+            for j in (i * i..=n).step_by(i) {
+                is_prime[j] = false;
+            }
+        }
+    }
+    (2..=n).filter(|&amp;i| is_prime[i]).collect()
+}
+
+/// 可从 Python 使用的 Rust 类。
+#[pyclass]
+struct Counter {
+    value: i64,
+}
+
+#[pymethods]
+impl Counter {
+    #[new]
+    fn new(start: i64) -&gt; Self {
+        Counter { value: start }
+    }
+
+    fn increment(&amp;mut self) {
+        self.value += 1;
+    }
+
+    fn get_value(&amp;self) -&gt; i64 {
+        self.value
+    }
+
+    fn __repr__(&amp;self) -&gt; String {
+        format!("Counter(value={})", self.value)
+    }
+}
+
+/// Python 模块定义。
+#[pymodule]
+fn my_extension(m: &amp;Bound&lt;'_, PyModule&gt;) -&gt; PyResult&lt;()&gt; {
+    m.add_function(wrap_pyfunction!(fibonacci, m)?)?;
+    m.add_function(wrap_pyfunction!(primes_up_to, m)?)?;
+    m.add_class::&lt;Counter&gt;()?;
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="从-python-使用"><a class="header" href="#从-python-使用">从 Python 使用</a></h3>
+<pre><code class="language-bash"># 构建并安装：
+maturin develop --release   # 构建并安装到当前 venv
+</code></pre>
+<pre><code class="language-python"># Python —— 像任何 Python 模块一样使用 Rust 扩展
+import my_extension
+
+# 调用 Rust 函数
+result = my_extension.fibonacci(50)
+print(result)  # 12586269025 —— 微秒级计算
+
+# 使用 Rust 类
+counter = my_extension.Counter(0)
+counter.increment()
+counter.increment()
+print(counter.get_value())  # 2
+print(counter)              # Counter(value=2)
+
+# 性能比较：
+import time
+
+# Python 版本
+def py_primes(n):
+    sieve = [True] * (n + 1)
+    for i in range(2, int(n**0.5) + 1):
+        if sieve[i]:
+            for j in range(i*i, n+1, i):
+                sieve[j] = False
+    return [i for i in range(2, n+1) if sieve[i]]
+
+start = time.perf_counter()
+py_result = py_primes(10_000_000)
+py_time = time.perf_counter() - start
+
+start = time.perf_counter()
+rs_result = my_extension.primes_up_to(10_000_000)
+rs_time = time.perf_counter() - start
+
+print(f"Python: {py_time:.3f}s")    # 约 3.5 秒
+print(f"Rust:   {rs_time:.3f}s")    # 约 0.05 秒 —— 70 倍快！
+print(f"Same results: {py_result == rs_result}")  # True
+</code></pre>
+<h3 id="pyo3-快速参考"><a class="header" href="#pyo3-快速参考">PyO3 快速参考</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Python 概念</th><th>PyO3 属性</th><th>说明</th></tr></thead><tbody>
+<tr><td>函数</td><td><code>#[pyfunction]</code></td><td>暴露给 Python</td></tr>
+<tr><td>类</td><td><code>#[pyclass]</code></td><td>Python 可见类</td></tr>
+<tr><td>方法</td><td><code>#[pymethods]</code></td><td>pyclass 上的方法</td></tr>
+<tr><td><code>__init__</code></td><td><code>#[new]</code></td><td>构造函数</td></tr>
+<tr><td><code>__repr__</code></td><td><code>fn __repr__()</code></td><td>字符串表示</td></tr>
+<tr><td><code>__str__</code></td><td><code>fn __str__()</code></td><td>显示字符串</td></tr>
+<tr><td><code>__len__</code></td><td><code>fn __len__()</code></td><td>长度</td></tr>
+<tr><td><code>__getitem__</code></td><td><code>fn __getitem__()</code></td><td>索引</td></tr>
+<tr><td>属性</td><td><code>#[getter]</code> / <code>#[setter]</code></td><td>属性访问</td></tr>
+<tr><td>静态方法</td><td><code>#[staticmethod]</code></td><td>无 self</td></tr>
+<tr><td>类方法</td><td><code>#[classmethod]</code></td><td>带 cls</td></tr>
+</tbody></table>
+</div>
+<h3 id="ffi-安全模式"><a class="header" href="#ffi-安全模式">FFI 安全模式</a></h3>
+<p>当通过 PyO3 或原始 C FFI 将 Rust 暴露给 Python 时，这些规则防止最常见的 bug：</p>
+<ol>
+<li>
+<p><strong>永远不要让 panic 跨越 FFI 边界</strong> —— Rust panic 展开到 Python（或 C）是<strong>未定义行为</strong>。PyO3 自动为 <code>#[pyfunction]</code> 处理这个，但原始 <code>extern "C"</code> 函数需要显式保护：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[no_mangle]
+pub extern "C" fn raw_ffi_function() -&gt; i32 {
+    match std::panic::catch_unwind(|| {
+<span class="boring">        实际逻辑
+</span>        42
+    }) {
+        Ok(result) =&gt; result,
+        Err(_) =&gt; -1,  # 返回错误代码而不是 panic 到 C/Python
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+</li>
+<li>
+<p><strong>共享 struct 使用 <code>#[repr(C)]</code></strong> —— 如果 Python/C 直接读取 struct 字段，你<strong>必须</strong>使用 <code>#[repr(C)]</code> 保证 C 兼容布局。如果你传递不透明指针（PyO3 为 <code>#[pyclass]</code> 做的），则不需要。</p>
+</li>
+<li>
+<p><strong><code>extern "C"</code></strong> —— 原始 FFI 函数需要，以便调用约定匹配 C/Python 期望的。PyO3 的 <code>#[pyfunction]</code> 为你处理这个。</p>
+</li>
+</ol>
+<blockquote>
+<p><strong>PyO3 优势</strong>：PyO3 为你包装这些安全问题中的大多数 —— panic 捕获、类型转换、GIL 管理。除非你有特定理由，否则优先使用 PyO3 而不是原始 FFI。</p>
+</blockquote>
+<hr />
+<!-- ch14a: 测试 -->
+<h2 id="单元测试-vs-pytest"><a class="header" href="#单元测试-vs-pytest">单元测试 vs pytest</a></h2>
+<h3 id="使用-pytest-的-python-测试"><a class="header" href="#使用-pytest-的-python-测试">使用 pytest 的 Python 测试</a></h3>
+<pre><code class="language-python"># test_calculator.py
+import pytest
+from calculator import add, divide
+
+def test_add():
+    assert add(2, 3) == 5
+
+def test_add_negative():
+    assert add(-1, 1) == 0
+
+def test_divide():
+    assert divide(10, 2) == 5.0
+
+def test_divide_by_zero():
+    with pytest.raises(ZeroDivisionError):
+        divide(1, 0)
+
+# 参数化测试
+@pytest.mark.parametrize("a,b,expected", [
+    (1, 2, 3),
+    (0, 0, 0),
+    (-1, -1, -2),
+    (100, 200, 300),
+])
+def test_add_parametrized(a, b, expected):
+    assert add(a, b) == expected
+
+# Fixture
+@pytest.fixture
+def sample_data():
+    return [1, 2, 3, 4, 5]
+
+def test_sum(sample_data):
+    assert sum(sample_data) == 15
+</code></pre>
+<pre><code class="language-bash"># 运行测试
+pytest                      # 运行所有测试
+pytest test_calculator.py   # 运行一个文件
+pytest -k "test_add"        # 运行匹配测试
+pytest -v                   # 详细输出
+pytest --tb=short           # 短 traceback
+</code></pre>
+<h3 id="rust-内置测试"><a class="header" href="#rust-内置测试">Rust 内置测试</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// src/calculator.rs —— 测试在同一个文件中！
+fn add(a: i32, b: i32) -&gt; i32 {
+    a + b
+}
+
+fn divide(a: f64, b: f64) -&gt; Result&lt;f64, String&gt; {
+    if b == 0.0 {
+        Err("Division by zero".to_string())
+    } else {
+        Ok(a / b)
+    }
+}
+
+<span class="boring">测试放在 #[cfg(test)] 模块中 —— 仅在 `cargo test` 期间编译
+</span>#[cfg(test)]
+mod tests {
+    use super::*;  # 从父模块导入一切
+
+    #[test]
+    fn test_add() {
+        assert_eq!(add(2, 3), 5);
+    }
+
+    #[test]
+    fn test_add_negative() {
+        assert_eq!(add(-1, 1), 0);
+    }
+
+    #[test]
+    fn test_divide() {
+        assert_eq!(divide(10.0, 2.0), Ok(5.0));
+    }
+
+    #[test]
+    fn test_divide_by_zero() {
+        assert!(divide(1.0, 0.0).is_err());
+    }
+
+<span class="boring">    测试某物 panic（如 pytest.raises）
+</span>    #[test]
+    #[should_panic(expected = "out of bounds")]
+    fn test_out_of_bounds() {
+        let v = vec![1, 2, 3];
+        let _ = v[99];  # Panic
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-bash"># 运行测试
+cargo test                         # 运行所有测试
+cargo test test_add                # 运行匹配测试
+cargo test -- --nocapture          # 显示 println! 输出
+cargo test -p my_crate             # 测试 workspace 中的一个 crate
+cargo test -- --test-threads=1     # 顺序（用于有副作用的测试）
+</code></pre>
+<h3 id="测试快速参考"><a class="header" href="#测试快速参考">测试快速参考</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>pytest</th><th>Rust</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>assert x == y</code></td><td><code>assert_eq!(x, y)</code></td><td>相等性</td></tr>
+<tr><td><code>assert x != y</code></td><td><code>assert_ne!(x, y)</code></td><td>不等性</td></tr>
+<tr><td><code>assert condition</code></td><td><code>assert!(condition)</code></td><td>布尔</td></tr>
+<tr><td><code>assert condition, "msg"</code></td><td><code>assert!(condition, "msg")</code></td><td>带消息</td></tr>
+<tr><td><code>pytest.raises(E)</code></td><td><code>#[should_panic]</code></td><td>期望 panic</td></tr>
+<tr><td><code>@pytest.fixture</code></td><td>测试或辅助函数中的设置</td><td>无内置 fixture</td></tr>
+<tr><td><code>@pytest.mark.parametrize</code></td><td><code>rstest</code> crate</td><td>参数化测试</td></tr>
+<tr><td><code>conftest.py</code></td><td><code>tests/common/mod.rs</code></td><td>共享测试辅助</td></tr>
+<tr><td><code>pytest.skip()</code></td><td><code>#[ignore]</code></td><td>跳过测试</td></tr>
+<tr><td><code>tmp_path</code> fixture</td><td><code>tempfile</code> crate</td><td>临时目录</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h2 id="使用-rstest-的参数化测试"><a class="header" href="#使用-rstest-的参数化测试">使用 rstest 的参数化测试</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">Cargo.toml：rstest = "0.23"
+</span>
+use rstest::rstest;
+
+<span class="boring">如 @pytest.mark.parametrize
+</span>#[rstest]
+#[case(1, 2, 3)]
+#[case(0, 0, 0)]
+#[case(-1, -1, -2)]
+#[case(100, 200, 300)]
+fn test_add(#[case] a: i32, #[case] b: i32, #[case] expected: i32) {
+    assert_eq!(add(a, b), expected);
+}
+
+<span class="boring">如 @pytest.fixture
+</span>use rstest::fixture;
+
+#[fixture]
+fn sample_data() -&gt; Vec&lt;i32&gt; {
+    vec![1, 2, 3, 4, 5]
+}
+
+#[rstest]
+fn test_sum(sample_data: Vec&lt;i32&gt;) {
+    assert_eq!(sample_data.iter().sum::&lt;i32&gt;(), 15);
+}
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="使用-mockall-模拟"><a class="header" href="#使用-mockall-模拟">使用 mockall 模拟</a></h2>
+<pre><code class="language-python"># Python —— 使用 unittest.mock 模拟
+from unittest.mock import Mock, patch
+
+def test_fetch_user():
+    mock_db = Mock()
+    mock_db.get_user.return_value = {"name": "Alice"}
+
+    result = fetch_user_name(mock_db, 1)
+    assert result == "Alice"
+    mock_db.get_user.assert_called_once_with(1)
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust —— 使用 mockall crate 模拟
+<span class="boring">Cargo.toml：mockall = "0.13"
+</span>
+use mockall::{automock, predicate::*};
+
+#[automock]                          # 自动生成 MockDatabase
+trait Database {
+    fn get_user(&amp;self, id: i64) -&gt; Option&lt;User&gt;;
+}
+
+fn fetch_user_name(db: &amp;dyn Database, id: i64) -&gt; Option&lt;String&gt; {
+    db.get_user(id).map(|u| u.name)
+}
+
+#[test]
+fn test_fetch_user() {
+    let mut mock = MockDatabase::new();
+    mock.expect_get_user()
+        .with(eq(1))                   # assert_called_with(1)
+        .times(1)                      # assert_called_once
+        .returning(|_| Some(User { name: "Alice".into() }));
+
+    let result = fetch_user_name(&amp;mock, 1);
+    assert_eq!(result, Some("Alice".to_string()));
+}
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：Unsafe 的安全包装器</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：编写一个安全函数 <code>split_at_mid</code>，接受 <code>&amp;mut [i32]</code> 并返回两个可变切片 <code>(&amp;mut [i32], &amp;mut [i32])</code> 在中点分割。内部，使用带原始指针的 <code>unsafe</code>（模拟 <code>split_at_mut</code> 做的）。然后用安全 API 包装它。</p>
+<details>
+<summary>🔑 解答</summary>
+<pre><pre class="playground"><code class="language-rust">fn split_at_mid(slice: &amp;mut [i32]) -&gt; (&amp;mut [i32], &amp;mut [i32]) {
+    let mid = slice.len() / 2;
+    let ptr = slice.as_mut_ptr();
+    let len = slice.len();
+
+    assert!(mid &lt;= len); # unsafe 前的安全检查
+
+<span class="boring">    SAFETY：mid &lt;= len（上面断言），ptr 来自有效的 &amp;mut 切片，
+</span><span class="boring">    所以两个子切片在边界内且不重叠。
+</span>    unsafe {
+        (
+            std::slice::from_raw_parts_mut(ptr, mid),
+            std::slice::from_raw_parts_mut(ptr.add(mid), len - mid),
+        )
+    }
+}
+
+fn main() {
+    let mut data = vec![1, 2, 3, 4, 5, 6];
+    let (left, right) = split_at_mid(&amp;mut data);
+    left[0] = 99;
+    right[0] = 88;
+    println!("left: {left:?}, right: {right:?}");
+<span class="boring">    left: [99, 2, 3], right: [88, 5, 6]
+</span>}</code></pre></pre>
+<p><strong>关键要点</strong>：<code>unsafe</code> 块小且由 <code>assert!</code> 保护。公共 API 完全安全 —— 调用者从不看到 <code>unsafe</code>。这是 Rust 模式：unsafe 内部，安全接口。Python 的 <code>ctypes</code> 不给你这样的保证。</p>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch13-concurrency.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch15-migration-patterns.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch13-concurrency.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch15-migration-patterns.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

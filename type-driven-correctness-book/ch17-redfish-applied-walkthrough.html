@@ -1,0 +1,491 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>13. 应用演练 — 类型安全的 Redfish 客户端 - Type-Driven Correctness in Rust</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Type-Driven Correctness in Rust</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="应用演练--类型安全-redfish-客户端-"><a class="header" href="#应用演练--类型安全-redfish-客户端-">应用演练 —— 类型安全 Redfish 客户端 🟡</a></h1>
+<blockquote>
+<p><strong>你将学到：</strong> 如何将类型状态会话、能力令牌、幻象类型资源导航、量纲分析、验证边界、构建器类型状态和一次性类型组合成完整、零开销的 Redfish 客户端 —— 每个协议违规都是编译错误。</p>
+<p><strong>交叉引用：</strong> <a href="ch02-typed-command-interfaces-request-determi.html">ch02</a>（类型化命令）、<a href="ch03-single-use-types-cryptographic-guarantee.html">ch03</a>（一次性类型）、<a href="ch04-capability-tokens-zero-cost-proof-of-aut.html">ch04</a>（能力令牌）、<a href="ch05-protocol-state-machines-type-state-for-r.html">ch05</a>（类型状态）、<a href="ch06-dimensional-analysis-making-the-compiler.html">ch06</a>（量纲类型）、<a href="ch07-validated-boundaries-parse-dont-validate.html">ch07</a>（验证边界）、<a href="ch09-phantom-types-for-resource-tracking.html">ch09</a>（幻象类型）、<a href="ch10-putting-it-all-together-a-complete-diagn.html">ch10</a>（IPMI 集成）、<a href="ch11-fourteen-tricks-from-the-trenches.html">ch11</a>（技巧 4 —— 构建器类型状态）</p>
+</blockquote>
+<h2 id="为什么-redfish-值得拥有自己的章节"><a class="header" href="#为什么-redfish-值得拥有自己的章节">为什么 Redfish 值得拥有自己的章节</a></h2>
+<p>第 10 章围绕 IPMI 组合核心模式 —— 字节级协议。但大多数 BMC 平台现在 alongside（或代替）IPMI 暴露 <strong>Redfish</strong> REST API，Redfish 引入它自己的正确性危险类别：</p>
+<div class="table-wrapper"><table><thead><tr><th>危险</th><th>示例</th><th>后果</th></tr></thead><tbody>
+<tr><td>格式错误的 URI</td><td><code>GET /redfish/v1/Chassis/1/Processors</code>（错误父级）</td><td>404 或静默返回错误数据</td></tr>
+<tr><td>错误电源状态上的操作</td><td>在已关闭系统上 <code>Reset(ForceOff)</code></td><td>BMC 返回错误，或更糟，与另一个操作竞争</td></tr>
+<tr><td>缺少权限</td><td>操作员级代码调用 <code>Manager.ResetToDefaults</code></td><td>生产中的 403，安全审计发现</td></tr>
+<tr><td>不完整的 PATCH</td><td>从 PATCH 体中省略必需的 BIOS 属性</td><td>静默无操作或部分配置损坏</td></tr>
+<tr><td>未验证的固件应用</td><td>镜像完整性检查之前调用 <code>SimpleUpdate</code></td><td>BMC 损坏</td></tr>
+<tr><td>模式版本不匹配</td><td>在 v1.5 BMC 上访问 <code>LastResetTime</code>（v1.13 添加）</td><td><code>null</code> 字段 → 运行时 panic</td></tr>
+<tr><td>遥测中的单位混淆</td><td>比较入口温度（°C）到功率绘制（W）</td><td>无意义的阈值决策</td></tr>
+</tbody></table>
+</div>
+<p>在 C、Python 或无类型 Rust 中，每个这些都仅通过纪律和测试防止。本章使它们成为<strong>编译错误</strong>。</p>
+<h2 id="无类型-redfish-客户端"><a class="header" href="#无类型-redfish-客户端">无类型 Redfish 客户端</a></h2>
+<p>典型的 Redfish 客户端看起来像这样：</p>
+<pre><code class="language-rust ignore">struct RedfishClient { base_url: String, token: Option&lt;String&gt; }
+
+impl RedfishClient {
+    fn get(&amp;self, path: &amp;str) -&gt; Result&lt;serde_json::Value, String&gt; { /* ... */ }
+    fn patch(&amp;self, path: &amp;str, body: &amp;serde_json::Value) -&gt; Result&lt;(), String&gt; { /* ... */ }
+    fn post_action(&amp;self, path: &amp;str, body: &amp;serde_json::Value) -&gt; Result&lt;(), String&gt; { /* ... */ }
+}
+
+fn check_thermal(client: &amp;RedfishClient) -&gt; Result&lt;(), String&gt; {
+    let resp = client.get("/redfish/v1/Chassis/1/Thermal")?;
+    // 🐛 此字段总是存在吗？如果 BMC 返回 null 怎么办？
+    let cpu_temp = resp["Temperatures"][0]["ReadingCelsius"].as_f64().unwrap();
+    let fan_rpm = resp["Fans"][0]["Reading"].as_f64().unwrap();
+    // 🐛 比较 °C 到 RPM —— 都是 f64
+    if cpu_temp &gt; fan_rpm { println!("thermal issue"); }
+    // 🐛 这是正确的路径吗？没有编译时检查。
+    client.post_action("/redfish/v1/Systems/1/Actions/ComputerSystem.Reset",
+        &amp;serde_json::json!({"ResetType": "ForceOff"}))?;
+    Ok(())
+}</code></pre>
+<p>这"工作" —— 直到它不。每个 <code>unwrap()</code> 是潜在 panic，每个字符串路径是未检查的假设，单位混淆是看不见的。</p>
+<h2 id="第-1-节--会话生命周期类型状态ch05"><a class="header" href="#第-1-节--会话生命周期类型状态ch05">第 1 节 —— 会话生命周期（类型状态，ch05）</a></h2>
+<p>Redfish 会话有严格的生命周期：connect → authenticate → use → close。将每个状态编码为不同型号。</p>
+<pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Disconnected
+    Disconnected --&gt; Connected : connect(host)
+    Connected --&gt; Authenticated : login(user, pass)
+    Authenticated --&gt; Authenticated : get() / patch() / post_action()
+    Authenticated --&gt; Closed : logout()
+    Closed --&gt; [*]
+</pre>
+<pre><code class="language-rust ignore">use std::marker::PhantomData;
+
+pub struct Disconnected;
+pub struct Connected;
+pub struct Authenticated;
+
+pub struct RedfishSession&lt;S&gt; {
+    base_url: String,
+    auth_token: Option&lt;String&gt;,
+    _state: PhantomData&lt;S&gt;,
+}
+
+impl RedfishSession&lt;Disconnected&gt; {
+    pub fn new(host: &amp;str) -&gt; Self {
+        RedfishSession { base_url: format!("https://{}", host), auth_token: None, _state: PhantomData }
+    }
+    pub fn connect(self) -&gt; Result&lt;RedfishSession&lt;Connected&gt;, RedfishError&gt; {
+        println!("Connecting to {}/redfish/v1", self.base_url);
+        Ok(RedfishSession { base_url: self.base_url, auth_token: None, _state: PhantomData })
+    }
+}
+
+impl RedfishSession&lt;Connected&gt; {
+    pub fn login(self, user: &amp;str, _pass: &amp;str) -&gt; Result&lt;(RedfishSession&lt;Authenticated&gt;, LoginToken), RedfishError&gt; {
+        println!("Authenticated as {}", user);
+        Ok((
+            RedfishSession { base_url: self.base_url, auth_token: Some("X-Auth-Token".to_string()), _state: PhantomData },
+            LoginToken { _private: () },
+        ))
+    }
+}
+
+impl RedfishSession&lt;Authenticated&gt; {
+    fn http_get(&amp;self, path: &amp;str) -&gt; Result&lt;serde_json::Value, RedfishError&gt; { /* ... */ }
+    fn http_patch(&amp;self, path: &amp;str, body: &amp;serde_json::Value) -&gt; Result&lt;serde_json::Value, RedfishError&gt; { /* ... */ }
+    fn http_post(&amp;self, path: &amp;str, body: &amp;serde_json::Value) -&gt; Result&lt;serde_json::Value, RedfishError&gt; { /* ... */ }
+    pub fn logout(self) { println!("Session closed"); }
+}</code></pre>
+<p><strong>消除的 bug 类：</strong> 在断开连接或未认证会话上发送请求。方法根本不存在 —— 没有运行时检查可以忘记。</p>
+<h2 id="第-2-节--权限令牌能力令牌ch04"><a class="header" href="#第-2-节--权限令牌能力令牌ch04">第 2 节 —— 权限令牌（能力令牌，ch04）</a></h2>
+<p>Redfish 定义四个权限级别：<code>Login</code>、<code>ConfigureComponents</code>、<code>ConfigureManager</code>、<code>ConfigureSelf</code>。与其在运行时检查权限，不如将它们编码为零大小证明令牌。</p>
+<pre><code class="language-rust ignore">pub struct LoginToken { _private: () }
+pub struct ConfigureComponentsToken { _private: () }
+pub struct ConfigureManagerToken { _private: () }
+
+/// 任何有 Login 的人都可以读取热数据。
+fn get_thermal(session: &amp;RedfishSession&lt;Authenticated&gt;, _proof: &amp;LoginToken) -&gt; Result&lt;serde_json::Value, RedfishError&gt; { /* ... */ }
+
+/// 更改启动顺序需要 ConfigureComponents。
+fn set_boot_order(session: &amp;RedfishSession&lt;Authenticated&gt;, _proof: &amp;ConfigureComponentsToken, order: &amp;[&amp;str]) -&gt; Result&lt;(), RedfishError&gt; { /* ... */ }
+
+/// 恢复出厂设置需要 ConfigureManager。
+fn reset_to_defaults(session: &amp;RedfishSession&lt;Authenticated&gt;, _proof: &amp;ConfigureManagerToken) -&gt; Result&lt;(), RedfishError&gt; { /* ... */ }</code></pre>
+<p><strong>消除的 bug 类：</strong> 权限提升。操作员级登录物理上不能生成 <code>ConfigureManagerToken</code> —— 编译器不会让代码引用它。零运行时成本：对于编译的二进制文件，这些令牌不存在。</p>
+<h2 id="第-3-节--类型化资源导航幻象类型ch09"><a class="header" href="#第-3-节--类型化资源导航幻象类型ch09">第 3 节 —— 类型化资源导航（幻象类型，ch09）</a></h2>
+<p>Redfish 资源形成树。将层次结构编码为类型防止构造非法 URI：</p>
+<pre><code class="language-rust ignore">use std::marker::PhantomData;
+
+pub struct ServiceRoot;
+pub struct SystemsCollection;
+pub struct ComputerSystem;
+pub struct ChassisCollection;
+pub struct ChassisInstance;
+pub struct ThermalResource;
+
+pub struct RedfishPath&lt;R&gt; { uri: String, _resource: PhantomData&lt;R&gt; }
+
+impl RedfishPath&lt;ServiceRoot&gt; {
+    pub fn root() -&gt; Self { RedfishPath { uri: "/redfish/v1".to_string(), _resource: PhantomData } }
+    pub fn chassis(&amp;self) -&gt; RedfishPath&lt;ChassisCollection&gt; {
+        RedfishPath { uri: format!("{}/Chassis", self.uri), _resource: PhantomData }
+    }
+}
+
+impl RedfishPath&lt;ChassisCollection&gt; {
+    pub fn instance(&amp;self, id: &amp;str) -&gt; RedfishPath&lt;ChassisInstance&gt; {
+        RedfishPath { uri: format!("{}/{}", self.uri, id), _resource: PhantomData }
+    }
+}
+
+impl RedfishPath&lt;ChassisInstance&gt; {
+    pub fn thermal(&amp;self) -&gt; RedfishPath&lt;ThermalResource&gt; {
+        RedfishPath { uri: format!("{}/Thermal", self.uri), _resource: PhantomData }
+    }
+}
+
+fn build_paths() {
+    let thermal = RedfishPath::root().chassis().instance("1").thermal();
+    assert_eq!(thermal.uri(), "/redfish/v1/Chassis/1/Thermal");
+    // ❌ 编译错误：ServiceRoot 没有 .thermal() 方法
+    // RedfishPath::root().thermal();
+}</code></pre>
+<p><strong>消除的 bug 类：</strong> 格式错误的 URI，导航到给定父级下不存在的子资源。层次结构在结构上强制执行 —— 你只能通过 <code>Chassis → Instance → Thermal</code> 到达 <code>Thermal</code>。</p>
+<h2 id="第-4-节--类型化遥测读取类型化命令--量纲分析ch02--ch06"><a class="header" href="#第-4-节--类型化遥测读取类型化命令--量纲分析ch02--ch06">第 4 节 —— 类型化遥测读取（类型化命令 + 量纲分析，ch02 + ch06）</a></h2>
+<p>将类型化资源路径与量纲返回类型结合，所以编译器知道每个读数携带什么单位：</p>
+<pre><code class="language-rust ignore">#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+pub struct Celsius(pub f64);
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+pub struct Rpm(pub u32);
+
+pub trait RedfishResource {
+    type Response;
+    fn parse(json: &amp;serde_json::Value) -&gt; Result&lt;Self::Response, RedfishError&gt;;
+}
+
+#[derive(Debug)]
+pub struct ValidThermalResponse {
+    pub temperatures: Vec&lt;TemperatureReading&gt;,
+    pub fans: Vec&lt;FanReading&gt;,
+}
+
+#[derive(Debug)]
+pub struct TemperatureReading {
+    pub name: String,
+    pub reading: Celsius,           // ← 量纲类型，不是 f64
+    pub upper_critical: Celsius,
+    pub status: HealthStatus,
+}
+
+#[derive(Debug)]
+pub struct FanReading {
+    pub name: String,
+    pub reading: Rpm,               // ← 量纲类型，不是 u32
+    pub status: HealthStatus,
+}
+
+impl RedfishResource for ThermalResource {
+    type Response = ValidThermalResponse;
+    fn parse(json: &amp;serde_json::Value) -&gt; Result&lt;ValidThermalResponse, RedfishError&gt; { /* ... */ }
+}
+
+impl RedfishSession&lt;Authenticated&gt; {
+    pub fn get_resource&lt;R: RedfishResource&gt;(&amp;self, path: &amp;RedfishPath&lt;R&gt;) -&gt; Result&lt;R::Response, RedfishError&gt; {
+        let json = self.http_get(path.uri())?;
+        R::parse(&amp;json)
+    }
+}
+
+fn read_thermal(session: &amp;RedfishSession&lt;Authenticated&gt;, _proof: &amp;LoginToken) -&gt; Result&lt;(), RedfishError&gt; {
+    let path = RedfishPath::root().chassis().instance("1").thermal();
+    let thermal = session.get_resource(&amp;path)?;
+    for t in &amp;thermal.temperatures {
+        // t.reading 是 Celsius —— 只能与 Celsius 比较
+        if t.reading &gt; t.upper_critical { println!("CRITICAL: {} at {:?}", t.name, t.reading); }
+        // ❌ 编译错误：不能比较 Celsius 与 Rpm
+        // if t.reading &gt; thermal.fans[0].reading { }
+    }
+    Ok(())
+}</code></pre>
+<p><strong>消除的 bug 类：</strong></p>
+<ul>
+<li><strong>单位混淆：</strong> <code>Celsius</code> ≠ <code>Rpm</code> ≠ <code>Watts</code> —— 编译器拒绝比较。</li>
+<li><strong>缺失字段 panic：</strong> <code>parse()</code> 在边界验证；<code>ValidThermalResponse</code> 保证所有字段存在。</li>
+<li><strong>错误响应类型：</strong> <code>get_resource(&amp;thermal_path)</code> 返回 <code>ValidThermalResponse</code>，不是原始 JSON。</li>
+</ul>
+<h2 id="第-5-节--带有构建器类型状态的-patchch11技巧-4"><a class="header" href="#第-5-节--带有构建器类型状态的-patchch11技巧-4">第 5 节 —— 带有构建器类型状态的 PATCH（ch11，技巧 4）</a></h2>
+<p>Redfish PATCH 负载必须包含特定字段。在必需字段设置后门控 <code>.apply()</code> 的构建器防止不完整或空补丁：</p>
+<pre><code class="language-rust ignore">pub struct FieldUnset;
+pub struct FieldSet;
+
+pub struct BiosPatchBuilder&lt;BootOrder, TpmState&gt; {
+    boot_order: Option&lt;Vec&lt;String&gt;&gt;,
+    tpm_enabled: Option&lt;bool&gt;,
+    _markers: PhantomData&lt;(BootOrder, TpmState)&gt;,
+}
+
+impl BiosPatchBuilder&lt;FieldSet, FieldSet&gt; {
+    pub fn apply(self, session: &amp;RedfishSession&lt;Authenticated&gt;, _proof: &amp;ConfigureComponentsToken, system: &amp;RedfishPath&lt;ComputerSystem&gt;) -&gt; Result&lt;(), RedfishError&gt; {
+        let body = serde_json::json!({
+            "Boot": { "BootOrder": self.boot_order.unwrap() },
+            "Oem": { "TpmEnabled": self.tpm_enabled.unwrap() }
+        });
+        session.http_patch(&amp;format!("{}/Bios/Settings", system.uri()), &amp;body)?;
+        Ok(())
+    }
+}
+
+// ✅ 编译 —— 两个必需字段设置
+BiosPatchBuilder::new()
+    .boot_order(vec!["Pxe".into(), "Hdd".into()])
+    .tpm_enabled(true)
+    .apply(session, configure, &amp;system)?;
+
+// ❌ 编译错误：.apply() 在 BiosPatchBuilder&lt;FieldSet, FieldUnset&gt; 上找不到
+// BiosPatchBuilder::new().boot_order(...).apply(...);</code></pre>
+<p><strong>消除的 bug 类：</strong> 不完整的 PATCH 请求。构建器在类型级别跟踪哪些字段已设置，<code>.apply()</code> 仅在两者都设置后可用。</p>
+<h2 id="关键要点"><a class="header" href="#关键要点">关键要点</a></h2>
+<ol>
+<li><strong>类型状态用于会话生命周期</strong> —— <code>Disconnected</code> → <code>Connected</code> → <code>Authenticated</code> → <code>Closed</code>。</li>
+<li><strong>能力令牌用于权限</strong> —— <code>LoginToken</code>、<code>ConfigureComponentsToken</code>、<code>ConfigureManagerToken</code>。</li>
+<li><strong>幻象类型用于资源导航</strong> —— <code>RedfishPath&lt;R&gt;</code> 强制执行有效的 URI 层次结构。</li>
+<li><strong>量纲类型用于遥测</strong> —— <code>Celsius</code>、<code>Rpm</code>、<code>Watts</code> 防止单位混淆。</li>
+<li><strong>验证边界用于解析</strong> —— <code>RedfishResource::parse()</code> 在边界验证 JSON。</li>
+<li><strong>构建器类型状态用于 PATCH</strong> —— <code>BiosPatchBuilder</code> 门控 <code>.apply()</code> 在必需字段上。</li>
+<li><strong>七个模式组合成零开销客户端</strong> —— 每个协议违规是编译错误，不是运行时 bug。</li>
+</ol>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch10-putting-it-all-together-a-complete-diagn.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch18-redfish-server-walkthrough.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch10-putting-it-all-together-a-complete-diagn.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch18-redfish-server-walkthrough.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

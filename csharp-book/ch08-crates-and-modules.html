@@ -1,0 +1,631 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>8. Crate 与模块 - Rust for C# Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C# Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="模块和-crates代码组织"><a class="header" href="#模块和-crates代码组织">模块和 Crates：代码组织</a></h2>
+<blockquote>
+<p><strong>你将学到：</strong> Rust 的模块系统 vs C# 命名空间和程序集，<code>pub</code>/<code>pub(crate)</code>/<code>pub(super)</code> 可见性，
+基于文件的模块组织，以及 crates 如何映射到 .NET 程序集。</p>
+<p><strong>难度：</strong> 🟢 初学者</p>
+</blockquote>
+<p>理解 Rust 的模块系统对于组织代码和管理依赖至关重要。对于 C# 开发者，这类似于理解命名空间、程序集和 NuGet 包。</p>
+<h3 id="rust-模块-vs-c-命名空间"><a class="header" href="#rust-模块-vs-c-命名空间">Rust 模块 vs C# 命名空间</a></h3>
+<h4 id="c-命名空间组织"><a class="header" href="#c-命名空间组织">C# 命名空间组织</a></h4>
+<pre><code class="language-csharp">// 文件：Models/User.cs
+namespace MyApp.Models
+{
+    public class User
+    {
+        public string Name { get; set; }
+        public int Age { get; set; }
+    }
+}
+
+// 文件：Services/UserService.cs
+using MyApp.Models;
+
+namespace MyApp.Services
+{
+    public class UserService
+    {
+        public User CreateUser(string name, int age)
+        {
+            return new User { Name = name, Age = age };
+        }
+    }
+}
+
+// 文件：Program.cs
+using MyApp.Models;
+using MyApp.Services;
+
+namespace MyApp
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            var service = new UserService();
+            var user = service.CreateUser("Alice", 30);
+        }
+    }
+}
+</code></pre>
+<h4 id="rust-模块组织"><a class="header" href="#rust-模块组织">Rust 模块组织</a></h4>
+<pre><pre class="playground"><code class="language-rust">// 文件：src/models.rs
+pub struct User {
+    pub name: String,
+    pub age: u32,
+}
+
+impl User {
+    pub fn new(name: String, age: u32) -&gt; User {
+        User { name, age }
+    }
+}
+
+// 文件：src/services.rs
+use crate::models::User;
+
+pub struct UserService;
+
+impl UserService {
+    pub fn create_user(name: String, age: u32) -&gt; User {
+        User::new(name, age)
+    }
+}
+
+// 文件：src/lib.rs（或 main.rs）
+pub mod models;
+pub mod services;
+
+use models::User;
+use services::UserService;
+
+fn main() {
+    let service = UserService;
+    let user = UserService::create_user("Alice".to_string(), 30);
+}</code></pre></pre>
+<h3 id="模块层次结构和可见性"><a class="header" href="#模块层次结构和可见性">模块层次结构和可见性</a></h3>
+<pre class="mermaid">graph TD
+    Crate[&quot;crate（根）&quot;] --&gt; ModA[&quot;mod data&quot;]
+    Crate --&gt; ModB[&quot;mod api&quot;]
+    ModA --&gt; SubA1[&quot;pub struct Repo&quot;]
+    ModA --&gt; SubA2[&quot;fn helper（私有）&quot;]
+    ModB --&gt; SubB1[&quot;pub fn handle()&quot;]
+    ModB --&gt; SubB2[&quot;pub(crate) fn internal()&quot;]
+    ModB --&gt; SubB3[&quot;pub(super) fn parent_only()&quot;]
+
+    style SubA1 fill:#c8e6c9,color:#000
+    style SubA2 fill:#ffcdd2,color:#000
+    style SubB1 fill:#c8e6c9,color:#000
+    style SubB2 fill:#fff9c4,color:#000
+    style SubB3 fill:#fff9c4,color:#000
+</pre>
+<blockquote>
+<p>🟢 绿色 = 到处公开  |  🟡 黄色 = 受限可见性  |  🔴 红色 = 私有</p>
+</blockquote>
+<h4 id="c-可见性修饰符"><a class="header" href="#c-可见性修饰符">C# 可见性修饰符</a></h4>
+<pre><code class="language-csharp">namespace MyApp.Data
+{
+    // public - 从任何地方可访问
+    public class Repository
+    {
+        // private - 仅在此类内
+        private string connectionString;
+
+        // internal - 在此程序集内
+        internal void Connect() { }
+
+        // protected - 此类和子类
+        protected virtual void Initialize() { }
+
+        // public - 从任何地方可访问
+        public void Save(object data) { }
+    }
+}
+</code></pre>
+<h4 id="rust-可见性规则"><a class="header" href="#rust-可见性规则">Rust 可见性规则</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust 中一切默认私有
+mod data {
+    struct Repository {  // 私有结构体
+        connection_string: String,  // 私有字段
+    }
+
+    impl Repository {
+        fn new() -&gt; Repository {  // 私有函数
+            Repository {
+                connection_string: "localhost".to_string(),
+            }
+        }
+
+        pub fn connect(&amp;self) {  // 公开方法
+            // 仅在此模块及其子模块内可访问
+        }
+
+        pub(crate) fn initialize(&amp;self) {  // crate 级公开
+            // 在此 crate 内任何地方可访问
+        }
+
+        pub(super) fn internal_method(&amp;self) {  // 父模块公开
+            // 在父模块内可访问
+        }
+    }
+
+    // 公开结构体 - 可从模块外部访问
+    pub struct PublicRepository {
+        pub data: String,  // 公开字段
+        private_data: String,  // 私有字段（无 pub）
+    }
+}
+
+pub use data::PublicRepository;  // 重新导出供外部使用
+<span class="boring">}</span></code></pre></pre>
+<h3 id="模块文件组织"><a class="header" href="#模块文件组织">模块文件组织</a></h3>
+<h4 id="c-项目结构"><a class="header" href="#c-项目结构">C# 项目结构</a></h4>
+<pre><code class="language-text">MyApp/
+├── MyApp.csproj
+├── Models/
+│   ├── User.cs
+│   └── Product.cs
+├── Services/
+│   ├── UserService.cs
+│   └── ProductService.cs
+├── Controllers/
+│   └── ApiController.cs
+└── Program.cs
+</code></pre>
+<h4 id="rust-模块文件结构"><a class="header" href="#rust-模块文件结构">Rust 模块文件结构</a></h4>
+<pre><code class="language-text">my_app/
+├── Cargo.toml
+└── src/
+    ├── main.rs（或 lib.rs）
+    ├── models/
+    │   ├── mod.rs        // 模块声明
+    │   ├── user.rs
+    │   └── product.rs
+    ├── services/
+    │   ├── mod.rs        // 模块声明
+    │   ├── user_service.rs
+    │   └── product_service.rs
+    └── controllers/
+        ├── mod.rs
+        └── api_controller.rs
+</code></pre>
+<h4 id="模块声明模式"><a class="header" href="#模块声明模式">模块声明模式</a></h4>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// src/models/mod.rs
+pub mod user;      // 声明 user.rs 为子模块
+pub mod product;   // 声明 product.rs 为子模块
+
+// 重新导出常用类型
+pub use user::User;
+pub use product::Product;
+
+// src/main.rs
+mod models;     // 声明 models/ 为模块
+mod services;   // 声明 services/ 为模块
+
+// 导入特定项
+use models::{User, Product};
+use services::UserService;
+
+// 或导入整个模块
+use models::user::*;  // 从 user 模块导入所有公开项
+<span class="boring">}</span></code></pre></pre>
+<hr />
+<h2 id="crates-vs-net-程序集"><a class="header" href="#crates-vs-net-程序集">Crates vs .NET 程序集</a></h2>
+<h3 id="理解-crates"><a class="header" href="#理解-crates">理解 Crates</a></h3>
+<p>在 Rust 中，<strong>crate</strong> 是编译和代码分发的基本单元，类似于 <strong>.NET 中的程序集</strong>的工作方式。</p>
+<h4 id="c-程序集模型"><a class="header" href="#c-程序集模型">C# 程序集模型</a></h4>
+<pre><code class="language-csharp">// MyLibrary.dll - 编译的程序集
+namespace MyLibrary
+{
+    public class Calculator
+    {
+        public int Add(int a, int b) =&gt; a + b;
+    }
+}
+
+// MyApp.exe - 引用 MyLibrary.dll 的可执行程序集
+using MyLibrary;
+
+class Program
+{
+    static void Main()
+    {
+        var calc = new Calculator();
+        Console.WriteLine(calc.Add(2, 3));
+    }
+}
+</code></pre>
+<h4 id="rust-crate-模型"><a class="header" href="#rust-crate-模型">Rust Crate 模型</a></h4>
+<pre><code class="language-toml">// 库 crate 的 Cargo.toml
+[package]
+name = "my_calculator"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "my_calculator"
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// src/lib.rs - 库 crate
+pub struct Calculator;
+
+impl Calculator {
+    pub fn add(&amp;self, a: i32, b: i32) -&gt; i32 {
+        a + b
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-toml">// 使用库的二进制 crate 的 Cargo.toml
+[package]
+name = "my_app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+my_calculator = { path = "../my_calculator" }
+</code></pre>
+<pre><pre class="playground"><code class="language-rust">// src/main.rs - 二进制 crate
+use my_calculator::Calculator;
+
+fn main() {
+    let calc = Calculator;
+    println!("{}", calc.add(2, 3));
+}</code></pre></pre>
+<h3 id="crate-类型比较"><a class="header" href="#crate-类型比较">Crate 类型比较</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>C# 概念</th><th>Rust 等价物</th><th>用途</th></tr></thead><tbody>
+<tr><td>类库 (.dll)</td><td>库 crate</td><td>可重用代码</td></tr>
+<tr><td>控制台应用 (.exe)</td><td>二进制 crate</td><td>可执行程序</td></tr>
+<tr><td>NuGet 包</td><td>发布的 crate</td><td>分发包</td></tr>
+<tr><td>程序集 (.dll/.exe)</td><td>编译的 crate</td><td>编译单元</td></tr>
+<tr><td>解决方案 (.sln)</td><td>工作区</td><td>多项目组织</td></tr>
+</tbody></table>
+</div>
+<h3 id="工作区-vs-解决方案"><a class="header" href="#工作区-vs-解决方案">工作区 vs 解决方案</a></h3>
+<h4 id="c-解决方案结构"><a class="header" href="#c-解决方案结构">C# 解决方案结构</a></h4>
+<pre><code class="language-xml">&lt;!-- MySolution.sln 结构 --&gt;
+&lt;Solution&gt;
+    &lt;Project Include="WebApi/WebApi.csproj" /&gt;
+    &lt;Project Include="Business/Business.csproj" /&gt;
+    &lt;Project Include="DataAccess/DataAccess.csproj" /&gt;
+    &lt;Project Include="Tests/Tests.csproj" /&gt;
+&lt;/Solution&gt;
+</code></pre>
+<h4 id="rust-工作区结构"><a class="header" href="#rust-工作区结构">Rust 工作区结构</a></h4>
+<pre><code class="language-toml">// 工作区根目录的 Cargo.toml
+[workspace]
+members = [
+    "web_api",
+    "business",
+    "data_access",
+    "tests"
+]
+
+[workspace.dependencies]
+serde = "1.0"           # 共享依赖版本
+tokio = "1.0"
+</code></pre>
+<pre><code class="language-toml">// web_api/Cargo.toml
+[package]
+name = "web_api"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+business = { path = "../business" }
+serde = { workspace = true }    # 使用工作区版本
+tokio = { workspace = true }
+</code></pre>
+<hr />
+<h2 id="练习"><a class="header" href="#练习">练习</a></h2>
+<details>
+<summary><strong>🏋️ 练习：设计模块树</strong>（点击展开）</summary>
+<p>给定这个 C# 项目布局，设计等价的 Rust 模块树：</p>
+<pre><code class="language-csharp">// C#
+namespace MyApp.Services { public class AuthService { } }
+namespace MyApp.Services { internal class TokenStore { } }
+namespace MyApp.Models { public class User { } }
+namespace MyApp.Models { public class Session { } }
+</code></pre>
+<p>要求：</p>
+<ol>
+<li><code>AuthService</code> 和两个模型必须公开</li>
+<li><code>TokenStore</code> 必须对 <code>services</code> 模块私有</li>
+<li>提供文件布局<strong>和</strong> <code>lib.rs</code> 中的 <code>mod</code> / <code>pub</code> 声明</li>
+</ol>
+<details>
+<summary>🔑 解决方案</summary>
+<p>文件布局：</p>
+<pre><code>src/
+├── lib.rs
+├── services/
+│   ├── mod.rs
+│   ├── auth_service.rs
+│   └── token_store.rs
+└── models/
+    ├── mod.rs
+    ├── user.rs
+    └── session.rs
+</code></pre>
+<pre><code class="language-rust ignore">// src/lib.rs
+pub mod services;
+pub mod models;
+
+// src/services/mod.rs
+mod token_store;          // 私有——类似 C# internal
+pub mod auth_service;     // 公开
+
+// src/services/auth_service.rs
+use super::token_store::TokenStore; // 在模块内可见
+
+pub struct AuthService;
+
+impl AuthService {
+    pub fn login(&amp;self) { /* 内部使用 TokenStore */ }
+}
+
+// src/services/token_store.rs
+pub(super) struct TokenStore; // 仅对父级（services）可见
+
+// src/models/mod.rs
+pub mod user;
+pub mod session;
+
+// src/models/user.rs
+pub struct User {
+    pub name: String,
+}
+
+// src/models/session.rs
+pub struct Session {
+    pub user_id: u64,
+}</code></pre>
+</details>
+</details>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch07-3-smart-pointers-beyond-single-ownership.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch08-1-package-management-cargo-vs-nuget.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch07-3-smart-pointers-beyond-single-ownership.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch08-1-package-management-cargo-vs-nuget.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

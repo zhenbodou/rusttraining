@@ -1,0 +1,749 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>5. 数据结构 - Rust for C/C++ Programmers</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust for C/C++ Programmers</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h3 id="rust-数组类型"><a class="header" href="#rust-数组类型">Rust 数组类型</a></h3>
+<blockquote>
+<p><strong>你将学到：</strong> Rust 的核心数据结构 — 数组、元组、slice、字符串、struct、<code>Vec</code> 和 <code>HashMap</code>。这是内容密集的一章；重点理解 <code>String</code> vs <code>&amp;str</code> 以及 struct 的工作原理。你将在第 7 章深入复习引用和 borrowing。</p>
+</blockquote>
+<ul>
+<li>数组包含固定数量的相同类型元素
+<ul>
+<li>与所有其他 Rust 类型一样，数组默认是不可变的（除非使用 mut）</li>
+<li>数组使用 [] 进行索引并进行边界检查。可以使用 len() 方法获取数组的长度</li>
+</ul>
+</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">    fn get_index(y : usize) -&gt; usize {
+        y+1
+    }
+
+    fn main() {
+        // 初始化一个包含 3 个元素的数组并将所有元素设置为 42
+        let a : [u8; 3] = [42; 3];
+        // 替代语法
+        // let a = [42u8, 42u8, 42u8];
+        for x in a {
+            println!("{x}");
+        }
+        let y = get_index(a.len());
+        // 如果取消下面的注释会导致 panic
+        //println!("{}", a[y]);
+    }</code></pre></pre>
+<hr />
+<h3 id="rust-数组类型续"><a class="header" href="#rust-数组类型续">Rust 数组类型（续）</a></h3>
+<ul>
+<li>数组可以嵌套
+<ul>
+<li>Rust 有几种内置的打印格式化器。在下面，<code>:?</code> 是 <code>debug</code> 打印格式化器。<code>:#?</code> 格式化器可用于 <code>pretty print</code>。这些格式化器可以按类型自定义（稍后详细介绍）</li>
+</ul>
+</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">    fn main() {
+        let a = [
+            [40, 0], // 定义一个嵌套数组
+            [41, 0],
+            [42, 1],
+        ];
+        for x in a {
+            println!("{x:?}");
+        }
+    }</code></pre></pre>
+<hr />
+<h3 id="rust-元组"><a class="header" href="#rust-元组">Rust 元组</a></h3>
+<ul>
+<li>元组具有固定大小，可以将任意类型分组为单个复合类型
+<ul>
+<li>组成类型可以按它们的相对位置进行索引（.0、.1、.2、...）。空元组，即 () 称为 unit 值，等价于 void 返回值</li>
+<li>Rust 支持元组解构，以便轻松将变量绑定到各个元素</li>
+</ul>
+</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">fn get_tuple() -&gt; (u32, bool) {
+    (42, true)
+}
+
+fn main() {
+   let t : (u8, bool) = (42, true);
+   let u : (u32, bool) = (43, false);
+   println!("{}, {}", t.0, t.1);
+   println!("{}, {}", u.0, u.1);
+   let (num, flag) = get_tuple(); // 元组解构
+   println!("{num}, {flag}");
+}</code></pre></pre>
+<h3 id="rust-引用"><a class="header" href="#rust-引用">Rust 引用</a></h3>
+<ul>
+<li>Rust 中的引用大致相当于 C 中的指针，但有一些关键区别
+<ul>
+<li>在任何时候都可以对变量进行任意数量的只读（不可变）引用。引用不能超出变量作用域（这是一个称为<strong>生命周期</strong>的关键概念；稍后详细讨论）</li>
+<li>只允许对可变变量进行单个可写（可变）引用，并且它不能与任何其他引用重叠</li>
+</ul>
+</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let mut a = 42;
+    {
+        let b = &amp;a;
+        let c = b;
+        println!("{} {}", *b, *c); // 编译器自动解引用 *c
+        // 非法，因为 b 和 c 仍在作用域内
+        // let d = &amp;mut a;
+    }
+    let d = &amp;mut a; // 正确：b 和 c 不在作用域内
+    *d = 43;
+}</code></pre></pre>
+<hr />
+<h1 id="rust-slice"><a class="header" href="#rust-slice">Rust slice</a></h1>
+<ul>
+<li>Rust 引用可用于创建数组的子集
+<ul>
+<li>与在编译时确定静态固定长度的数组不同，slice 可以是任意大小。在内部，slice 实现为"fat-pointer"，包含 slice 的长度和指向原始数组中起始元素的指针</li>
+</ul>
+</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let a = [40, 41, 42, 43];
+    let b = &amp;a[1..a.len()]; // 从原始数组的第二个元素开始的 slice
+    let c = &amp;a[1..]; // 与上面相同
+    let d = &amp;a[..]; // 与 &amp;a[0..] 或 &amp;a[0..a.len()] 相同
+    println!("{b:?} {c:?} {d:?}");
+}</code></pre></pre>
+<hr />
+<h1 id="rust-常量和静态变量"><a class="header" href="#rust-常量和静态变量">Rust 常量和静态变量</a></h1>
+<ul>
+<li><code>const</code> 关键字可用于定义常量值。常量值在<strong>编译时</strong>计算并内联到程序中</li>
+<li><code>static</code> 关键字用于定义类似于 C/C++ 等语言中的全局变量。静态变量有一个可寻址的内存位置，创建一次并持续程序的整个生命周期</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">const SECRET_OF_LIFE: u32 = 42;
+static GLOBAL_VARIABLE : u32 = 2;
+fn main() {
+    println!("The secret of life is {}", SECRET_OF_LIFE);
+    println!("Value of global variable is {GLOBAL_VARIABLE}")
+}</code></pre></pre>
+<hr />
+<h1 id="rust-字符串string-vs-str"><a class="header" href="#rust-字符串string-vs-str">Rust 字符串：String vs &amp;str</a></h1>
+<ul>
+<li>Rust 有<strong>两种</strong>用于不同目的的字符串类型
+<ul>
+<li><code>String</code> — 拥有所有权、堆分配、可增长（类似于 C 的 <code>malloc</code> 缓冲区，或 C++ 的 <code>std::string</code>）</li>
+<li><code>&amp;str</code> — 借用、轻量级引用（类似于 C 的 <code>const char*</code> 带长度，或 C++ 的 <code>std::string_view</code> — 但 <code>&amp;str</code> 经过<strong>生命周期检查</strong>，因此永远不会悬空）</li>
+<li>与 C 的空终止字符串不同，Rust 字符串跟踪其长度并保证有效的 UTF-8</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><strong>对于 C++ 开发者：</strong> <code>String</code> ≈ <code>std::string</code>，<code>&amp;str</code> ≈ <code>std::string_view</code>。与 <code>std::string_view</code> 不同，<code>&amp;str</code> 由 borrow checker 保证其整个生命周期内有效。</p>
+</blockquote>
+<h2 id="string-vs-str拥有所有权-vs-借用"><a class="header" href="#string-vs-str拥有所有权-vs-借用">String vs &amp;str：拥有所有权 vs 借用</a></h2>
+<blockquote>
+<p><strong>生产模式</strong>：请参阅 <a href="ch17-2-avoiding-unchecked-indexing.html#json-handling-nlohmannjson--serde">JSON 处理：nlohmann::json → serde</a> 了解生产代码中如何使用 serde 处理字符串。</p>
+</blockquote>
+<div class="table-wrapper"><table><thead><tr><th><strong>方面</strong></th><th><strong>C <code>char*</code></strong></th><th><strong>C++ <code>std::string</code></strong></th><th><strong>Rust <code>String</code></strong></th><th><strong>Rust <code>&amp;str</code></strong></th></tr></thead><tbody>
+<tr><td><strong>内存</strong></td><td>手动（<code>malloc</code>/<code>free</code>）</td><td>堆分配，拥有缓冲区</td><td>堆分配，自动释放</td><td>借用引用（生命周期检查）</td></tr>
+<tr><td><strong>可变性</strong></td><td>始终通过指针可变</td><td>可变</td><td>使用 <code>mut</code> 可变</td><td>始终不可变</td></tr>
+<tr><td><strong>大小信息</strong></td><td>无（依赖 <code>'\0'</code>）</td><td>跟踪长度和容量</td><td>跟踪长度和容量</td><td>跟踪长度（fat pointer）</td></tr>
+<tr><td><strong>编码</strong></td><td>未指定（通常为 ASCII）</td><td>未指定（通常为 ASCII）</td><td>保证有效的 UTF-8</td><td>保证有效的 UTF-8</td></tr>
+<tr><td><strong>空终止符</strong></td><td>必需</td><td>必需（<code>c_str()</code>）</td><td>不使用</td><td>不使用</td></tr>
+</tbody></table>
+</div>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    // &amp;str - 字符串 slice（借用、不可变，通常是字符串字面量）
+    let greeting: &amp;str = "Hello";  // 指向只读内存
+
+    // String - 拥有所有权、堆分配、可增长
+    let mut owned = String::from(greeting);  // 复制数据到堆
+    owned.push_str(", World!");        // 增长字符串
+    owned.push('!');                   // 追加单个字符
+
+    // String 和 &amp;str 之间的转换
+    let slice: &amp;str = &amp;owned;          // String -&gt; &amp;str（免费，只是借用）
+    let owned2: String = slice.to_string();  // &amp;str -&gt; String（分配）
+    let owned3: String = String::from(slice); // 与上面相同
+
+    // 字符串连接（注意：+ 消耗左操作数）
+    let hello = String::from("Hello");
+    let world = String::from(", World!");
+    let combined = hello + &amp;world;  // hello 被移动（消耗），world 被借用
+    // println!("{hello}");  // 无法编译：hello 被移动了
+
+    // 使用 format! 避免移动问题
+    let a = String::from("Hello");
+    let b = String::from("World");
+    let combined = format!("{a}, {b}!");  // a 和 b 都不会被消耗
+
+    println!("{combined}");
+}</code></pre></pre>
+<h2 id="为什么不能使用--索引字符串"><a class="header" href="#为什么不能使用--索引字符串">为什么不能使用 <code>[]</code> 索引字符串</a></h2>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let s = String::from("hello");
+    // let c = s[0];  // 无法编译！Rust 字符串是 UTF-8，不是字节数组
+
+    // 安全的替代方案：
+    let first_char = s.chars().next();           // Option&lt;char&gt;: Some('h')
+    let as_bytes = s.as_bytes();                 // &amp;[u8]: 原始 UTF-8 字节
+    let substring = &amp;s[0..1];                    // &amp;str: "h"（字节范围，必须是有效的 UTF-8 边界）
+
+    println!("First char: {:?}", first_char);
+    println!("Bytes: {:?}", &amp;as_bytes[..5]);
+}</code></pre></pre>
+<h2 id="练习字符串操作"><a class="header" href="#练习字符串操作">练习：字符串操作</a></h2>
+<p>🟢 <strong>入门</strong></p>
+<ul>
+<li>编写一个函数 <code>fn count_words(text: &amp;str) -&gt; usize</code>，计算字符串中由空格分隔的单词数量</li>
+<li>编写一个函数 <code>fn longest_word(text: &amp;str) -&gt; &amp;str</code>，返回最长的单词（提示：你需要考虑生命周期 — 为什么返回类型需要是 <code>&amp;str</code> 而不是 <code>String</code>？）</li>
+</ul>
+<details><summary>答案（点击展开）</summary>
+<pre><pre class="playground"><code class="language-rust">fn count_words(text: &amp;str) -&gt; usize {
+    text.split_whitespace().count()
+}
+
+fn longest_word(text: &amp;str) -&gt; &amp;str {
+    text.split_whitespace()
+        .max_by_key(|word| word.len())
+        .unwrap_or("")
+}
+
+fn main() {
+    let text = "the quick brown fox jumps over the lazy dog";
+    println!("Word count: {}", count_words(text));       // 9
+    println!("Longest word: {}", longest_word(text));     // "jumps"
+}</code></pre></pre>
+</details>
+<h1 id="rust-struct"><a class="header" href="#rust-struct">Rust struct</a></h1>
+<ul>
+<li><code>struct</code> 关键字声明用户定义的 struct 类型
+<ul>
+<li><code>struct</code> 成员可以是有名称的，也可以是匿名的（元组 struct）</li>
+</ul>
+</li>
+<li>与 C++ 等语言不同，Rust 中没有"数据继承"的概念</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    struct MyStruct {
+        num: u32,
+        is_secret_of_life: bool,
+    }
+    let x = MyStruct {
+        num: 42,
+        is_secret_of_life: true,
+    };
+    let y = MyStruct {
+        num: x.num,
+        is_secret_of_life: x.is_secret_of_life,
+    };
+    let z = MyStruct { num: x.num, ..x }; // .. 表示复制剩余字段
+    println!("{} {} {}", x.num, y.is_secret_of_life, z.num);
+}</code></pre></pre>
+<h1 id="rust-元组-struct"><a class="header" href="#rust-元组-struct">Rust 元组 struct</a></h1>
+<ul>
+<li>Rust 元组 struct 类似于元组，单个字段没有名称
+<ul>
+<li>与元组一样，单个元素使用 .0、.1、.2、... 访问。元组 struct 的一个常见用例是包装原始类型以创建自定义类型。<strong>这有助于避免混合相同类型的不同值</strong></li>
+</ul>
+</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">struct WeightInGrams(u32);
+struct WeightInMilligrams(u32);
+fn to_weight_in_grams(kilograms: u32) -&gt; WeightInGrams {
+    WeightInGrams(kilograms * 1000)
+}
+
+fn to_weight_in_milligrams(w : WeightInGrams) -&gt; WeightInMilligrams  {
+    WeightInMilligrams(w.0 * 1000)
+}
+
+fn main() {
+    let x = to_weight_in_grams(42);
+    let y = to_weight_in_milligrams(x);
+    // let z : WeightInGrams = x;  // 无法编译：x 被移动到 to_weight_in_milligrams() 中
+    // let a : WeightInGrams = y;   // 无法编译：类型不匹配（WeightInMilligrams vs WeightInGrams）
+}</code></pre></pre>
+<p><strong>注意</strong>：<code>#[derive(...)]</code> 属性自动为 struct 和 enum 生成常见的 trait 实现。你将在整个课程中看到它的使用：</p>
+<pre><pre class="playground"><code class="language-rust">#[derive(Debug, Clone, PartialEq)]
+struct Point { x: i32, y: i32 }
+
+fn main() {
+    let p = Point { x: 1, y: 2 };
+    println!("{:?}", p);           // Debug：有效，因为 #[derive(Debug)]
+    let p2 = p.clone();           // Clone：有效，因为 #[derive(Clone)]
+    assert_eq!(p, p2);            // PartialEq：有效，因为 #[derive(PartialEq)]
+}</code></pre></pre>
+<p>我们稍后将深入介绍 trait 系统，但 <code>#[derive(Debug)]</code> 非常有用，你应该将它添加到几乎每个创建的 <code>struct</code> 和 <code>enum</code> 中。</p>
+<h1 id="rust-vec-类型"><a class="header" href="#rust-vec-类型">Rust Vec 类型</a></h1>
+<ul>
+<li><code>Vec&lt;T&gt;</code> 类型实现动态堆分配缓冲区（类似于 C 中手动管理的 <code>malloc</code>/<code>realloc</code> 数组，或 C++ 的 <code>std::vector</code>）
+<ul>
+<li>与固定大小的数组不同，<code>Vec</code> 可以在运行时增长和缩小</li>
+<li><code>Vec</code> 拥有其数据并自动管理内存分配/释放</li>
+</ul>
+</li>
+<li>常见操作：<code>push()</code>、<code>pop()</code>、<code>insert()</code>、<code>remove()</code>、<code>len()</code>、<code>capacity()</code></li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let mut v = Vec::new();    // 空向量，类型从用法推断
+    v.push(42);                // 在末尾添加元素 - Vec&lt;i32&gt;
+    v.push(43);
+
+    // 安全迭代（首选）
+    for x in &amp;v {              // 借用元素，不消耗向量
+        println!("{x}");
+    }
+
+    // 初始化快捷方式
+    let mut v2 = vec![1, 2, 3, 4, 5];           // 用于初始化的宏
+    let v3 = vec![0; 10];                       // 10 个零
+
+    // 安全访问方法（优于索引）
+    match v2.get(0) {
+        Some(first) =&gt; println!("First: {first}"),
+        None =&gt; println!("Empty vector"),
+    }
+
+    // 有用的方法
+    println!("Length: {}, Capacity: {}", v2.len(), v2.capacity());
+    if let Some(last) = v2.pop() {             // 移除并返回最后一个元素
+        println!("Popped: {last}");
+    }
+
+    // 危险：直接索引（可能 panic！）
+    // println!("{}", v2[100]);  // 将在运行时 panic
+}</code></pre></pre>
+<blockquote>
+<p><strong>生产模式</strong>：请参阅 <a href="ch17-2-avoiding-unchecked-indexing.html#%E9%81%BF%E5%85%8D%E6%9C%AA%E6%A3%80%E6%9F%A5%E7%9A%84%E7%B4%A2%E5%BC%95%E8%AE%BF%E9%97%AE">避免未检查的索引访问</a> 了解生产 Rust 代码中安全的 <code>.get()</code> 模式。</p>
+</blockquote>
+<h1 id="rust-hashmap-类型"><a class="header" href="#rust-hashmap-类型">Rust HashMap 类型</a></h1>
+<ul>
+<li><code>HashMap</code> 实现通用 <code>key</code> -&gt; <code>value</code> 查找（也称为 <code>dictionary</code> 或 <code>map</code>）</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    use std::collections::HashMap;  // 需要显式导入，与 Vec 不同
+    let mut map = HashMap::new();       // 分配一个空 HashMap
+    map.insert(40, false);  // 类型推断为 int -&gt; bool
+    map.insert(41, false);
+    map.insert(42, true);
+    for (key, value) in map {
+        println!("{key} {value}");
+    }
+    let map = HashMap::from([(40, false), (41, false), (42, true)]);
+    if let Some(x) = map.get(&amp;43) {
+        println!("43 was mapped to {x:?}");
+    } else {
+        println!("No mapping was found for 43");
+    }
+    let x = map.get(&amp;43).or(Some(&amp;false));  // 如果键未找到则使用默认值
+    println!("{x:?}");
+}</code></pre></pre>
+<h1 id="练习vec-和-hashmap"><a class="header" href="#练习vec-和-hashmap">练习：Vec 和 HashMap</a></h1>
+<p>🟢 <strong>入门</strong></p>
+<ul>
+<li>创建一个 <code>HashMap&lt;u32, bool&gt;</code>，包含几个条目（确保一些值为 <code>true</code>，其他为 <code>false</code>）。遍历 hashmap 中的所有元素，将键放入一个 <code>Vec</code>，将值放入另一个</li>
+</ul>
+<details><summary>答案（点击展开）</summary>
+<pre><pre class="playground"><code class="language-rust">use std::collections::HashMap;
+
+fn main() {
+    let map = HashMap::from([(1, true), (2, false), (3, true), (4, false)]);
+    let mut keys = Vec::new();
+    let mut values = Vec::new();
+    for (k, v) in &amp;map {
+        keys.push(*k);
+        values.push(*v);
+    }
+    println!("Keys:   {keys:?}");
+    println!("Values: {values:?}");
+
+    // 替代方案：使用迭代器和 unzip()
+    let (keys2, values2): (Vec&lt;u32&gt;, Vec&lt;bool&gt;) = map.into_iter().unzip();
+    println!("Keys (unzip):   {keys2:?}");
+    println!("Values (unzip): {values2:?}");
+}</code></pre></pre>
+</details>
+<hr />
+<h2 id="深入探讨c-引用-vs-rust-引用"><a class="header" href="#深入探讨c-引用-vs-rust-引用">深入探讨：C++ 引用 vs Rust 引用</a></h2>
+<blockquote>
+<p><strong>对于 C++ 开发者：</strong> C++ 程序员通常假设 Rust <code>&amp;T</code> 的工作方式与 C++ <code>T&amp;</code> 相同。虽然表面上相似，但存在一些根本差异会导致混淆。C 开发者可以跳过本节 — Rust 引用在 <a href="ch07-ownership-and-borrowing.html">ownership 和 borrowing</a> 中介绍。</p>
+</blockquote>
+<h4 id="1-没有右值引用或通用引用"><a class="header" href="#1-没有右值引用或通用引用">1. 没有右值引用或通用引用</a></h4>
+<p>在 C++ 中，<code>&amp;&amp;</code> 根据上下文有两种含义：</p>
+<pre><code class="language-cpp">// C++：&amp;&amp; 含义不同：
+int&amp;&amp; rref = 42;           // 右值引用 — 绑定到临时对象
+void process(Widget&amp;&amp; w);   // 右值引用 — 调用者必须 std::move
+
+// 通用（转发）引用 — 推导的模板上下文：
+template&lt;typename T&gt;
+void forward(T&amp;&amp; arg) {     // 不是右值引用！推导为 T&amp; 或 T&amp;&amp;
+    inner(std::forward&lt;T&gt;(arg));  // 完美转发
+}
+</code></pre>
+<p><strong>在 Rust 中：这些都不存在。</strong> <code>&amp;&amp;</code> 只是逻辑 AND 运算符。</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust：&amp;&amp; 只是布尔 AND
+let a = true &amp;&amp; false; // false
+
+// Rust 没有右值引用、没有通用引用、没有完美转发。
+// 取而代之的是：
+//   - Move 是非 Copy 类型的默认行为（不需要 std::move）
+//   - 泛型 + trait 约束取代通用引用
+//   - 没有临时绑定区分 — 值就是值
+
+fn process(w: Widget) { }      // 获取所有权（类似于 C++ 值参数 + 隐式 move）
+fn process_ref(w: &amp;Widget) { } // 不可变借用（类似于 C++ const T&amp;）
+fn process_mut(w: &amp;mut Widget) { } // 可变借用（类似于 C++ T&amp;，但是独占的）
+<span class="boring">}</span></code></pre></pre>
+<div class="table-wrapper"><table><thead><tr><th>C++ 概念</th><th>Rust 等价物</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>T&amp;</code>（左值引用）</td><td><code>&amp;T</code> 或 <code>&amp;mut T</code></td><td>Rust 分为共享 vs 独占</td></tr>
+<tr><td><code>T&amp;&amp;</code>（右值引用）</td><td>就是 <code>T</code></td><td>按值获取 = 获取所有权</td></tr>
+<tr><td>模板中的 <code>T&amp;&amp;</code>（通用引用）</td><td><code>impl Trait</code> 或 <code>&lt;T: Trait&gt;</code></td><td>泛型取代转发</td></tr>
+<tr><td><code>std::move(x)</code></td><td><code>x</code>（直接使用）</td><td>Move 是默认行为</td></tr>
+<tr><td><code>std::forward&lt;T&gt;(x)</code></td><td>不需要等价物</td><td>没有需要转发的通用引用</td></tr>
+</tbody></table>
+</div>
+<h4 id="2-move-是按位复制--没有-move-构造函数"><a class="header" href="#2-move-是按位复制--没有-move-构造函数">2. Move 是按位复制 — 没有 Move 构造函数</a></h4>
+<p>在 C++ 中，move 是一个<em>用户定义的操作</em>（move 构造函数/move 赋值）。在 Rust 中，move 始终是值的<strong>按位 memcpy</strong>，并且源值失效：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust move = 按位复制字节，标记源为无效
+let s1 = String::from("hello");
+let s2 = s1; // s1 的字节复制到 s2 的栈槽
+              // s1 现在无效 — 编译器强制执行
+// println!("{s1}"); // ❌ 编译错误：move 后使用值
+<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-cpp">// C++ move = 调用 move 构造函数（用户定义！）
+std::string s1 = "hello";
+std::string s2 = std::move(s1); // 调用 string 的 move 构造函数
+// s1 现在处于"有效但未指定状态"的僵尸状态
+std::cout &lt;&lt; s1; // 编译！打印... 某物（通常是空字符串）
+</code></pre>
+<p><strong>结果</strong>：</p>
+<ul>
+<li>Rust 没有 Rule of Five（不需要定义 copy ctor、move ctor、copy=、move=、destructor）</li>
+<li>没有 move 后的"僵尸"状态 — 编译器简单地阻止访问</li>
+<li>没有 move 的 <code>noexcept</code> 考虑 — 按位复制不会抛出</li>
+</ul>
+<h4 id="3-自动解引用编译器看透间接层"><a class="header" href="#3-自动解引用编译器看透间接层">3. 自动解引用：编译器看透间接层</a></h4>
+<p>Rust 通过 <code>Deref</code> trait 自动解引用多层指针/包装器。这在 C++ 中没有等价物：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::sync::{Arc, Mutex};
+
+// 嵌套包装：Arc&lt;Mutex&lt;Vec&lt;String&gt;&gt;&gt;
+let data = Arc::new(Mutex::new(vec!["hello".to_string()]));
+
+// 在 C++ 中，你需要在每一层显式解锁和手动解引用。
+// 在 Rust 中，编译器自动解引用 Arc → Mutex → MutexGuard → Vec：
+let guard = data.lock().unwrap(); // Arc 自动解引用到 Mutex
+let first: &amp;str = &amp;guard[0];      // MutexGuard→Vec (Deref), Vec[0] (Index),
+                                   // &amp;String→&amp;str (Deref 强制)
+println!("First: {first}");
+
+// 方法调用也自动解引用：
+let boxed_string = Box::new(String::from("hello"));
+println!("Length: {}", boxed_string.len());  // Box→String，然后 String::len()
+// 不需要 (*boxed_string).len() 或 boxed_string-&gt;len()
+<span class="boring">}</span></code></pre></pre>
+<p><strong>Deref 强制</strong>也适用于函数参数 — 编译器插入解引用来匹配类型：</p>
+<pre><pre class="playground"><code class="language-rust">fn greet(name: &amp;str) {
+    println!("Hello, {name}");
+}
+
+fn main() {
+    let owned = String::from("Alice");
+    let boxed = Box::new(String::from("Bob"));
+    let arced = std::sync::Arc::new(String::from("Carol"));
+
+    greet(&amp;owned);  // &amp;String → &amp;str  (1 次 deref 强制)
+    greet(&amp;boxed);  // &amp;Box&lt;String&gt; → &amp;String → &amp;str  (2 次 deref 强制)
+    greet(&amp;arced);  // &amp;Arc&lt;String&gt; → &amp;String → &amp;str  (2 次 deref 强制)
+    greet("Dave");  // &amp;str 已经是 — 不需要强制
+}
+// 在 C++ 中，你需要对每种情况使用 .c_str() 或显式转换。</code></pre></pre>
+<p><strong>Deref 链</strong>：当你调用 <code>x.method()</code> 时，Rust 的方法解析
+尝试接收者类型 <code>T</code>，然后 <code>&amp;T</code>，然后 <code>&amp;mut T</code>。如果没有匹配，它
+通过 <code>Deref</code> trait 解引用并用目标类型重复。
+这会继续通过多层 — 这就是为什么 <code>Box&lt;Vec&lt;T&gt;&gt;</code>
+"就是能用"像 <code>Vec&lt;T&gt;</code> 一样。Deref <em>强制</em>（用于函数参数）
+是一个单独但相关的机制，通过链接 <code>Deref</code> impl 自动将 <code>&amp;Box&lt;String&gt;</code>
+转换为 <code>&amp;str</code>。</p>
+<h4 id="4-没有空引用没有可选引用"><a class="header" href="#4-没有空引用没有可选引用">4. 没有空引用，没有可选引用</a></h4>
+<pre><code class="language-cpp">// C++：引用不能为空，但指针可以，区别模糊
+Widget&amp; ref = *ptr;  // 如果 ptr 为空 → UB
+Widget* opt = nullptr;  // 通过指针的"可选"引用
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust：引用始终有效 — 由 borrow checker 保证
+// 在安全代码中无法创建空或悬空引用
+let r: &amp;i32 = &amp;42; // 始终有效
+
+// "可选引用"是显式的：
+let opt: Option&lt;&amp;Widget&gt; = None; // 意图清晰，没有空指针
+if let Some(w) = opt {
+    w.do_something(); // 仅在存在时可访问
+}
+<span class="boring">}</span></code></pre></pre>
+<h4 id="5-引用不能重新绑定"><a class="header" href="#5-引用不能重新绑定">5. 引用不能重新绑定</a></h4>
+<pre><code class="language-cpp">// C++：引用是别名 — 不能重新绑定
+int a = 1, b = 2;
+int&amp; r = a;
+r = b;  // 这将 b 的值赋给 a — 不会重新绑定 r！
+// a 现在是 2，r 仍然引用 a
+</code></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Rust：let 绑定可以 shadow，但引用遵循不同的规则
+let a = 1;
+let b = 2;
+let r = &amp;a;
+// r = &amp;b;   // ❌ 不能赋值给不可变变量
+let r = &amp;b;  // ✅ 但你可以用新绑定 SHADOW r
+             // 旧绑定消失，不是重新绑定
+
+// 使用 mut：
+let mut r = &amp;a;
+r = &amp;b;      // ✅ r 现在指向 b — 这是重新绑定（不是通过赋值）
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>思维模型</strong>：在 C++ 中，引用是一个对象的永久别名。
+在 Rust 中，引用是一个值（带有生命周期保证的指针），
+遵循正常的变量绑定规则 — 默认不可变，只有声明为 <code>mut</code> 时才可重新绑定。</p>
+</blockquote>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch04-control-flow.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch06-enums-and-pattern-matching.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch04-control-flow.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch06-enums-and-pattern-matching.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,466 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>9. 何时 Tokio 不是最佳选择 - Async Rust: From Futures to Production</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Async Rust: From Futures to Production</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/microsoft/RustTraining" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="9-何时-tokio-不是最佳选择-"><a class="header" href="#9-何时-tokio-不是最佳选择-">9. 何时 Tokio 不是最佳选择 🟡</a></h1>
+<blockquote>
+<p><strong>你将学到什么：</strong></p>
+<ul>
+<li><code>'static</code> 问题：何时 <code>tokio::spawn</code> 迫使你到处使用 <code>Arc</code></li>
+<li>用于 <code>!Send</code> future 的 <code>LocalSet</code></li>
+<li><code>FuturesUnordered</code> 用于借用友好的并发（不需要 spawn）</li>
+<li><code>JoinSet</code> 用于管理的任务组</li>
+<li>编写运行时无关的库</li>
+</ul>
+</blockquote>
+<pre class="mermaid">graph TD
+    START[&quot;需要并发 future？&quot;] --&gt; STATIC{&quot;future 可以是 'static 吗？&quot;}
+    STATIC --&gt;|是 | SEND{&quot;future 是 Send 吗？&quot;}
+    STATIC --&gt;|否 | FU[&quot;FuturesUnordered&lt;br/&gt;在当前任务上运行&quot;]
+    SEND --&gt;|是 | SPAWN[&quot;tokio::spawn&lt;br/&gt;多线程&quot;]
+    SEND --&gt;|否 | LOCAL[&quot;LocalSet&lt;br/&gt;单线程&quot;]
+    SPAWN --&gt; MANAGE{&quot;需要跟踪/中止任务？&quot;}
+    MANAGE --&gt;|是 | JOINSET[&quot;JoinSet / TaskTracker&quot;]
+    MANAGE --&gt;|否 | HANDLE[&quot;JoinHandle&quot;]
+
+    style START fill:#f5f5f5,stroke:#333,color:#000
+    style FU fill:#d4efdf,stroke:#27ae60,color:#000
+    style SPAWN fill:#e8f4f8,stroke:#2980b9,color:#000
+    style LOCAL fill:#fef9e7,stroke:#f39c12,color:#000
+    style JOINSET fill:#e8daef,stroke:#8e44ad,color:#000
+    style HANDLE fill:#e8f4f8,stroke:#2980b9,color:#000
+</pre>
+<h2 id="static-future-问题"><a class="header" href="#static-future-问题">'static Future 问题</a></h2>
+<p>Tokio 的 <code>spawn</code> 需要 <code>'static</code> future。这意味着你不能在生成的任务中借用本地数据：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>async fn process_items(items: &amp;[String]) {
+    // ❌ 不能这样做——items 被借用，不是 'static
+    // for item in items {
+    //     tokio::spawn(async {
+    //         process(item).await;
+    //     });
+    // }
+
+    // 😐 变通方法 1：克隆所有内容
+    for item in items {
+        let item = item.clone();
+        tokio::spawn(async move {
+            process(&amp;item).await;
+        });
+    }
+
+    // 😐 变通方法 2：使用 Arc
+    let items = Arc::new(items.to_vec());
+    for i in 0..items.len() {
+        let items = Arc::clone(&amp;items);
+        tokio::spawn(async move {
+            process(&amp;items[i]).await;
+        });
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>这很烦人！在 Go 中，你可以直接 <code>go func() { use(item) }</code> 使用闭包。在 Rust 中，所有权系统迫使你思考谁拥有什么以及它存活多久。</p>
+<h3 id="scoped-任务和替代方案"><a class="header" href="#scoped-任务和替代方案">Scoped 任务和替代方案</a></h3>
+<p>有几种解决方案可以解决 <code>'static</code> 问题：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 1. tokio::task::LocalSet——在当前线程上运行 !Send future
+use tokio::task::LocalSet;
+
+let local_set = LocalSet::new();
+local_set.run_until(async {
+    tokio::task::spawn_local(async {
+        // 可以在这里使用 Rc、Cell 和其他 !Send 类型
+        let rc = std::rc::Rc::new(42);
+        println!("{rc}");
+    }).await.unwrap();
+}).await;
+
+// 2. FuturesUnordered——并发而不生成
+use futures::stream::{FuturesUnordered, StreamExt};
+
+async fn process_items(items: &amp;[String]) {
+    let futures: FuturesUnordered&lt;_&gt; = items
+        .iter()
+        .map(|item| async move {
+            // ✅ 可以借用 item——不需要 spawn，不需要 'static！
+            process(item).await
+        })
+        .collect();
+
+    // 驱动所有 future 完成
+    futures.for_each(|result| async {
+        println!("Result: {result:?}");
+    }).await;
+}
+
+// 3. tokio JoinSet（tokio 1.21+）——管理的生成任务组
+use tokio::task::JoinSet;
+
+async fn with_joinset() {
+    let mut set = JoinSet::new();
+
+    for i in 0..10 {
+        set.spawn(async move {
+            tokio::time::sleep(Duration::from_millis(100)).await;
+            i * 2
+        });
+    }
+
+    while let Some(result) = set.join_next().await {
+        println!("Task completed: {:?}", result.unwrap());
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="用于库的轻量级运行时"><a class="header" href="#用于库的轻量级运行时">用于库的轻量级运行时</a></h3>
+<p>如果你正在编写库——不要强迫用户使用 tokio：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// ❌ 坏：库强迫用户使用 tokio
+pub async fn my_lib_function() {
+    tokio::time::sleep(Duration::from_secs(1)).await;
+    // 现在你的用户必须使用 tokio
+}
+
+// ✅ 好：库是运行时无关的
+pub async fn my_lib_function() {
+    // 只使用 std::future 和 futures crate 中的类型
+    do_computation().await;
+}
+
+// ✅ 好：为 I/O 操作接受泛型 future
+pub async fn fetch_with_retry&lt;F, Fut, T, E&gt;(
+    operation: F,
+    max_retries: usize,
+) -&gt; Result&lt;T, E&gt;
+where
+    F: Fn() -&gt; Fut,
+    Fut: Future&lt;Output = Result&lt;T, E&gt;&gt;,
+{
+    for attempt in 0..max_retries {
+        match operation().await {
+            Ok(val) =&gt; return Ok(val),
+            Err(e) if attempt == max_retries - 1 =&gt; return Err(e),
+            Err(_) =&gt; continue,
+        }
+    }
+    unreachable!()
+}
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>经验法则</strong>：库应该依赖 <code>futures</code> crate，而不是 <code>tokio</code>。
+应用应该依赖 <code>tokio</code>（或它们选择的运行时）。
+这使生态系统可组合。</p>
+</blockquote>
+<details>
+<summary><strong>🏋️ 练习：FuturesUnordered vs Spawn</strong>（点击展开）</summary>
+<p><strong>挑战</strong>：用两种方式编写相同的函数——一种使用 <code>tokio::spawn</code>（需要 <code>'static</code>），另一种使用 <code>FuturesUnordered</code>（借用数据）。函数接收 <code>&amp;[String]</code> 并返回每个字符串在模拟异步查找后的长度。</p>
+<p>比较：哪种方法需要 <code>.clone()</code>？哪种可以借用输入切片？</p>
+<details>
+<summary>🔑 答案</summary>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use futures::stream::{FuturesUnordered, StreamExt};
+use tokio::time::{sleep, Duration};
+
+// 版本 1：tokio::spawn——需要 'static，必须克隆
+async fn lengths_with_spawn(items: &amp;[String]) -&gt; Vec&lt;usize&gt; {
+    let mut handles = Vec::new();
+    for item in items {
+        let owned = item.clone(); // 必须克隆——spawn 需要 'static
+        handles.push(tokio::spawn(async move {
+            sleep(Duration::from_millis(10)).await;
+            owned.len()
+        }));
+    }
+
+    let mut results = Vec::new();
+    for handle in handles {
+        results.push(handle.await.unwrap());
+    }
+    results
+}
+
+// 版本 2：FuturesUnordered——借用数据，不需要克隆
+async fn lengths_without_spawn(items: &amp;[String]) -&gt; Vec&lt;usize&gt; {
+    let futures: FuturesUnordered&lt;_&gt; = items
+        .iter()
+        .map(|item| async move {
+            sleep(Duration::from_millis(10)).await;
+            item.len() // ✅ 借用 item——不需要克隆！
+        })
+        .collect();
+
+    futures.collect().await
+}
+
+#[tokio::test]
+async fn test_both_versions() {
+    let items = vec!["hello".into(), "world".into(), "rust".into()];
+
+    let v1 = lengths_with_spawn(&amp;items).await;
+    // 注意：v1 保持插入顺序（顺序 join）
+
+    let mut v2 = lengths_without_spawn(&amp;items).await;
+    v2.sort(); // FuturesUnordered 按完成顺序返回
+
+    assert_eq!(v1, vec![5, 5, 4]);
+    assert_eq!(v2, vec![4, 5, 5]);
+}
+<span class="boring">}</span></code></pre></pre>
+<p><strong>关键要点</strong>：<code>FuturesUnordered</code> 通过在当前任务上运行所有 future 来避免 <code>'static</code> 要求（无线程迁移）。权衡：所有 future 共享一个任务——如果一个阻塞，其他任务也会停滞。对应该在单独线程上运行的 CPU 密集型工作使用 <code>spawn</code>。</p>
+</details>
+</details>
+<blockquote>
+<p><strong>关键要点 — 何时 Tokio 不是最佳选择</strong></p>
+<ul>
+<li><code>FuturesUnordered</code> 在当前任务上并发运行 future——没有 <code>'static</code> 要求</li>
+<li><code>LocalSet</code> 在单线程执行器上启用 <code>!Send</code> future</li>
+<li><code>JoinSet</code>（tokio 1.21+）提供管理的任务组，带有自动清理</li>
+<li>对于库：只依赖 <code>std::future::Future</code> + <code>futures</code> crate，不直接依赖 tokio</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>另见：</strong> <a href="ch08-tokio-deep-dive.html">第 8 章 — Tokio 深度解析</a> 了解何时 spawn 是正确的工具，<a href="ch11-streams-and-asynciterator.html">第 11 章 — Stream</a> 了解 <code>buffer_unordered()</code> 作为另一种并发限制器</p>
+</blockquote>
+<hr />
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch08-tokio-deep-dive.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="ch10-async-traits.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch08-tokio-deep-dive.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="ch10-async-traits.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>
